@@ -1,7 +1,6 @@
 From Autosubst Require Export Autosubst.
 From iris.program_logic Require Export language ectx_language ectxi_language.
 From fae_gtlc_mu Require Export cast_calculus.types.
-Require Coq.Logic.JMeq.
 
 Inductive expr :=
 | Var (x : var)
@@ -22,40 +21,13 @@ Inductive expr :=
 | Unfold (e : expr)
 (* Casts! *)
 | Cast (e : expr) (τi τf : type)
+(* We are not going to ask for a proof of τi ~ τf... only in type-checking *)
 | Blame.
 
 Instance Ids_expr : Ids expr. derive. Defined.
 Instance Rename_expr : Rename expr. derive. Defined.
 Instance Subst_expr : Subst expr. derive. Defined.
 Instance SubstLemmas_expr : SubstLemmas expr. derive. Qed.
-
-(* Distinction between inert and active as in formalisation of Jeremy *)
-
-Inductive Inert_cast_pair : type → type → Prop :=
-  | Between_arrow_types τ1 τ2 τ1' τ2' : Inert_cast_pair (TArrow τ1 τ2) (TArrow τ1' τ2')
-  | From_ground_to_unknown τ (G : Ground τ) : Inert_cast_pair τ TUnknown.
-
-Lemma Unique_Ground_Proof τ (G1 : Ground τ) (G2 : Ground τ) : G1 = G2.
-Proof.
-  destruct G1; generalize_eqs G2; intros; destruct G2; try inversion H; try by rewrite H0.
-Qed.
-
-Lemma Unique_Inert_cast_pair_proof τi τf (Ip1 : Inert_cast_pair τi τf) (Ip2 : Inert_cast_pair τi τf) : Ip1 = Ip2.
-Proof.
-  destruct Ip1.
-  - generalize_eqs Ip2.
-    intros.
-    destruct Ip2.
-    simplify_eq.
-      by rewrite H1.
-      inversion H0.
-  - generalize_eqs Ip2.
-    intros.
-    destruct Ip2.
-    simplify_eq.
-    rewrite (Unique_Ground_Proof τ G G0).
-      by rewrite -H0.
-Qed.
 
 Inductive val :=
 | LamV (e : {bind 1 of expr})
@@ -65,8 +37,6 @@ Inductive val :=
 | InjRV (v : val)
 | FoldV (v : val)
 | CastV (v : val) (τi τf : type) (Ip : Inert_cast_pair τi τf).
-(* | CastFunction (v : val) (τ1 τ2 τ1' τ2' : type) *)
-(* | CastGroundUp (v : val) (τ : type) (G : Ground τ) : val. *)
 
 Fixpoint of_val (v : val) : expr :=
   match v with
@@ -77,8 +47,6 @@ Fixpoint of_val (v : val) : expr :=
   | InjRV v => InjR (of_val v)
   | FoldV v => Fold (of_val v)
   | CastV v τi τf _ => Cast (of_val v) τi τf
-  (* | CastFunction v τ1 τ2 τ1' τ2' => Cast (of_val v) (TArrow τ1 τ2) (TArrow τ1' τ2') *)
-  (* | CastGroundUp v τ G => Cast (of_val v) τ ⋆ *)
   end.
 Notation "# v" := (of_val v) (at level 20).
 
@@ -121,12 +89,6 @@ Fixpoint to_val (e : expr) : option val :=
   | Case _ _ _ => None
   | Unfold _ => None
   | Blame => None
-  (* | Cast e (TArrow τ1 τ2) (TArrow τ1' τ2') => v ← (to_val e); Some (CastFunction v τ1 τ2 τ1' τ2') *)
-  (* | Cast e τ ⋆ => match (Ground_dec τ) with *)
-  (*                | left G => v ← (to_val e); Some (CastGroundUp v τ G ) *)
-  (*                | right _ => None *)
-  (*                end *)
-  (* | _ => None *)
   end.
 
 (** Evaluation contexts *)
@@ -243,7 +205,12 @@ Inductive head_step : expr → state → list Empty_set → expr → state → l
     sym τ τG →
     head_step
       (Cast e ⋆ τ) σ []
-      (Cast (Cast e ⋆ τG) τG τ) σ [].
+      (Cast (Cast e ⋆ τG) τG τ) σ []
+(* Let Blame diverge *)
+| BlameDiverge σ :
+    head_step
+      Blame σ []
+      Blame σ [].
 
 (** Basic properties about the language *)
 Lemma to_of_val v : to_val (of_val v) = Some v.

@@ -79,3 +79,5 @@ Proof.
   intros eq d.
   rewrite -eq. by apply Unfold_typed.
 Qed.
+
+Definition Is_Closed τ := forall τ', τ.[τ'/] = τ.

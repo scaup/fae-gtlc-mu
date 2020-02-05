@@ -1,0 +1,19 @@
+-Q theories fae_gtlc_mu
+theories/prelude.v
+
+theories/stlc_mu/typing.v
+theories/stlc_mu/lang.v
+theories/stlc_mu/lib/universe.v
+theories/stlc_mu/lib/fix.v
+
+theories/cast_calculus/types.v
+theories/cast_calculus/lang.v
+theories/cast_calculus/typing.v
+
+theories/backtranslation/types.v
+theories/backtranslation/expressions.v
+
+theories/stlc_mu/lib/cast_emulations.v
+
+# theories/cc/lang.v
+# theories/gtlcu/lang.v

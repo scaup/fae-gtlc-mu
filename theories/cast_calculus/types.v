@@ -1,5 +1,6 @@
 From Autosubst Require Export Autosubst.
 From fae_gtlc_mu Require Export prelude.
+Require Coq.Logic.JMeq.
 
 Inductive type :=
   | TUnit : type
@@ -19,25 +20,52 @@ Instance Rename_type : Rename type. derive. Defined.
 Instance Subst_type : Subst type. derive. Defined.
 Instance SubstLemmas_typer : SubstLemmas type. derive. Qed.
 
-Inductive sym : type -> type -> Type :=
-| SymUnit : sym TUnit TUnit
-| SymUnknownL (τ : type) : sym ⋆ τ
-| SymUnknwonR (τ : type) : sym τ ⋆
-| SymSum
+(* We keep track on the maximal amount of free variables; *)
+(* this is handy when we'll express substitutions later on, we don't have to calculate the distinct free variables... *)
+(* also, gen_sym 0 will only contain closed types *)
+
+Inductive gen_sym : nat -> type -> type -> Prop :=
+| GenSymUnit (i : nat) : gen_sym i TUnit TUnit
+| GenSymUnknownL (i : nat) (τ : type) : gen_sym i ⋆ τ
+| GenSymUnknwonR (i : nat) (τ : type) : gen_sym i τ ⋆
+| GenSymSum
+    (i : nat)
     (τ1 τ1' τ2 τ2' : type)
-    (s1 : sym τ1 τ1')
-    (s2 : sym τ2 τ2')
-  : sym (τ1 + τ2)%type (τ1' + τ2')%type
-| SymProd
+    (s1 : gen_sym i τ1 τ1')
+    (s2 : gen_sym i τ2 τ2')
+  : gen_sym i (τ1 + τ2)%type (τ1' + τ2')%type
+| GenSymProd
+    (i : nat)
     (τ1 τ1' τ2 τ2' : type)
-    (s1 : sym τ1 τ1')
-    (s2 : sym τ2 τ2')
-  : sym (τ1 × τ2) (τ2 × τ2')
-| SymArrow
+    (s1 : gen_sym i τ1 τ1')
+    (s2 : gen_sym i τ2 τ2')
+  : gen_sym i (τ1 × τ2) (τ1' × τ2')
+| GenSymArrow
+    (i : nat)
     (τ1 τ1' τ2 τ2' : type)
-    (s1 : sym τ1 τ1')
-    (s2 : sym τ2 τ2')
-  : sym (TArrow τ1 τ2) (TArrow τ2 τ2').
+    (s1 : gen_sym i τ1 τ1')
+    (s2 : gen_sym i τ2 τ2')
+  : gen_sym i (TArrow τ1 τ2) (TArrow τ1' τ2')
+| GenSymVar (j : nat) (i : nat) (P : i < j) :
+    gen_sym j (TVar i) (TVar i)
+| GenSymRec (j : nat) (τ τ' : type) (P : gen_sym (S j) τ τ') :
+    gen_sym j (TRec τ) (TRec τ').
+
+Definition sym : type -> type -> Prop := gen_sym 0.
+
+(* Lemma sym_dec (n : nat) (τi τf : type) : Decision (gen_sym n τi τf). *)
+(* Proof. *)
+  (* destruct τi; destruct τf; (apply left; by constructor) || apply right. *)
+  (* -  *)
+
+
+Lemma sym_dec (τi τf : type) : Decision (sym τi τf).
+Proof.
+  destruct τi; induction τf; simplify_eq; ((apply left; by constructor) || (try by (apply right; intro abs; inversion abs))).
+  rep
+
+  - simplify_eq.
+  - constructor.
 
 Inductive Ground : type → Prop :=
   | Ground_TUnit : Ground TUnit
@@ -45,17 +73,6 @@ Inductive Ground : type → Prop :=
   | Ground_TSum : Ground (TSum TUnknown TUnknown)
   | Ground_TArrow : Ground (TArrow TUnknown TUnknown)
   | Ground_TRec : Ground (TRec TUnknown).
-
-(* Definition is_unknown_dec (τ : type) : sum (τ = TUnknown) (not (τ = TUnknown)) := *)
-(*   match τ with *)
-(*   | TUnit => inr _ *)
-(*   | TProd x x0 => inr _ *)
-(*   | TSum x x0 => inr _ *)
-(*   | TArrow x x0 => inr _ *)
-(*   | TRec τ => inr _ *)
-(*   | TVar x => inr _ *)
-(*   | TUnknown => inl eq_refl *)
-(*   end. *)
 
 Definition Is_Unknown_dec (τ : type) : Decision (τ = ⋆).
 Proof.
@@ -94,60 +111,34 @@ Definition Ground_dec (τ : type) : Decision (Ground τ).
   - apply right. intro aaa. inversion aaa.
 Defined.
 
-  (* match τ with *)
-  (* | TUnit => left Ground_TUnit *)
-  (* | TProd x x0 => match (decide (x = Unknown)) with *)
-  (*                | left _ => match (decide (x0 = Unknown)) with *)
-  (*                             | left _ => left Ground_TProd *)
-  (*                             | right _ =>  *)
-  (* | TSum x x0 => *)
-  (* | TArrow x x0 => *)
-  (* | TRec τ => *)
-  (* | TVar x => *)
-  (* | TUnknown => *)
-  (* end. *)
-
-
 (* Checking if two GROUND TYPES are equal *)
 Definition Ground_equal {τ1 τ2 : type} (G1 : Ground τ1) (G2 : Ground τ2) : Prop := τ1 = τ2.
 
-(* Definition Ground_equal_dec {τ1 τ2 : type} (G1 : Ground τ1) (G2 : Ground τ2) : Decision  := τ1 = τ2. *)
+(* Distinction between inert and active as in formalisation of Jeremy *)
 
-(* Inductive ground_type : Type := *)
-(*   | Ground_TUnit : ground_type *)
-(*   | Ground_TProd : ground_type *)
-(*   | Ground_TArrow : ground_type *)
-(*   | Ground_TSum : ground_type *)
-(*   | Ground_TRec : ground_type. *)
+Inductive Inert_cast_pair : type → type → Prop :=
+  | Between_arrow_types τ1 τ2 τ1' τ2' : Inert_cast_pair (TArrow τ1 τ2) (TArrow τ1' τ2')
+  | From_ground_to_unknown τ (G : Ground τ) : Inert_cast_pair τ TUnknown.
 
-(* Definition to_ground (τ : type) : option ground_type := *)
-(*   match τ with *)
-(*   | TUnit => Some Ground_TUnit *)
-(*   | TProd x x0 => match x with *)
-(*                  | TUnknown => match x0 with *)
-(*                               | TUnknown => Some Ground_TProd *)
-(*                               | _ => None *)
-(*                               end *)
-(*                  | _ => None *)
-(*                  end *)
-(*   | TSum x x0 => match x with *)
-(*                  | TUnknown => match x0 with *)
-(*                               | TUnknown => Some Ground_TSum *)
-(*                               | _ => None *)
-(*                               end *)
-(*                  | _ => None *)
-(*                  end *)
-(*   | TArrow x x0 => match x with *)
-(*                  | TUnknown => match x0 with *)
-(*                               | TUnknown => Some Ground_TArrow *)
-(*                               | _ => None *)
-(*                               end *)
-(*                  | _ => None *)
-(*                  end *)
-(*   | TRec τ => match τ with *)
-(*              | TUnknown => Some Ground_TRec *)
-(*              | _ => None *)
-(*              end *)
-(*   | TVar x => None *)
-(*   | TUnknown => None *)
-(*   end. *)
+Lemma Unique_Ground_Proof τ (G1 : Ground τ) (G2 : Ground τ) : G1 = G2.
+Proof.
+  destruct G1; generalize_eqs G2; intros; destruct G2; try inversion H; try by rewrite H0.
+Qed.
+
+Lemma Unique_Inert_cast_pair_proof τi τf (Ip1 : Inert_cast_pair τi τf) (Ip2 : Inert_cast_pair τi τf) : Ip1 = Ip2.
+Proof.
+  destruct Ip1.
+  - generalize_eqs Ip2.
+    intros.
+    destruct Ip2.
+    simplify_eq.
+      by rewrite H1.
+      inversion H0.
+  - generalize_eqs Ip2.
+    intros.
+    destruct Ip2.
+    simplify_eq.
+    rewrite (Unique_Ground_Proof τ G G0).
+      by rewrite -H0.
+Qed.
+
