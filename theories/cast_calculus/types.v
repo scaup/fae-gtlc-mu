@@ -1,5 +1,5 @@
 From Autosubst Require Export Autosubst.
-From fae_gtlc_mu Require Export prelude.
+From fae_gtlc_mu Require Import prelude.
 Require Coq.Logic.JMeq.
 
 Inductive type :=
@@ -15,7 +15,6 @@ Notation "⋆" := TUnknown : type_scope.
 Infix "×" := TProd (at level 150) : type_scope.
 Infix "+" := TSum : type_scope.
 
-(*
 Definition Is_Unknown_dec (τ : type) : Decision (τ = ⋆).
 Proof.
   destruct τ.
@@ -27,7 +26,6 @@ Proof.
   apply right; auto.
   apply left; auto.
 Qed.
-*)
 
 Instance Ids_type : Ids type. derive. Defined.
 Instance Rename_type : Rename type. derive. Defined.
@@ -36,14 +34,13 @@ Instance SubstLemmas_typer : SubstLemmas type. derive. Qed.
 
 Definition Is_Closed τ := forall τ', τ.[τ'/] = τ.
 
-Inductive Ground : type → Type :=
+Inductive Ground : type → Prop :=
   | Ground_TUnit : Ground TUnit
   | Ground_TProd : Ground (TProd TUnknown TUnknown)
   | Ground_TSum : Ground (TSum TUnknown TUnknown)
   | Ground_TArrow : Ground (TArrow TUnknown TUnknown)
   | Ground_TRec : Ground (TRec TUnknown).
 
-(*
 Definition Ground_dec (τ : type) : Decision (Ground τ).
   destruct τ.
   - apply left; constructor.
@@ -68,7 +65,6 @@ Definition Ground_dec (τ : type) : Decision (Ground τ).
   - apply right. intro aaa. inversion aaa.
   - apply right. intro aaa. inversion aaa.
 Defined.
-*)
 
 (* Checking if two GROUND TYPES are equal *)
 Definition Ground_equal {τ1 τ2 : type} (G1 : Ground τ1) (G2 : Ground τ2) : Prop := τ1 = τ2.
