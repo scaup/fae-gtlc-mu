@@ -2,24 +2,29 @@ From fae_gtlc_mu.cast_calculus Require Export types.
 From fae_gtlc_mu.stlc_mu Require Export typing lang lib.fix lib.universe.
 From fae_gtlc_mu.backtranslation Require Export types.
 
+(** Trivial stuff *)
+
+Definition identity : expr :=
+  Lam (Var 0).
+
 (** Embeddings *)
 
-Definition ce_unit_to_unknown : expr :=
+Definition embed_TUnit : expr :=
   Lam (Fold (InjL (InjL (InjL (InjL (Var 0)))))).
 
-Lemma ce_unit_to_unknown_typed Γ τ (G : Ground τ) :
-  Γ ⊢ₛ ce_unit_to_unknown : (TUnit → Universe).
+Lemma embed_TUnit_typed Γ τ (G : Ground τ) :
+  Γ ⊢ₛ embed_TUnit : (TUnit → Universe).
 Proof.
   apply Lam_typed, Fold_typed.
   repeat apply InjL_typed.
   by apply Var_typed.
 Qed.
 
-Definition ce_ground_sum_to_unknown : expr :=
+Definition embed_Gound_TSum : expr :=
   Lam (Fold ((InjL (InjL (InjL (InjR (Var 0))))))).
 
-Definition ce_ground_sum_to_unknown_typed :
-  [] ⊢ₛ ce_ground_sum_to_unknown : ((Universe + Universe) → Universe)%type.
+Definition embed_Gound_TSum_typed :
+  [] ⊢ₛ embed_Gound_TSum : ((Universe + Universe) → Universe)%type.
 Proof.
   apply Lam_typed.
   apply Fold_typed.
@@ -27,22 +32,33 @@ Proof.
   by apply Var_typed.
 Qed.
 
-Definition ce_ground_prod_to_unknown : expr :=
+Definition embed_Gound_TProd : expr :=
   Lam (Fold (InjL (InjL (InjR (Var 0))))).
 
-Definition ce_ground_prod_to_unknown_typed :
-  [] ⊢ₛ ce_ground_prod_to_unknown : ((Universe × Universe) → Universe).
+Definition embed_Gound_TProd_typed :
+  [] ⊢ₛ embed_Gound_TProd : ((Universe × Universe) → Universe).
 Proof.
   apply Lam_typed, Fold_typed.
   repeat apply InjL_typed. asimpl. repeat apply InjR_typed.
   by apply Var_typed.
 Qed.
 
-Definition ce_ground_rec_to_unknown  : expr :=
+Definition embed_Gound_TArrow : expr :=
+  Lam (Fold (InjL (InjR (Var 0)))).
+
+Definition embed_Gound_TArrow_typed :
+  [] ⊢ₛ embed_Gound_TArrow : ((Universe → Universe) → Universe).
+Proof.
+  apply Lam_typed, Fold_typed.
+  repeat apply InjL_typed. asimpl. repeat apply InjR_typed.
+  by apply Var_typed.
+Qed.
+
+Definition embed_Gound_TRec  : expr :=
   Lam (Fold (InjR (Unfold (Var 0)))).
 
-Definition ce_ground_rec_to_unknown_typed :
-  [] ⊢ₛ ce_ground_rec_to_unknown : (TRec Universe → Universe).
+Definition embed_Gound_TRec_typed :
+  [] ⊢ₛ embed_Gound_TRec : (TRec Universe → Universe).
 Proof.
   apply Lam_typed. apply Fold_typed.
   apply InjR_typed.
@@ -76,7 +92,7 @@ Proof.
     + by apply Var_typed.
 Qed.
 
-Definition Match_TUnit : expr :=
+Definition extract_TUnit : expr :=
   Lam (Case (Unfold (Var 0))
             (Case (Var 0)
                   (Case (Var 0)
@@ -91,7 +107,7 @@ Definition Match_TUnit : expr :=
             (Ω)
       ).
 
-Definition Match_TUnit_typed : [] ⊢ₛ Match_TUnit : (Universe → TUnit).
+Definition extract_TUnit_typed : [] ⊢ₛ extract_TUnit : (Universe → TUnit).
 Proof.
   apply Lam_typed.
   apply Case_typed with (τ1 := (TUnit + (TVar 0 + TVar 0) + (TVar 0 × TVar 0) + (TVar 0 → TVar 0)).[Universe/]%type)
@@ -112,7 +128,7 @@ Proof.
   - by apply Ω_typed.
 Qed.
 
-Definition Match_TSum : expr :=
+Definition extract_Ground_TSum : expr :=
   Lam (Case (Unfold (Var 0))
             (Case (Var 0)
                   (Case (Var 0)
@@ -127,7 +143,7 @@ Definition Match_TSum : expr :=
             (Ω)
       ).
 
-Definition Match_TSum_typed : [] ⊢ₛ Match_TSum : (Universe → (Universe + Universe))%type.
+Definition extract_Ground_TSum_typed : [] ⊢ₛ extract_Ground_TSum : (Universe → (Universe + Universe))%type.
 Proof.
   apply Lam_typed.
   apply Case_typed with (τ1 := (TUnit + (TVar 0 + TVar 0) + (TVar 0 × TVar 0) + (TVar 0 → TVar 0)).[Universe/]%type)
@@ -145,7 +161,7 @@ Proof.
   - by apply Ω_typed.
 Qed.
 
-Definition Match_TProd : expr :=
+Definition extract_Ground_TProd : expr :=
   Lam (Case (Unfold (Var 0))
             (Case (Var 0)
                   (Case (Var 0)
@@ -157,7 +173,7 @@ Definition Match_TProd : expr :=
             (Ω)
       ).
 
-Definition Match_TProd_typed : [] ⊢ₛ Match_TProd : (Universe → (Universe × Universe)).
+Definition extract_Ground_TProd_typed : [] ⊢ₛ extract_Ground_TProd : (Universe → (Universe × Universe)).
 Proof.
   apply Lam_typed.
   apply Case_typed with (τ1 := (TUnit + (TVar 0 + TVar 0) + (TVar 0 × TVar 0) + (TVar 0 → TVar 0)).[Universe/]%type)
@@ -172,7 +188,7 @@ Proof.
   - by apply Ω_typed.
 Qed.
 
-Definition Match_TArrow : expr :=
+Definition extract_Ground_TArrow : expr :=
   Lam (Case (Unfold (Var 0))
             (Case (Var 0)
                   (Ω)
@@ -181,7 +197,7 @@ Definition Match_TArrow : expr :=
             (Ω)
       ).
 
-Definition Match_TArrow_typed : [] ⊢ₛ Match_TArrow : (Universe → (Universe → Universe)).
+Definition extract_Ground_TArrow_typed : [] ⊢ₛ extract_Ground_TArrow : (Universe → (Universe → Universe)).
 Proof.
   apply Lam_typed.
   apply Case_typed with (τ1 := (TUnit + (TVar 0 + TVar 0) + (TVar 0 × TVar 0) + (TVar 0 → TVar 0)).[Universe/]%type)
@@ -193,13 +209,13 @@ Proof.
   - by apply Ω_typed.
 Qed.
 
-Definition Match_TRec : expr :=
+Definition extract_Ground_TRec : expr :=
   Lam (Case (Unfold (Var 0))
             (Ω)
             (Fold (Var 0))
       ).
 
-Definition Match_TRec_typed : [] ⊢ₛ Match_TRec : (Universe → TRec Universe).
+Definition extract_Ground_TRec_typed : [] ⊢ₛ extract_Ground_TRec : (Universe → TRec Universe).
 Proof.
   apply Lam_typed.
   apply Case_typed with (τ1 := (TUnit + (TVar 0 + TVar 0) + (TVar 0 × TVar 0) + (TVar 0 → TVar 0)).[Universe/]%type)
@@ -211,11 +227,11 @@ Qed.
 
 (** Factorisations *)
 
-Definition up_factorization (f1 f2 : expr) (τ τG : cast_calculus.types.type) (G : Ground τG) (_ : not (Ground τ)) (_ : not (τ = ⋆)) (_ : sym τ τG) : expr :=
+Definition factorization (f1 f2 : expr) : expr :=
   Lam (f2 (f1 (Var 0))).
 
-Lemma up_factorization_typed {f1 f2 : expr} {τ τG : cast_calculus.types.type} {G : Ground τG} {p1 : not (Ground τ)} {p2 : not (τ = ⋆)} {p3 : sym τ τG} (d1 : forall Γ, Γ ⊢ₛ f1 : (<<τ>> → <<τG>>)) (d2 : forall Γ, Γ ⊢ₛ f2 : (<<τG>> → Universe)) :
-  [] ⊢ₛ up_factorization f1 f2 τ τG G p1 p2 p3 : (<<τ>> → Universe).
+Lemma factorization_up_typed {f1 f2 : expr} {τ τG : cast_calculus.types.type} {G : Ground τG} {p1 : notT (Ground τ)} {p2 : not (τ = ⋆)} (d1 : forall Γ, Γ ⊢ₛ f1 : (<<τ>> → <<τG>>)) (d2 : forall Γ, Γ ⊢ₛ f2 : (<<τG>> → Universe)) :
+  [] ⊢ₛ factorization f1 f2 : (<<τ>> → Universe).
 Proof.
   apply Lam_typed.
   apply App_typed with (τ1 := << τG >>).
@@ -225,11 +241,8 @@ Proof.
   by apply Var_typed.
 Qed.
 
-Definition down_factorization (f1 f2 : expr) (τ τG : cast_calculus.types.type) (G : Ground τG) (_ : not (Ground τ)) (_ : not (τ = ⋆)) (_ : sym τ τG) : expr :=
-  Lam (f2 (f1 (Var 0))).
-
-Lemma down_factorization_typed {f1 f2 : expr} {τ τG : cast_calculus.types.type} {G : Ground τG} {p1 : not (Ground τ)} {p2 : not (τ = ⋆)} {p3 : sym τ τG} (d1 : forall Γ, Γ ⊢ₛ f1 : (Universe → <<τG>>)) (d2 : forall Γ, Γ ⊢ₛ f2 : (<<τG>> → <<τ>>)) :
-  [] ⊢ₛ up_factorization f1 f2 τ τG G p1 p2 p3 : (Universe → <<τ>>).
+Lemma factorization_down_typed {f1 f2 : expr} {τ τG : cast_calculus.types.type} {G : Ground τG} {p1 : notT (Ground τ)} {p2 : not (τ = ⋆)} (d1 : forall Γ, Γ ⊢ₛ f1 : (Universe → <<τG>>)) (d2 : forall Γ, Γ ⊢ₛ f2 : (<<τG>> → <<τ>>)) :
+  [] ⊢ₛ factorization f1 f2 : (Universe → <<τ>>).
 Proof.
   apply Lam_typed.
   apply App_typed with (τ1 := << τG >>).
@@ -241,11 +254,11 @@ Qed.
 
 (** Between sums, products, recursive types, arrow types *)
 
-Definition between_sums (τ1 τ2 τ1' τ2' : cast_calculus.types.type) (f1 f2 : expr) : expr :=
-  Lam (Case (Var 0) (InjL (f1 (Var 0))) (InjR (f2 (Var 0)))).
+Definition between_TSum (c1 c2 : expr) : expr :=
+  Lam (Case (Var 0) (InjL (c1 (Var 0))) (InjR (c2 (Var 0)))).
 
-Lemma between_sums_typed (τ1 τ2 τ1' τ2' : cast_calculus.types.type) (f1 f2 : expr) (d1 : ∀ Γ, Γ ⊢ₛ f1 : (<<τ1>> → <<τ1'>>)) (d2 : ∀ Γ, Γ ⊢ₛ f2 : (<<τ2>> → <<τ2'>>)) :
-  [] ⊢ₛ between_sums τ1 τ2 τ1' τ2' f1 f2 : (<<τ1>> + <<τ2>> → <<τ1'>> + <<τ2'>>)%type.
+Lemma between_TSum_typed (τ1 τ2 τ1' τ2' : cast_calculus.types.type) (f1 f2 : expr) (d1 : ∀ Γ, Γ ⊢ₛ f1 : (<<τ1>> → <<τ1'>>)) (d2 : ∀ Γ, Γ ⊢ₛ f2 : (<<τ2>> → <<τ2'>>)) :
+  [] ⊢ₛ between_TSum f1 f2 : (<<τ1>> + <<τ2>> → <<τ1'>> + <<τ2'>>)%type.
 Proof.
   apply Lam_typed.
   apply Case_typed with (τ1 := <<τ1>>) (τ2 := <<τ2>>).
@@ -254,17 +267,37 @@ Proof.
   constructor. eapply App_typed. apply d2. by apply Var_typed.
 Qed.
 
-Definition between_prods (τ1 τ2 τ1' τ2' : cast_calculus.types.type) (f1 f2 : expr) : expr :=
+Definition between_TProd (f1 f2 : expr) : expr :=
   Lam (Pair (f1 (Fst (Var 0))) (f2 (Snd (Var 0)))).
 
-Lemma between_prods_typed (τ1 τ2 τ1' τ2' : cast_calculus.types.type) (f1 f2 : expr) (d1 : ∀ Γ, Γ ⊢ₛ f1 : (<<τ1>> → <<τ1'>>)) (d2 : ∀ Γ, Γ ⊢ₛ f2 : (<<τ2>> → <<τ2'>>)) :
-  [] ⊢ₛ between_prods τ1 τ2 τ1' τ2' f1 f2 : ((<<τ1>> × <<τ2>>) → (<<τ1'>> × <<τ2'>>))%type.
+Lemma between_TProd_typed (τ1 τ2 τ1' τ2' : cast_calculus.types.type) (f1 f2 : expr) (d1 : ∀ Γ, Γ ⊢ₛ f1 : (<<τ1>> → <<τ1'>>)) (d2 : ∀ Γ, Γ ⊢ₛ f2 : (<<τ2>> → <<τ2'>>)) :
+  [] ⊢ₛ between_TProd f1 f2 : ((<<τ1>> × <<τ2>>) → (<<τ1'>> × <<τ2'>>))%type.
 Proof.
   apply Lam_typed.
   apply Pair_typed.
   eapply App_typed. apply d1. econstructor. by apply Var_typed.
   eapply App_typed. apply d2. econstructor. by apply Var_typed.
 Qed.
+
+Definition between_TArrow (ca cr : expr) : expr :=
+  Lam (*f*)
+    (Lam (*a*) (
+         cr
+           (((Var 1)(*f*)) (ca (Var 0(*a*))))
+       )
+    ).
+
+Lemma between_TArrow_typed (τ1 τ2 τ3 τ4 : cast_calculus.types.type) (ca cr : expr) (da : ∀ Γ, Γ ⊢ₛ ca : (<<τ3>> → <<τ1>>)) (dr : ∀ Γ, Γ ⊢ₛ cr : (<<τ2>> → <<τ4>>)) :
+  [] ⊢ₛ between_TArrow ca cr : ((<<τ1>> → <<τ2>>) → (<<τ3>> → <<τ4>>))%type.
+Proof.
+  repeat apply Lam_typed.
+  apply App_typed with (τ1 := <<τ2>>).
+  auto. apply App_typed with (τ1 := <<τ1>>); auto.
+    by auto; apply Var_typed.
+    eapply App_typed. auto.
+    by apply Var_typed.
+Qed.
+
 
 (* Definition between_recs (τb τb' : cast_calculus.types.type) (f1 f2 : expr) : expr := *)
 (*   Lam ( *)
@@ -283,21 +316,95 @@ Qed.
 
 (** Complete definition *)
 
-Fixpoint 𝓕 (τi τf : cast_calculus.types.type) (P : sym τi τf) : expr :=
-  match P with
-  | SymUnit => (Lam (Var 0))
-  | SymUnknownL τ (* ⋆ ~ τ *) => 
-  | SymUnknwonR τ => Unit
-  | SymSum τ1 τ1' τ2 τ2' s1 s2 => Unit
-  | SymProd τ1 τ1' τ2 τ2' s1 s2 => Unit
-  | SymArrow τ1 τ1' τ2 τ2' s1 s2 => Unit
+(* recursively defined on the alternative consistency relation *)
+
+Definition add_head (i : nat) (ls : list nat) : list nat :=
+  match ls with
+  | nil => nil
+  | cons x x0 => cons (i + x) x0
   end.
 
+Fixpoint 𝓕 (τi τf : cast_calculus.types.type) (P : open_sym_alt τi τf) (Σ : list nat) : expr :=
+  match P with
+  (** ATOMIC cases *)
+  | GenSymAltGroundGround τ G => identity
+  | GenSymAltGroundStar τ G => match G with
+                              | Ground_TUnit => embed_TUnit
+                              | Ground_TProd => embed_Gound_TProd
+                              | Ground_TSum => embed_Gound_TSum
+                              | Ground_TArrow => embed_Gound_TArrow
+                              | Ground_TRec => embed_Gound_TRec
+                              end
+  | GenSymAltStarGround τ G => match G with
+                              | Ground_TUnit => extract_TUnit
+                              | Ground_TProd => extract_Ground_TProd
+                              | Ground_TSum => extract_Ground_TSum
+                              | Ground_TArrow => extract_Ground_TArrow
+                              | Ground_TRec => extract_Ground_TRec
+                              end
+  | GenSymAltStarStar => identity
+  (** RECURSIVE cases *)
+  | GenSymAltProds τ1 τ1' τ2 τ2' P1 P2 =>
+    between_TProd (𝓕 τ1 τ1' P1 (add_head 1 Σ) (Fst (Var 0)))
+                  (𝓕 τ2 τ2' P2 (add_head 1 Σ) (Snd (Var 0)))
+  | GenSymAltSums τ1 τ1' τ2 τ2' P1 P2 =>
+    between_TSum (𝓕 τ1 τ1' P1 (add_head 2 Σ) (Var 0))
+                 (InjR (𝓕 τ2 τ2' P2 (add_head 2 Σ) (Var 0)))
+  | GenSymAltArrows τ1 τ2 τ3 τ4 P31 P24 =>
+    between_TArrow (𝓕 τ3 τ1 P31 (add_head 2 Σ))
+                   (𝓕 τ2 τ4 P24 (add_head 2 Σ))
+  | GenSymAltRec τ τ' x => Unit
+  (* recursive calls from earlier *)
+  | GenSymAltVars i =>
+    Var (sum_list_with id (take (S i) Σ))
+  | GenSymAltVarStar i => Unit
+    (* Lam (𝓕 _ _ (GenSymAltGroundStar Ground_TRec) (add_head 1 Σ) *)
+           (* (Var (sum_list_with id (take (S i) Σ))) *)
+        (* ) *)
+        (* wrrooooong *)
+
+  (* compare μ. () + (nat × #0) ~ μ. () + (nat × ⋆) *)
+          (* vs *)
+          (* μ. () + (nat × #0) ~ μ. ⋆ *)
+  (* recursive call will be different in both cases... *)
+
+  | GenSymAltStarVar i => Unit
+  | GenSymAltStarTau τ τG G x => Unit
+  | GenSymAltTauStar τ τG G x => Unit
+  end.
+
+(* Fixpoint free_variables (τ : cast_calculus.types.type) : nat := *)
+(*   match τ with *)
+(*   | types.TUnit => 0 *)
+(*   | types.TProd τ1 τ2 => max (free_variables τ1) (free_variables τ2) *)
+(*   | types.TSum τ1 τ2 => max (free_variables τ1) (free_variables τ2) *)
+(*   | types.TArrow τ1 τ2 => max (free_variables τ1) (free_variables τ2) *)
+(*   | types.TRec τ => (free_variables τ) - 1 *)
+(*   | types.TVar k => k *)
+(*   | types.TUnknown => 0 *)
+(*   end. *)
+
+(* Definition upperbound (τ τ' : cast_calculus.types.type) : nat := max (free_variables τ) (free_variables τ'). *)
 
 
-Admitted.
 
-Lemma 𝓕_typed (τi τf : cast_calculus.types.type) :
-  [] ⊢ₛ 𝓕 τi τf : TArrow <<τi>> <<τf>>.
-Admitted.
+(* Definition 𝓕 (τi τf : cast_calculus.types.type) (P : open_sym τi τf) (Σ : vec expr (upperbound τi τf)) : expr. *)
+(* Proof. *)
+(*   induction P. *)
+(*   - admit. *)
+(*   - admit. *)
+(*   - admit. *)
+(*   - admit. *)
+(*   - admit. *)
+(*   - admit. *)
+(*   - admit. *)
+(*   - admit. *)
+
+
+(* Fixpoint 𝓕 (τi τf : cast_calculus.types.type) (P : sym τi τf) : expr := *)
+
+
+(* Lemma 𝓕_typed (τi τf : cast_calculus.types.type) : *)
+(*   [] ⊢ₛ 𝓕 τi τf : TArrow <<τi>> <<τf>>. *)
+(* Admitted. *)
 
