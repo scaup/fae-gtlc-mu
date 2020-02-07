@@ -34,36 +34,36 @@ Instance SubstLemmas_typer : SubstLemmas type. derive. Qed.
 
 Definition Is_Closed τ := forall τ', τ.[τ'/] = τ.
 
-Inductive Ground : type → Prop :=
+Inductive Ground : type → Type :=
   | Ground_TUnit : Ground TUnit
   | Ground_TProd : Ground (TProd TUnknown TUnknown)
   | Ground_TSum : Ground (TSum TUnknown TUnknown)
   | Ground_TArrow : Ground (TArrow TUnknown TUnknown)
   | Ground_TRec : Ground (TRec TUnknown).
 
-Definition Ground_dec (τ : type) : Decision (Ground τ).
+Definition Ground_dec (τ : type) : TDecision (Ground τ).
   destruct τ.
-  - apply left; constructor.
+  - apply inl; constructor.
   - destruct (Is_Unknown_dec τ1). rewrite e.
     destruct (Is_Unknown_dec τ2). rewrite e0.
-    + apply left. constructor.
-    + apply right. intro aaa. inversion aaa. apply n. by symmetry.
-    + apply right. intro aaa. inversion aaa. apply n. by symmetry.
+    + apply inl. constructor.
+    + apply inr. intro aaa. inversion aaa. apply n. by symmetry.
+    + apply inr. intro aaa. inversion aaa. apply n. by symmetry.
   - destruct (Is_Unknown_dec τ1). rewrite e.
     destruct (Is_Unknown_dec τ2). rewrite e0.
-    + apply left. constructor.
-    + apply right. intro aaa. inversion aaa. apply n. by symmetry.
-    + apply right. intro aaa. inversion aaa. apply n. by symmetry.
+    + apply inl. constructor.
+    + apply inr. intro aaa. inversion aaa. apply n. by symmetry.
+    + apply inr. intro aaa. inversion aaa. apply n. by symmetry.
   - destruct (Is_Unknown_dec τ1). rewrite e.
     destruct (Is_Unknown_dec τ2). rewrite e0.
-    + apply left. constructor.
-    + apply right. intro aaa. inversion aaa. apply n. by symmetry.
-    + apply right. intro aaa. inversion aaa. apply n. by symmetry.
+    + apply inl. constructor.
+    + apply inr. intro aaa. inversion aaa. apply n. by symmetry.
+    + apply inr. intro aaa. inversion aaa. apply n. by symmetry.
   - destruct (Is_Unknown_dec τ). rewrite e.
-    + apply left. constructor.
-    + apply right. intro aaa. inversion aaa. apply n. by symmetry.
-  - apply right. intro aaa. inversion aaa.
-  - apply right. intro aaa. inversion aaa.
+    + apply inl. constructor.
+    + apply inr. intro aaa. inversion aaa. apply n. by symmetry.
+  - apply inr. intro aaa. inversion aaa.
+  - apply inr. intro aaa. inversion aaa.
 Defined.
 
 (* Checking if two GROUND TYPES are equal *)
@@ -145,10 +145,10 @@ Inductive open_sym_alt : type -> type -> Type :=
     open_sym_alt τ1 τ1' ->
     open_sym_alt τ2 τ2' ->
     open_sym_alt (τ1 + τ2)%type (τ1' + τ2')%type
-| GenSymAltArrows (τ1 τ1' τ2 τ2' : type) :
-    open_sym_alt τ1 τ1' ->
-    open_sym_alt τ2 τ2' ->
-    open_sym_alt (TArrow τ1 τ2')%type (TArrow τ1' τ2)%type
+| GenSymAltArrows (τ1 τ2 τ3 τ4 : type) :
+    open_sym_alt τ3 τ1 ->
+    open_sym_alt τ2 τ4 ->
+    open_sym_alt (TArrow τ1 τ2)%type (TArrow τ3 τ4)%type
 | GenSymAltVars (i : nat) :
     open_sym_alt (TVar i) (TVar i)
 | GenSymAltVarStar (i : nat) :
@@ -186,9 +186,9 @@ Proof.
     + intro P. apply GenSymAltTauStar with (τG := (⋆ + ⋆)%type); first by constructor. constructor.
       apply IHτ1; constructor. apply IHτ2; constructor.
   - (** Arrow case *) intros τ'0; destruct τ'0; try by (repeat constructor); try by (intro abs; inversion abs).
-    + intro P. inversion P. simplify_eq. constructor. by apply IHτ1. apply open_sym_alt_symmetric. by apply IHτ2.
+    + intro P. inversion P. simplify_eq. constructor. apply open_sym_alt_symmetric. by apply IHτ1. by apply IHτ2.
     + intro P. apply GenSymAltTauStar with (τG := (TArrow ⋆ ⋆)%type); first by constructor. constructor.
-      apply IHτ1; constructor. apply open_sym_alt_symmetric. apply IHτ2; constructor.
+      apply open_sym_alt_symmetric. apply IHτ1; constructor. apply IHτ2; constructor.
   - intros τ'0; destruct τ'0; try by (repeat constructor); try by (intro abs; inversion abs).
     + intro P. inversion P. simplify_eq.
       constructor. by apply IHτ.
@@ -203,7 +203,7 @@ Proof.
     + intros P. apply GenSymAltStarTau with (τG := (⋆ + ⋆)%type); constructor.
       apply IHτ'0_1; constructor. apply IHτ'0_2; constructor.
     + intros P. apply GenSymAltStarTau with (τG := (TArrow ⋆ ⋆)%type); constructor.
-      apply IHτ'0_1; constructor. apply open_sym_alt_symmetric. apply IHτ'0_2; constructor.
+      apply open_sym_alt_symmetric. apply IHτ'0_1; constructor. apply IHτ'0_2; constructor.
     + intros P. apply GenSymAltStarTau with (τG := (TRec ⋆)%type); constructor.
       apply IHτ'0; constructor.
 Qed.
@@ -226,6 +226,6 @@ Proof.
   induction P; try by (apply GenSymUnknownR || apply GenSymUnknownL || by constructor).
   - apply open_sym_reflexive.
   - constructor.
-    + auto.
     + by apply open_sym_symmetric.
+    + auto.
 Qed.

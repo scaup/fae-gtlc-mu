@@ -24,7 +24,7 @@ Inductive typed (Γ : list type) : expr → type → Prop :=
   | Fold_typed e τ : Γ ⊢ₜ e : τ.[TRec τ/] → Γ ⊢ₜ Fold e : TRec τ
   | Unfold_typed e τ : Γ ⊢ₜ e : TRec τ → Γ ⊢ₜ Unfold e : τ.[TRec τ/]
   (* typing for CAST *)
-  | Cast_typed e τi τf : sym τi τf → Γ ⊢ₜ e : τi → Γ ⊢ₜ Cast e τi τf : τf
+  | Cast_typed e τi τf : Is_Closed τi -> Is_Closed τf -> open_sym τi τf → Γ ⊢ₜ e : τi → Γ ⊢ₜ Cast e τi τf : τf
   (* typing for BLAME *)
   | Blame_typed τ : Is_Closed τ → Γ ⊢ₜ Blame : τ
   (* maybe adjust later to allow... *)

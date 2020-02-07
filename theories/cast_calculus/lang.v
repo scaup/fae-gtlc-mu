@@ -67,7 +67,7 @@ destruct τf.
   - apply right. intro aaa. inversion aaa.
   - destruct (Ground_dec τi).
     + apply left. by constructor.
-    + apply right. intro aaa. inversion aaa. by apply n.
+    + apply right. intro aaa. inversion aaa. by apply f.
 Defined.
 
 Fixpoint to_val (e : expr) : option val :=
@@ -192,7 +192,7 @@ Inductive head_step : expr → state → list Empty_set → expr → state → l
 (* Factorisations *)
 | UpFactorization e v τ τG (G : Ground τG) σ :
     to_val e = Some v →
-    (¬ Ground τ) →
+    ((Ground τ) -> False) →
     (¬ (τ = ⋆)) →
     open_sym τ τG →
     head_step
@@ -200,7 +200,7 @@ Inductive head_step : expr → state → list Empty_set → expr → state → l
       (Cast (Cast e τ τG) τG ⋆) σ []
 | DownFactorization e v τ τG (G : Ground τG) σ :
     to_val e = Some v →
-    (¬ Ground τ) →
+    (notT (Ground τ)) →
     (¬ (τ = ⋆)) →
     open_sym τ τG →
     head_step
