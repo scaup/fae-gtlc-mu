@@ -7,13 +7,21 @@ theories/stlc_mu/lib/universe.v
 theories/stlc_mu/lib/fix.v
 
 theories/cast_calculus/types.v
-theories/cast_calculus/lang.v
-theories/cast_calculus/typing.v
+theories/cast_calculus/consistency/standard.v
+theories/cast_calculus/consistency/structural.v
+theories/cast_calculus/consistency/equivalent.v
 
 theories/backtranslation/types.v
-theories/backtranslation/expressions.v
 
-theories/stlc_mu/lib/cast_emulations.v
+# theories/cast_calculus/consistency_standard_open.v
+# theories/cast_calculus/consistency_standard_closed.v
+# theories/cast_calculus/consistency_alternative_open.v
+# theories/cast_calculus/lang.v
+# theories/cast_calculus/typing.v
+# 
+# theories/backtranslation/expressions.v
+
+# theories/stlc_mu/lib/cast_emulations.v
 
 # theories/cc/lang.v
 # theories/gtlcu/lang.v

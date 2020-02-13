@@ -15,6 +15,15 @@ Notation "⋆" := TUnknown : type_scope.
 Infix "×" := TProd (at level 150) : type_scope.
 Infix "+" := TSum : type_scope.
 
+Inductive UB (n : nat) : type -> Type :=
+| UBUnit : UB n TUnit
+| UBProd τ τ' : UB n τ -> UB n τ' -> UB n (TProd τ τ')
+| UBSum τ τ' : UB n τ -> UB n τ' -> UB n (TSum τ τ')
+| UBArrow τ τ' : UB n τ -> UB n τ' -> UB n (TArrow τ τ')
+| UBRec τ : UB (S n) τ -> UB n (TRec τ)
+| UBVar i : i < n -> UB n (TVar i)
+| UBStar : UB n ⋆.
+
 Definition Is_Unknown_dec (τ : type) : Decision (τ = ⋆).
 Proof.
   destruct τ.
@@ -94,138 +103,4 @@ Proof.
     simplify_eq.
     rewrite (Unique_Ground_Proof τ G G0).
       by rewrite -H0.
-Qed.
-
-(* We keep track on the maximal amount of free variables; *)
-(* this is handy when we'll express substitutions later on, we don't have to calculate the distinct free variables... *)
-(* also, open_sym 0 will only contain closed types *)
-
-(* needs to be in Type, given a certain consistency, we want to now why it is consistent *)
-
-(* Let's maybe not do this :( *)
-
-Inductive open_sym : type -> type -> Type :=
-| GenSymUnit : open_sym TUnit TUnit
-| GenSymUnknownL (τ : type) : open_sym ⋆ τ
-| GenSymUnknownR (τ : type) : open_sym τ ⋆
-| GenSymSum
-    (τ1 τ1' τ2 τ2' : type)
-    (s1 : open_sym τ1 τ1')
-    (s2 : open_sym τ2 τ2')
-  : open_sym (τ1 + τ2)%type (τ1' + τ2')%type
-| GenSymProd
-    (τ1 τ1' τ2 τ2' : type)
-    (s1 : open_sym τ1 τ1')
-    (s2 : open_sym τ2 τ2')
-  : open_sym (τ1 × τ2) (τ1' × τ2')
-| GenSymArrow
-    (τ1 τ1' τ2 τ2' : type)
-    (s1 : open_sym τ1 τ1')
-    (s2 : open_sym τ2 τ2')
-  : open_sym (TArrow τ1 τ2) (TArrow τ1' τ2')
-| GenSymVar (i : nat) :
-    open_sym (TVar i) (TVar i)
-| GenSymRec (τ τ' : type) (P : open_sym τ τ') :
-    open_sym (TRec τ) (TRec τ').
-
-Inductive open_sym_alt : type -> type -> Type :=
-| GenSymAltGroundGround τ (G : Ground τ) :
-    open_sym_alt τ τ
-| GenSymAltGroundStar τ (G : Ground τ) :
-    open_sym_alt τ ⋆
-| GenSymAltStarGround τ (G : Ground τ) :
-    open_sym_alt ⋆ τ
-| GenSymAltStarStar :
-    open_sym_alt ⋆ ⋆
-| GenSymAltProds (τ1 τ1' τ2 τ2' : type) :
-    open_sym_alt τ1 τ1' ->
-    open_sym_alt τ2 τ2' ->
-    open_sym_alt (τ1 × τ2)%type (τ1' × τ2')%type
-| GenSymAltSums (τ1 τ1' τ2 τ2' : type) :
-    open_sym_alt τ1 τ1' ->
-    open_sym_alt τ2 τ2' ->
-    open_sym_alt (τ1 + τ2)%type (τ1' + τ2')%type
-| GenSymAltArrows (τ1 τ2 τ3 τ4 : type) :
-    open_sym_alt τ3 τ1 ->
-    open_sym_alt τ2 τ4 ->
-    open_sym_alt (TArrow τ1 τ2)%type (TArrow τ3 τ4)%type
-| GenSymAltVars (i : nat) :
-    open_sym_alt (TVar i) (TVar i)
-| GenSymAltVarStar (i : nat) :
-    open_sym_alt (TVar i) ⋆
-| GenSymAltStarVar (i : nat) :
-    open_sym_alt ⋆ (TVar i)
-| GenSymAltRec (τ τ' : type) :
-    open_sym_alt τ τ' ->
-    open_sym_alt (TRec τ) (TRec τ')
-| GenSymAltStarTau τ τG (G : Ground τG):
-    open_sym_alt τG τ →
-    open_sym_alt ⋆ τ
-| GenSymAltTauStar τ τG (G : Ground τG):
-    open_sym_alt τ τG →
-    open_sym_alt τ ⋆.
-
-Lemma open_sym_alt_symmetric (τ τ' : type) : open_sym_alt τ τ' -> open_sym_alt τ' τ.
-Proof.
-  intro P. induction P; try by constructor.
-  by apply GenSymAltTauStar with (τG := τG).
-  by apply GenSymAltStarTau with (τG := τG).
-Qed.
-
-Lemma open_sym_implies_alt_open_sym (τ τ' : type) : (open_sym τ τ') -> (open_sym_alt τ τ').
-Proof.
-  generalize τ'.
-  induction τ.
-  - intros τ'0; destruct τ'0; try by (repeat constructor); try by (intro abs; inversion abs).
-  - intros τ'0; destruct τ'0; try by (repeat constructor); try by (intro abs; inversion abs).
-    + intro P. inversion P. simplify_eq. constructor. by apply IHτ1. by apply IHτ2.
-    + intro P. apply GenSymAltTauStar with (τG := ⋆ × ⋆); first by constructor. constructor.
-      apply IHτ1. constructor. apply IHτ2; constructor.
-  - intros τ'0; destruct τ'0; try by (repeat constructor); try by (intro abs; inversion abs).
-    + intro P. inversion P. simplify_eq. constructor. by apply IHτ1. by apply IHτ2.
-    + intro P. apply GenSymAltTauStar with (τG := (⋆ + ⋆)%type); first by constructor. constructor.
-      apply IHτ1; constructor. apply IHτ2; constructor.
-  - (** Arrow case *) intros τ'0; destruct τ'0; try by (repeat constructor); try by (intro abs; inversion abs).
-    + intro P. inversion P. simplify_eq. constructor. apply open_sym_alt_symmetric. by apply IHτ1. by apply IHτ2.
-    + intro P. apply GenSymAltTauStar with (τG := (TArrow ⋆ ⋆)%type); first by constructor. constructor.
-      apply open_sym_alt_symmetric. apply IHτ1; constructor. apply IHτ2; constructor.
-  - intros τ'0; destruct τ'0; try by (repeat constructor); try by (intro abs; inversion abs).
-    + intro P. inversion P. simplify_eq.
-      constructor. by apply IHτ.
-    + intro P. apply GenSymAltTauStar with (τG := (TRec ⋆)); constructor.
-      apply IHτ. constructor.
-  - intros τ'0; destruct τ'0; try by (repeat constructor); try by (intro abs; inversion abs).
-    + intro P. inversion P. simplify_eq.
-      by apply GenSymAltVars.
-  - intros τ'0; induction τ'0; try by (repeat constructor); try by (intro abs; inversion abs).
-    + intros P. apply GenSymAltStarTau with (τG := (⋆ × ⋆)%type); constructor.
-      apply IHτ'0_1; constructor. apply IHτ'0_2; constructor.
-    + intros P. apply GenSymAltStarTau with (τG := (⋆ + ⋆)%type); constructor.
-      apply IHτ'0_1; constructor. apply IHτ'0_2; constructor.
-    + intros P. apply GenSymAltStarTau with (τG := (TArrow ⋆ ⋆)%type); constructor.
-      apply open_sym_alt_symmetric. apply IHτ'0_1; constructor. apply IHτ'0_2; constructor.
-    + intros P. apply GenSymAltStarTau with (τG := (TRec ⋆)%type); constructor.
-      apply IHτ'0; constructor.
-Qed.
-
-Lemma open_sym_reflexive (τ : type) : open_sym τ τ.
-Proof.
-  induction τ; by constructor.
-Qed.
-
-Lemma open_sym_symmetric (τ τ' : type) : open_sym τ τ' -> open_sym τ' τ.
-Proof.
-  intro P.
-  induction P; by constructor.
-Qed.
-
-
-Lemma open_sym_alt_implies_open_sym (τ τ' : type) : (open_sym_alt τ τ') -> (open_sym τ τ').
-Proof.
-  intro P.
-  induction P; try by (apply GenSymUnknownR || apply GenSymUnknownL || by constructor).
-  - apply open_sym_reflexive.
-  - constructor.
-    + by apply open_sym_symmetric.
-    + auto.
 Qed.
