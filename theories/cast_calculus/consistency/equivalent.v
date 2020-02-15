@@ -3,33 +3,6 @@ From fae_gtlc_mu Require Import prelude.
 From fae_gtlc_mu.cast_calculus Require Import types consistency.standard consistency.structural.
 (* Require Coq.Logic.JMeq. *)
 
-Definition flip (A : Assumption) : Assumption :=
-  match A with
-  | Unfolded => Unfolded
-  | LogBodies τ1 τ2 P1 P2 => LogBodies τ2 τ1 P2 P1
-  | LogStar => LogStar
-  end.
-
-Lemma flipflip a : flip (flip a) = a.
-  by destruct a.
-Qed.
-
-Lemma flipflipmap l : map flip (map flip l) = l.
-  induction l.
-  by simpl.
-  simpl. by rewrite flipflip IHl.
-Qed.
-
-Lemma map_lookup (l : list Assumption) (f : Assumption -> Assumption) (i : nat) (a : Assumption) :
-  l !! i = Some (f a) -> ((map f l) !! i = Some a).
-Proof.
-Admitted.
-
-Lemma map_update (f : Assumption -> Assumption) (l : list Assumption) i a :
-  map f (update l i a) = update (map f l) i (f a).
-Proof.
-Admitted.
-
 Lemma cons_struct_symmetric (A : list Assumption) (τ τ' : type) (P : cons_struct A τ τ') : cons_struct (map flip A) τ' τ.
 Proof.
   induction P; try by constructor.
@@ -41,9 +14,10 @@ Proof.
     by rewrite map_update in IHP.
   - apply (consExposeExtraRecursionRStar (map flip A) i τb' τb P' P); first by apply map_lookup; unfold flip.
     by rewrite map_update in IHP.
-  - eapply consUseRecursion.
-    by apply map_lookup.
-    (* by rewrite map_length. *)
+  (* - by apply consUseRecursion with (a := flip a). *)
+  - apply consUseRecursion.
+    (* apply map_lookup. *)
+    by rewrite map_length.
     (* by rewrite flipflip. *)
   - apply consUseRecursionRStar.
     by apply map_lookup.
@@ -87,7 +61,7 @@ Admitted.
 Lemma possible_unfoldings_flip l : possible_unfoldings (map flip l) = possible_unfoldings l.
 Admitted.
 
-Lemma cons_struct_star (τ : type) (A : list Assumption) (P : UB (length A) τ) (S : possible_unfoldings A = 0) : A ⊢ τ ~ ⋆.
+Lemma cons_struct_star_zero_unfoldings (τ : type) (A : list Assumption) (PAub : UBAssumptions A) (P : UB (length A) τ) (S : possible_unfoldings A = 0) : A ⊢ τ ~ ⋆.
 Proof.
   generalize dependent A.
   induction τ; intros.
@@ -101,13 +75,19 @@ Proof.
         intro abs; inversion abs.
         by simpl.
         apply consTProdTProd. apply consStarStar. apply IHτ2.
-        by inversion P. auto.
+        by inversion P.
+        by inversion P.
+        auto.
     + (* τ1 ≠ ⋆ *)
       apply consTauStar with (τG := ⋆ × ⋆). auto.
         intro abs; inversion abs; apply n; symmetry; apply H0.
         intro abs; inversion abs.
         by simpl.
-        apply consTProdTProd. apply IHτ1. by inversion P. auto. apply IHτ2. by inversion P. auto.
+        apply consTProdTProd. apply IHτ1.
+          by inversion P.
+          by inversion P.
+          auto. apply IHτ2. by inversion P. auto.
+          by inversion P. auto.
   - destruct (Is_Unknown_dec τ1); simplify_eq.
     + (* τ1 = ⋆ *) destruct (Is_Unknown_dec τ2); simplify_eq.
       * (* τ2 = ⋆ *) apply consTGroundStar; by constructor.
@@ -117,13 +97,17 @@ Proof.
         intro abs; inversion abs.
         by simpl.
         apply consTSumTSum. apply consStarStar. apply IHτ2. by inversion P. auto.
+          by inversion P. auto.
     + (* τ1 ≠ ⋆ *)
       apply consTauStar with (τG := TSum ⋆ ⋆).
         auto.
         intro abs; inversion abs; apply n; symmetry; apply H0.
         intro abs; inversion abs.
         by simpl.
-        apply consTSumTSum. apply IHτ1. by inversion P. auto. apply IHτ2. by inversion P. auto.
+        apply consTSumTSum. apply IHτ1. by inversion P. auto.
+          by inversion P. auto.
+        apply IHτ2. by inversion P. auto.
+          by inversion P. auto.
   - destruct (Is_Unknown_dec τ1); simplify_eq.
     + (* τ1 = ⋆ *) destruct (Is_Unknown_dec τ2); simplify_eq.
       * (* τ2 = ⋆ *) apply consTGroundStar; by constructor.
@@ -134,6 +118,7 @@ Proof.
         by simpl.
         apply consTArrowTArrow. apply consStarStar. apply IHτ2.
         by inversion P. auto.
+          by inversion P. auto.
     + (* τ1 ≠ ⋆ *)
       apply consTauStar with (τG := TArrow ⋆ ⋆).
         done.
@@ -141,10 +126,13 @@ Proof.
         intro abs; inversion abs.
         by simpl.
         apply consTArrowTArrow.
-        apply cons_struct_symmetric'; apply IHτ1. rewrite map_length. by inversion P.
+        apply cons_struct_symmetric'; apply IHτ1.
+          apply ubass_flip.
+          by inversion P. auto.
+        rewrite map_length. by inversion P.
         by rewrite possible_unfoldings_flip.
         apply IHτ2. by inversion P.
-        done.
+          by inversion P. auto.
   - destruct (Is_Unknown_dec τ); simplify_eq.
     + (* τ = ⋆ *) apply consTGroundStar; constructor.
     + (* τ ≠ ⋆ *) apply consTauStar with (τG := TRec ⋆).
@@ -154,6 +142,7 @@ Proof.
         auto.
         apply consExposeRecursionRStar.
         apply IHτ.
+        by apply consLogStar.
         by inversion P.
         done.
   - apply consTauStar with (τG := TRec ⋆).
@@ -173,11 +162,11 @@ Proof.
 Qed.
 
 
-Lemma cons_struct_star' (A : list Assumption) (k : nat) (S : possible_unfoldings A = k) (τ : type) (P : UB (length A) τ) : A ⊢ τ ~ ⋆.
+Lemma cons_struct_starR (A : list Assumption) (PAub : UBAssumptions A) (k : nat) (S : possible_unfoldings A = k) (τ : type) (P : UB (length A) τ) : A ⊢ τ ~ ⋆.
 Proof.
   generalize dependent A.
   generalize dependent τ.
-  induction k; first by intros; by apply cons_struct_star.
+  induction k; first by intros; by apply cons_struct_star_zero_unfoldings.
   intros τ.
   induction τ; intros.
   - apply consTGroundStar; by constructor.
@@ -190,13 +179,18 @@ Proof.
         intro abs; inversion abs.
         by simpl.
         apply consTProdTProd. apply consStarStar. apply IHτ2.
-        by inversion P. inversion P. auto.
+        by inversion P.
+        inversion P. auto.
+        inversion P. auto.
     + (* τ1 ≠ ⋆ *)
       apply consTauStar with (τG := ⋆ × ⋆). auto.
         intro abs; inversion abs; apply n; symmetry; apply H0.
         intro abs; inversion abs.
         by simpl.
-        apply consTProdTProd. apply IHτ1. by inversion P. inversion P. auto. apply IHτ2. by inversion P. inversion P. auto.
+        apply consTProdTProd. apply IHτ1. by inversion P. inversion P. auto.
+        inversion P. auto.
+        apply IHτ2. by inversion P. inversion P. auto.
+        inversion P. auto.
   - destruct (Is_Unknown_dec τ1); simplify_eq.
     + (* τ1 = ⋆ *) destruct (Is_Unknown_dec τ2); simplify_eq.
       * (* τ2 = ⋆ *) apply consTGroundStar; by constructor.
@@ -206,6 +200,7 @@ Proof.
         intro abs; inversion abs.
         by simpl.
         apply consTSumTSum. apply consStarStar. apply IHτ2. by inversion P. inversion P. auto.
+        inversion P. auto.
     + (* τ1 ≠ ⋆ *)
       apply consTauStar with (τG := TSum ⋆ ⋆).
         auto.
@@ -230,9 +225,10 @@ Proof.
         intro abs; inversion abs.
         by simpl.
         apply consTArrowTArrow.
-        apply cons_struct_symmetric'; apply IHτ1. rewrite possible_unfoldings_flip. by inversion P. rewrite map_length. by inversion P.
+        apply cons_struct_symmetric'; apply IHτ1. simpl. by apply ubass_flip. rewrite possible_unfoldings_flip. by inversion P. rewrite map_length. by inversion P.
         (* by rewrite possible_unfoldings_flip. *)
         apply IHτ2. by inversion P. by inversion P.
+        by inversion P.
   - destruct (Is_Unknown_dec τ); simplify_eq.
     + (* τ = ⋆ *) apply consTGroundStar; constructor.
     + (* τ ≠ ⋆ *) apply consTauStar with (τG := TRec ⋆).
@@ -242,6 +238,8 @@ Proof.
         auto.
         apply consExposeRecursionRStar.
         apply IHτ.
+        apply consLogStar.
+        by inversion P.
         by inversion P.
         by inversion P.
   - apply consTauStar with (τG := TRec ⋆).
@@ -255,11 +253,57 @@ Proof.
       * by apply consUseExtraRecursionRStar.
       * eapply consExposeExtraRecursionRStar; first done.
         (** Induction Hypothesis *) apply IHk.
+        by apply ubass1.
         eapply unfold_in_assumptions; done.
         (** Assumptions need to be below *)
-        admit.
+        rewrite alter_length.
+        eapply ubass2. auto. apply eq.
       * by apply consUseRecursionRStar.
     + exfalso. rewrite <- lookup_lt_is_Some in H0.
       destruct H0; rewrite H in eq; inversion eq.
   - apply consStarStar.
-Admitted.
+Qed.
+
+Lemma cons_struct_starL (A : list Assumption) (PAub : UBAssumptions A) (k : nat) (S : possible_unfoldings A = k) (τ : type) (P : UB (length A) τ) : A ⊢ ⋆ ~ τ.
+Proof.
+  apply cons_struct_symmetric'.
+  apply cons_struct_starR with (k := k).
+  apply ubass_flip. auto.
+  by rewrite possible_unfoldings_flip.
+  by rewrite map_length.
+Qed.
+
+Lemma cons_stand_implies_struct (A : list Assumption) (PAub : UBAssumptions A) (k : nat) (S : possible_unfoldings A = k) (τ τ' : type) (P : UB (length A) τ) (P' : UB (length A) τ') (Pstand : cons_stand 0 τ τ') : A ⊢ τ ~ τ'.
+Proof.
+  generalize dependent A.
+  generalize dependent k.
+  induction Pstand; intros.
+  - apply consBaseBase.
+  - apply cons_struct_starL with (k := k); (constructor || auto).
+  - apply cons_struct_starR with (k := k); (constructor || auto).
+  - apply consTSumTSum.
+    apply IHPstand1 with (k := k); try auto. by inversion P. by inversion P'.
+    apply IHPstand2 with (k := k); try auto. by inversion P. by inversion P'.
+  - apply consTProdTProd.
+    apply IHPstand1 with (k := k); try auto. by inversion P. by inversion P'.
+    apply IHPstand2 with (k := k); try auto. by inversion P. by inversion P'.
+  - apply consTArrowTArrow.
+    apply cons_struct_symmetric'.
+    apply IHPstand1 with (k := k). apply ubass_flip. try auto. by rewrite possible_unfoldings_flip. rewrite map_length. by inversion P. rewrite map_length. by inversion P'.
+    apply IHPstand2 with (k := k).
+      by inversion P. by inversion P'.
+      by inversion P. by inversion P'.
+  - apply consUseRecursion. by inversion P'.
+  - destruct (Is_Unknown_dec τ); simplify_eq.
+    + apply consExposeRecursionLStar.
+      apply IHPstand with (k := (possible_unfoldings A)).
+      apply consLogStar. auto. by simpl. constructor. inversion P'. by simpl.
+    + destruct (Is_Unknown_dec τ'); simplify_eq.
+      * apply consExposeRecursionRStar.
+        apply IHPstand with (k := possible_unfoldings A).
+        apply consLogStar. auto. by simpl. simpl. inversion P'. by inversion P. constructor.
+      * apply consExposeRecursion with (Pi := n0) (Pf := n1).
+        apply IHPstand with (k := S (possible_unfoldings A)).
+        apply consLogBodies. auto. by inversion P. by inversion P'. by simpl.
+        simpl. by inversion P. by inversion P'.
+Qed.

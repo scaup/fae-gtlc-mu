@@ -24,6 +24,26 @@ Inductive UB (n : nat) : type -> Type :=
 | UBVar i : i < n -> UB n (TVar i)
 | UBStar : UB n ⋆.
 
+Lemma UBup τ (n : nat) (P : UB n τ) : UB (S n) τ.
+Proof.
+  generalize dependent n.
+  induction τ.
+  - constructor.
+  - constructor.
+      apply IHτ1; by inversion P.
+      apply IHτ2; by inversion P.
+  - constructor.
+      apply IHτ1; by inversion P.
+      apply IHτ2; by inversion P.
+  - constructor.
+      apply IHτ1; by inversion P.
+      apply IHτ2; by inversion P.
+  - constructor.
+      apply IHτ; by inversion P.
+  - intros. constructor. inversion P. lia.
+  - intros. constructor.
+Qed.
+
 Definition Is_Unknown_dec (τ : type) : Decision (τ = ⋆).
 Proof.
   destruct τ.
@@ -104,3 +124,41 @@ Proof.
     rewrite (Unique_Ground_Proof τ G G0).
       by rewrite -H0.
 Qed.
+
+
+
+
+
+
+
+
+
+
+(* possibly with sigma type and proof of groundness *)
+Definition get_shape (τ : type) : option type :=
+  match τ with
+  | TUnit => None
+  | TProd x x0 => Some (TProd ⋆ ⋆)
+  | TSum x x0 => Some (TSum ⋆ ⋆)
+  | TArrow x x0 => Some (TArrow ⋆ ⋆)
+  | TRec τ => Some (TRec ⋆)
+  | TVar x => Some (TRec ⋆)
+  | TUnknown => None
+  end.
+
+Lemma get_shape_is_ground {τ τG : type} : get_shape τ = Some τG -> Ground τG.
+Proof.
+  intro.
+  destruct τ; simplify_eq; destruct τG; inversion H; constructor.
+Qed.
+
+Definition update {A : Type} (l : list A) (i : nat) (a : A) : list A :=
+  alter (fun _ => a) i l.
+
+
+
+
+
+
+
+

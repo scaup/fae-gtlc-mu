@@ -1,8 +1,8 @@
 -Q theories fae_gtlc_mu
 theories/prelude.v
 
-theories/stlc_mu/typing.v
 theories/stlc_mu/lang.v
+theories/stlc_mu/typing.v
 theories/stlc_mu/lib/universe.v
 theories/stlc_mu/lib/fix.v
 
@@ -13,6 +13,11 @@ theories/cast_calculus/consistency/equivalent.v
 
 theories/backtranslation/types.v
 
+theories/stlc_mu/lib/cast_emulations/embed.v
+theories/stlc_mu/lib/cast_emulations/extract.v
+theories/stlc_mu/lib/cast_emulations/factorize.v
+theories/stlc_mu/lib/cast_emulations/between.v
+
 # theories/cast_calculus/consistency_standard_open.v
 # theories/cast_calculus/consistency_standard_closed.v
 # theories/cast_calculus/consistency_alternative_open.v
@@ -21,7 +26,6 @@ theories/backtranslation/types.v
 # 
 # theories/backtranslation/expressions.v
 
-# theories/stlc_mu/lib/cast_emulations.v
 
 # theories/cc/lang.v
 # theories/gtlcu/lang.v
