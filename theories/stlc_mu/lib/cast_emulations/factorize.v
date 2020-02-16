@@ -1,4 +1,4 @@
-From fae_gtlc_mu.cast_calculus Require Export types consistency.structural.
+From fae_gtlc_mu.cast_calculus Require Export types consistency.structural.definition.
 From fae_gtlc_mu.stlc_mu Require Export typing lang lib.fix.
 From fae_gtlc_mu.stlc_mu.lib Require Export universe embed extract.
 From fae_gtlc_mu.backtranslation Require Export types.

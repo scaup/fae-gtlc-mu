@@ -1,4 +1,4 @@
-From fae_gtlc_mu.cast_calculus Require Export types consistency.structural.
+From fae_gtlc_mu.cast_calculus Require Export types consistency.structural.definition.
 From fae_gtlc_mu.stlc_mu Require Export typing lang lib.fix.
 From fae_gtlc_mu.stlc_mu.lib Require Export universe.
 From fae_gtlc_mu.backtranslation Require Export types.
@@ -58,7 +58,7 @@ Definition between_TRec (f : expr) : expr :=
       Fix (
           Lam (* g : μ.<<τi.[...]>> → μ.<<τf.[...]>> *) (
               Lam (* r : μ.<<τi.[...]>> *) (
-                  Fold (rename (+3) f(*<<τi.[μ.τi/]>>*) (Unfold (Var 0)))
+                  Fold (rename (+2) f(*<<τi.[μ.τi/]>>*) (Unfold (Var 0)))
                 )
             )
         ) (Var 0)
@@ -80,7 +80,7 @@ Proof.
   apply Lam_typed.
   apply Fold_typed.
   apply App_typed with (τ1 := <<τi>>.[(TRec <<τi>>)/]).
-  apply up_type_three.
+  apply up_type_two.
   admit.
   apply Unfold_typed.
     by apply Var_typed.
