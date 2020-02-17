@@ -41,7 +41,6 @@ Proof.
   - apply consTauStar with (τG := τG); by (done || rewrite map_length).
   - apply consTRecTRecNoStars with (Pl := Pr) (Pr := Pl).
     by rewrite map_cons in IHP.
-  - eapply (consTVars (map flip A) i _ _ Pr Pl). by rewrite list_lookup_fmap e.
   - apply (consStarTVar (map flip A) i τr τl Pr Pl).
     by rewrite list_lookup_fmap e.
     simpl in IHP.
@@ -50,6 +49,7 @@ Proof.
     by rewrite list_lookup_fmap e.
     simpl in IHP.
     by rewrite map_update in IHP.
+  - eapply (consTVars (map flip A) i _ _ Pr Pl). by rewrite list_lookup_fmap e.
   - apply consStarTVarUse with (τr := τl).
     by rewrite list_lookup_fmap e.
   - apply consTVarStarUse with (τl := τr).
