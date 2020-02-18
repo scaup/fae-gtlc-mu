@@ -50,16 +50,31 @@ Proof.
     by apply Var_typed.
 Qed.
 
+(* Definition between_TRec (f : expr) : expr := *)
+(*   Lam (* x : μ. τi.[...] *) ( *)
+(*       Fix ( *)
+(*           Lam (* g : μ.τi.[...] → μ.τf.[...] *) ( *)
+(*               Lam (* f : τi.[μ.τi/] → τf.[μ.τf] just a lambda abstraction around Fold (f (Unfold x)) *) ( *)
+(*                   Lam (* r : μ.τi.[...] *) ( *)
+(*                       Fold ((Var 1) (Unfold (Var 0))) *)
+(*                     ) *)
+(*                 ) f *)
+(*             ) *)
+(*         ) (Var 0) *)
+(*     ). *)
+
 Definition between_TRec (f : expr) : expr :=
-  Lam (* x : μ. τi.[...] *) (
+  Lam (* x : μ. τi *) (
       Fix (
-          Lam (* g : μ.τi.[...] → μ.τf.[...] *) (
-              Lam (* r : μ.τi.[...] *) (
-                  Fold (rename (+1) f(*τi.[μ.τi/]*) (Unfold (Var 0)))
+          Lam (* g : μ.τi → μ.τf *) (
+              Lam (* r : μ.τi *) (
+                  Fold (rename (+1) (f.[upn 1 (ren (+ 1))])(* : τi.[μ.τi/] → τf.[μ.τf]*) (Unfold (Var 0)))
                 )
             )
         ) (Var 0)
     ).
+  (* Γ' ++ Γ ⊢ₛ e : τ → *)
+  (* Γ' ++ ξ ++ Γ ⊢ₛ e.[upn (length Γ') (ren (+ (length ξ)))] : τ. *)
 
 Lemma between_TRec_typed Γ (τi τf : type) (Pi : Is_Closed (TRec τi)) (Pf : Is_Closed (TRec τf)) (f : expr)
       (d : ((TArrow (TRec τi) (TRec τf)):: Γ) ⊢ₛ f : ((τi.[TRec τi/]) → τf.[TRec τf/])) :
@@ -73,9 +88,13 @@ Proof.
   apply Lam_typed.
   apply Fold_typed.
   apply App_typed with (τ1 := τi.[(TRec τi)/]).
-  apply up_type_three.
-  auto.
+  apply up_type_one.
+  rewrite rewrite_for_context_weakening in d.
+  rewrite (rewrite_for_context_weakening Γ).
+  rewrite rewrite_for_context_weakening.
+  apply context_gen_weakening.
+  apply d.
   apply Unfold_typed.
-    by apply Var_typed.
-    by apply Var_typed.
+  by apply Var_typed.
+  by apply Var_typed.
 Qed.

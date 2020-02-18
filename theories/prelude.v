@@ -21,3 +21,11 @@ Section Autosubst_Lemmas.
   Qed.
 End Autosubst_Lemmas.
 
+Inductive ForallT {A : Type} (P : A → Type) : list A → Type :=
+    ForallT_nil : ForallT P []
+  | ForallT_cons : ∀ (x : A) (l : list A), P x → ForallT P l → ForallT P (x :: l).
+
+Lemma rewrite_for_context_weakening {A} (Γ : list A) τ : τ :: Γ = [τ] ++ Γ.
+by simpl.
+Qed.
+
