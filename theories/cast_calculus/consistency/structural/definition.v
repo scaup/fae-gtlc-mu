@@ -54,10 +54,10 @@ Inductive cons_struct (A : list Assumption) : type -> type -> Type :=
   (** exposing recursive calls *)
   (* between μ types; we always *expose* a recursive call here *)
   | consTRecTRecNoStars τl τr (Pl : not_star τl) (Pr : not_star τr) :
-      (NoStars NotYet τl τr Pl Pr :: A) ⊢ τl ~ τr -> (* we add the assumption to our list (the two type bodies) *)
+      (NoStars τl τr Pl Pr :: A) ⊢ τl ~ τr -> (* we add the assumption to our list (the two type bodies) *)
       (* Sometimes, this recursive call we not be useful though (e.g. μ.(TUnit + N × 0) ~ μ.(TUnit + N × ⋆)) *)
       (* In these cases, we need to expose an eXtra recursive call. *)
-      (* See XUnfolding and consTVarStar and consStarTVar *)
+      (* See consTVarStar and consStarTVar *)
       A ⊢ (TRec τl) ~ (TRec τr)
   | consTRecTRecStarOnLeft τr :
       (StarOnLeft τr :: A) ⊢ ⋆ ~ τr -> (* we add the assumption to our list *)
@@ -69,17 +69,17 @@ Inductive cons_struct (A : list Assumption) : type -> type -> Type :=
       A ⊢ (TRec τl) ~ (TRec ⋆)
   (* exposing new recursive call because previous one was not usable *)
   | consTVarStar i τl τr Pl Pr :
-      (A !! i) = Some (NoStars NotYet τl τr Pl Pr) ->
-      (StarOnRight τl :: update A i (NoStars Done τl τr Pl Pr)) ⊢ τl ~ ⋆ ->
+      (A !! i) = Some (NoStars τl τr Pl Pr) ->
+      (update A i (StarOnRight τl)) ⊢ τl ~ ⋆ ->
       A ⊢ (TVar i) ~ (TRec ⋆)
   | consStarTVar i τl τr Pl Pr :
-      (A !! i) = Some (NoStars NotYet τl τr Pl Pr) ->
-      (StarOnLeft τr :: update A i (NoStars Done τl τr Pl Pr)) ⊢ ⋆ ~ τr ->
+      (A !! i) = Some (NoStars τl τr Pl Pr) ->
+      (update A i (StarOnLeft τr)) ⊢ ⋆ ~ τr ->
       A ⊢ (TRec ⋆) ~ (TVar i)
   (** using previously exposed recursive calls *)
   (* *using* previously exposed recursion ; two variables *)
   | consTVars i τl τr Pl Pr :
-      (A !! i) = Some (NoStars NotYet τl τr Pl Pr) -> (* we need this specific information when proving well-typedness !! *)
+      (A !! i) = Some (NoStars τl τr Pl Pr) -> (* we need this specific information when proving well-typedness !! *)
       A ⊢ (TVar i) ~ (TVar i)
   (* using recurion; one variable, one star *)
   | consTVarStarUse i τl :
