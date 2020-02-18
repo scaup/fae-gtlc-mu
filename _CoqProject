@@ -1,27 +1,29 @@
 -Q theories fae_gtlc_mu
 theories/prelude.v
 
+### STLC ###
 theories/stlc_mu/lang.v
 theories/stlc_mu/typing.v
-theories/stlc_mu/lib/universe.v
 theories/stlc_mu/lib/fix.v
 
+### GRADUAL TYPES ###
 theories/cast_calculus/types.v
 theories/cast_calculus/consistency/standard.v
 theories/cast_calculus/consistency/structural/assumption.v
 theories/cast_calculus/consistency/structural/definition.v
-
 theories/cast_calculus/consistency/equivalent/symmetric.v
 # theories/cast_calculus/consistency/equivalent/proof.v
 
-
+### BACKTRANSLATION ###
 theories/backtranslation/types.v
+theories/backtranslation/cast_help/universe.v
+theories/backtranslation/de_bruijn_hell.v
+theories/backtranslation/cast_help/embed.v
+theories/backtranslation/cast_help/extract.v
+theories/backtranslation/cast_help/factorize.v
+theories/backtranslation/cast_help/between.v
 
-theories/stlc_mu/lib/cast_emulations/embed.v
-theories/stlc_mu/lib/cast_emulations/extract.v
-theories/stlc_mu/lib/cast_emulations/factorize.v
-theories/stlc_mu/lib/cast_emulations/between.v
-theories/stlc_mu/lib/cast_emulations/interp_assumption.v
+# theories/backtranslation/cast_help/interp_assumption.v
 
 # theories/cast_calculus/consistency_standard_open.v
 # theories/cast_calculus/consistency_standard_closed.v

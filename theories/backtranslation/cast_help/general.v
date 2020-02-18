@@ -1,19 +1,10 @@
 From fae_gtlc_mu.cast_calculus Require Export types consistency.structural.definition.
 From fae_gtlc_mu.stlc_mu Require Export typing lang lib.fix.
-From fae_gtlc_mu.stlc_mu.lib Require Export universe.
-From fae_gtlc_mu.stlc_mu.lib.cast_emulations Require Export embed factorize extract between interp_assumption.
-From fae_gtlc_mu.backtranslation Require Export types.
+From fae_gtlc_mu.backtranslation.cast_help Require Export universe embed extract between factorize.
+From fae_gtlc_mu.backtranslation Require Export types de_bruijn_hell.
 
 (** emulation of a cast between an arbitrary pair of consistent types *)
 (* recursively defined on the alternative consistency relation *)
-
-(* Fixpoint 𝓕 (A : list Assumption) (τi τf : cast_calculus.types.type) (P : A ⊢ τi ~ τf) : expr := *)
-  (* | consTVarStar i τl τr Pl Pr x x0 => *)
-  (* | consStarTVar i τl τr Pl Pr x x0 => *)
-  (* | consTVarStarUse i τr x => *)
-  (* | consStarTVarUse i τl x => *)
-  (* end *)
-
 
 Fixpoint 𝓕 (A : list Assumption) (τi τf : cast_calculus.types.type) (P : A ⊢ τi ~ τf) : expr :=
   match P with
@@ -49,35 +40,48 @@ Fixpoint 𝓕 (A : list Assumption) (τi τf : cast_calculus.types.type) (P : A 
   end.
 
 Lemma 𝓕_typed (A : list Assumption) (τi τf : cast_calculus.types.type) (P : A ⊢ τi ~ τf) :
-  (assumptions_to_context A) ⊢ₛ (𝓕 A τi τf P) : ((the_initial_type A τi) → (the_final_type A τf)).
-From fae_gtlc_mu.cast_calculus Require Import types. (* make use of subs notation in gtlc *)
+  (assumptions_to_static_context A) ⊢ₛ (𝓕 A τi τf P) : ((back_type A τi) → (back_type A τf)).
+(* From fae_gtlc_mu.cast_calculus Require Import types. (* make use of subs notation in gtlc *) *)
 Proof.
-  (* unfold initial_type. *)
-  (* unfold final_type. *)
   induction P; intros.
-  - rewrite the_initial_star_type_rewrite the_final_ground_type_rewrite; auto.
+  - rewrite back_star_type back_ground_type.
     apply extract_typed.
-  - rewrite the_final_star_type_rewrite the_initial_ground_type_rewrite; auto.
+    auto.
+  - rewrite back_star_type back_ground_type.
     apply embed_typed.
-  - rewrite the_final_star_type_rewrite.
-    apply factorization_up_typed with (τG := τG).
-    admit.
-    admit.
-    (* (try done || by eapply get_shape_is_ground). *)
+    auto.
+  - rewrite back_star_type.
+    rewrite (back_ground_type τG) in IHP.
+    apply factorization_up_typed with (τG := τG); try done.
+    by eapply get_shape_is_ground.
+  - rewrite back_star_type.
+    rewrite (back_ground_type τG) in IHP.
+    apply factorization_down_typed with (τG := τG). apply IHP.
+      by eapply get_shape_is_ground.
+  - apply identity_typed.
+  - apply identity_typed.
+  - repeat rewrite back_type_TSum.
+    apply between_TSum_typed.
+    by apply IHP1.
+    by apply IHP2.
+  - repeat rewrite back_type_TProd.
+    apply between_TProd_typed.
+    by apply IHP1.
+    by apply IHP2.
+  - repeat rewrite back_type_TArrow.
+    apply between_TArrow_typed.
+    by apply IHP1.
+    by apply IHP2.
+  - repeat rewrite back_type_TRec.
+    rewrite back_type_unfolded_l back_type_unfolded_r in IHP.
+    apply between_TRec_typed.
+    apply TRec_back_body_is_closed.
+    apply TRec_back_body_is_closed.
+    assert (H : ((assumptions_to_static_context (NoStars NotYet τl τr Pl Pr :: A))) = (TRec ((back_body A τl) → TRec (back_body A τr)) :: assumptions_to_static_context A)).
+    { admit. }
     apply IHP.
-  - apply factorization_down_typed with (τG := τG); (try done || by eapply get_shape_is_ground).
-    by apply IHP.
-  - apply identity_typed.
-  - apply identity_typed.
-  - apply between_TSum_typed.
-    by apply IHP1.
-    by apply IHP2.
-  - apply between_TProd_typed.
-    by apply IHP1.
-    by apply IHP2.
-  - apply between_TArrow_typed.
-    by apply IHP1.
-    by apply IHP2.
+    rewrite H in IHP.
+
   - simpl. apply Lam_typed.
     apply App_typed with (τ1 := TRec << τi >>).
     apply App_typed with (τ1 := ((TRec << τi >> → TRec << τf >>) → (TRec << τi >> → TRec << τf >>))).

@@ -1,4 +1,4 @@
-From fae_gtlc_mu Require Import cast_calculus.types stlc_mu.typing stlc_mu.lib.universe.
+From fae_gtlc_mu Require Import cast_calculus.types stlc_mu.typing backtranslation.cast_help.universe.
 
 Reserved Notation "<< τ >>" (at level 4, τ at next level).
 Fixpoint backtranslate_type (τ : cast_calculus.types.type) : type :=
