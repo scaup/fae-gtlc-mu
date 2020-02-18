@@ -4,7 +4,7 @@ From fae_gtlc_mu.cast_calculus Require Import types consistency.standard consist
 
  Definition flip (A : Assumption) : Assumption :=
   match A with
-  | NoStars F τl τr Pl Pr => NoStars F τr τl Pr Pl
+  | NoStars τl τr Pl Pr => NoStars τr τl Pr Pl
   | StarOnLeft τr => StarOnRight τr
   | StarOnRight τl => StarOnLeft τl
   end.

@@ -14,7 +14,7 @@ Definition reverse (s : Side) :=
 
 Definition assumption_to_gradual_pair (a : Assumption) : cast_calculus.types.type * cast_calculus.types.type :=
   match a with
-  | NoStars F τl τr Pl Pr => (TRec τl, TRec τr)
+  | NoStars τl τr Pl Pr => (TRec τl, TRec τr)
   | StarOnLeft τr => (TRec ⋆, TRec τr)
   | StarOnRight τl => (TRec τl, TRec τl)
   end.
@@ -82,12 +82,12 @@ Lemma back_type_TRec (A : list Assumption) (τb : cast_calculus.types.type) (s :
   back_type A (TRec τb) s = stlc_mu.typing.TRec (back_body A τb s).
 Admitted.
 
-Lemma back_type_unfolded_l (A : list Assumption) (F : XUnfolding) (τbl τbr : cast_calculus.types.type) (Pl : not_star τbl) (Pr : not_star τbr) :
-  back_type (NoStars F τbl τbr Pl Pr :: A) τbl Left = (back_body A τbl Left).[back_type A (TRec τbl) Left/].
+Lemma back_type_unfolded_l (A : list Assumption) (τbl τbr : cast_calculus.types.type) (Pl : not_star τbl) (Pr : not_star τbr) :
+  back_type (NoStars τbl τbr Pl Pr :: A) τbl Left = (back_body A τbl Left).[back_type A (TRec τbl) Left/].
 Admitted.
 
-Lemma back_type_unfolded_r (A : list Assumption) (F : XUnfolding) (τbl τbr : cast_calculus.types.type) (Pl : not_star τbl) (Pr : not_star τbr) :
-  back_type (NoStars F τbl τbr Pl Pr :: A) τbr Right = (back_body A τbr Right).[back_type A (TRec τbr) Right/].
+Lemma back_type_unfolded_r (A : list Assumption) (τbl τbr : cast_calculus.types.type) (Pl : not_star τbl) (Pr : not_star τbr) :
+  back_type (NoStars τbl τbr Pl Pr :: A) τbr Right = (back_body A τbr Right).[back_type A (TRec τbr) Right/].
 Admitted.
 
 Lemma back_star_type {A : list Assumption} (s : Side) :
@@ -106,17 +106,17 @@ Lemma back_type_unfolded_r' (A : list Assumption) (τbr : cast_calculus.types.ty
   back_type (StarOnLeft τbr :: A) τbr Right = (back_body A τbr Right).[back_type A (TRec τbr) Right/].
 Admitted.
 
-Definition change_Xunfolding (A : list Assumption) {τl τr : cast_calculus.types.type} {pl : not_star τl} {pr : not_star τr} {i : nat} (eq : (A !! i) = Some (NoStars NotYet τl τr pl pr)) : list Assumption :=
-  update A i (NoStars Done τl τr pl pr).
+Definition change_Xunfolding (A : list Assumption) {τl τr : cast_calculus.types.type} {pl : not_star τl} {pr : not_star τr} {i : nat} (eq : (A !! i) = Some (NoStars τl τr pl pr)) : list Assumption :=
+  update A i (NoStars τl τr pl pr).
 
-Lemma change_Xunfolding_same_context {A : list Assumption} {τl τr : cast_calculus.types.type} {pl : not_star τl} {pr : not_star τr} {i : nat} (eq : (A !! i) = Some (NoStars NotYet τl τr pl pr)) :
+Lemma change_Xunfolding_same_context {A : list Assumption} {τl τr : cast_calculus.types.type} {pl : not_star τl} {pr : not_star τr} {i : nat} (eq : (A !! i) = Some (NoStars τl τr pl pr)) :
   assumptions_to_static_context (change_Xunfolding A eq) = assumptions_to_static_context A.
 Admitted.
 
-Lemma back_type_var_l {A : list Assumption} {τl τr : cast_calculus.types.type} {pl : not_star τl} {pr : not_star τr} {i : nat} (eq : (A !! i) = Some (NoStars NotYet τl τr pl pr)) :
-  back_type A (TVar i) Left = back_type A (TRec τl).
+Lemma back_type_var_l {A : list Assumption} {τl τr : cast_calculus.types.type} {pl : not_star τl} {pr : not_star τr} {i : nat} (eq : (A !! i) = Some (NoStars τl τr pl pr)) :
+  back_type A (TVar i) Left = back_type A (TRec τl) Left.
 Admitted.
 
-Lemma back_type_var_r {A : list Assumption} {τl τr : cast_calculus.types.type} {pl : not_star τl} {pr : not_star τr} {i : nat} (eq : (A !! i) = Some (NoStars NotYet τl τr pl pr)) :
-  back_type A (TVar i) Right = back_type A (TRec τr).
+Lemma back_type_var_r {A : list Assumption} {τl τr : cast_calculus.types.type} {pl : not_star τl} {pr : not_star τr} {i : nat} (eq : (A !! i) = Some (NoStars τl τr pl pr)) :
+  back_type A (TVar i) Right = back_type A (TRec τr) Right.
 Admitted.

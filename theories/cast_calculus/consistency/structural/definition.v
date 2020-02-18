@@ -94,8 +94,8 @@ where "A ⊢ τ ~ τ'" := (cons_struct A τ τ').
 Inductive UBA : list Assumption -> Type :=
   | emptyUBA :
       UBA []
-  | consUBANostars A F τl τr Pl Pr (pUBl : UB (S (length A)) τl) (pUBr : UB (S (length A)) τr) (pUBA : UBA A) :
-      UBA (NoStars F τl τr Pl Pr :: A)
+  | consUBANostars A τl τr Pl Pr (pUBl : UB (S (length A)) τl) (pUBr : UB (S (length A)) τr) (pUBA : UBA A) :
+      UBA (NoStars τl τr Pl Pr :: A)
   | consUBAStarOnLeft A τl (pUBl : UB (S (length A)) τl) (pUBA : UBA A) :
       UBA (StarOnLeft τl :: A)
   | consUBAStarOnRight A τr (pUBr : UB (S (length A)) τr) (pUBA : UBA A) :
