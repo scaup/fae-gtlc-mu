@@ -54,7 +54,7 @@ Inductive cons_struct (A : list Assumption) : type -> type -> Type :=
   (** exposing recursive calls *)
   (* between μ types; we always *expose* a recursive call here *)
   | consTRecTRecNoStars τl τr (Pl : not_star τl) (Pr : not_star τr) :
-      (NoStars τl τr Pl Pr :: A) ⊢ τl ~ τr -> (* we add the assumption to our list (the two type bodies) *)
+      (NoStars NotYet τl τr Pl Pr :: A) ⊢ τl ~ τr -> (* we add the assumption to our list (the two type bodies) *)
       (* Sometimes, this recursive call we not be useful though (e.g. μ.(TUnit + N × 0) ~ μ.(TUnit + N × ⋆)) *)
       (* In these cases, we need to expose an eXtra recursive call. *)
       (* See consTVarStar and consStarTVar *)
@@ -69,17 +69,17 @@ Inductive cons_struct (A : list Assumption) : type -> type -> Type :=
       A ⊢ (TRec τl) ~ (TRec ⋆)
   (* exposing new recursive call because previous one was not usable *)
   | consTVarStar i τl τr Pl Pr :
-      (A !! i) = Some (NoStars τl τr Pl Pr) ->
-      (update A i (StarOnRight τl)) ⊢ τl ~ ⋆ ->
+      (A !! i) = Some (NoStars NotYet τl τr Pl Pr) ->
+      (update A i (NoStars ForStarOnRight τl τr Pl Pr)) ⊢ τl ~ ⋆ ->
       A ⊢ (TVar i) ~ (TRec ⋆)
   | consStarTVar i τl τr Pl Pr :
-      (A !! i) = Some (NoStars τl τr Pl Pr) ->
-      (update A i (StarOnLeft τr)) ⊢ ⋆ ~ τr ->
+      (A !! i) = Some (NoStars NotYet τl τr Pl Pr) ->
+      (update A i (NoStars ForStarOnLeft τl τr Pl Pr)) ⊢ ⋆ ~ τr ->
       A ⊢ (TRec ⋆) ~ (TVar i)
   (** using previously exposed recursive calls *)
   (* *using* previously exposed recursion ; two variables *)
   | consTVars i τl τr Pl Pr :
-      (A !! i) = Some (NoStars τl τr Pl Pr) -> (* we need this specific information when proving well-typedness !! *)
+      (A !! i) = Some (NoStars NotYet τl τr Pl Pr) -> (* we need this specific information when proving well-typedness !! *)
       A ⊢ (TVar i) ~ (TVar i)
   (* using recurion; one variable, one star *)
   | consTVarStarUse i τl :
@@ -88,14 +88,20 @@ Inductive cons_struct (A : list Assumption) : type -> type -> Type :=
   | consStarTVarUse i τr :
       (A !! i) = Some (StarOnLeft τr) ->
       A ⊢ (TRec ⋆) ~ (TVar i)
+  | consTVarStarUseX i τl τr Pl Pr :
+      (A !! i) = Some (NoStars ForStarOnRight τl τr Pl Pr) ->
+      A ⊢ (TVar i) ~ (TRec ⋆)
+  | consStarTVarUseX i τl τr Pl Pr :
+      (A !! i) = Some (NoStars ForStarOnLeft τl τr Pl Pr) ->
+      A ⊢ (TRec ⋆) ~ (TVar i)
 where "A ⊢ τ ~ τ'" := (cons_struct A τ τ').
 
 (* UBA A implies that A is appropriately bounded *)
 Inductive UBA : list Assumption -> Type :=
   | emptyUBA :
       UBA []
-  | consUBANostars A τl τr Pl Pr (pUBl : UB (S (length A)) τl) (pUBr : UB (S (length A)) τr) (pUBA : UBA A) :
-      UBA (NoStars τl τr Pl Pr :: A)
+  | consUBANostars A F τl τr Pl Pr (pUBl : UB (S (length A)) τl) (pUBr : UB (S (length A)) τr) (pUBA : UBA A) :
+      UBA (NoStars F τl τr Pl Pr :: A)
   | consUBAStarOnLeft A τl (pUBl : UB (S (length A)) τl) (pUBA : UBA A) :
       UBA (StarOnLeft τl :: A)
   | consUBAStarOnRight A τr (pUBr : UB (S (length A)) τr) (pUBA : UBA A) :

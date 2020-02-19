@@ -4,13 +4,17 @@ From fae_gtlc_mu.cast_calculus Require Import types consistency.standard consist
 
  Definition flip (A : Assumption) : Assumption :=
   match A with
-  | NoStars τl τr Pl Pr => NoStars τr τl Pr Pl
+  | NoStars F τl τr Pl Pr => match F with
+                            | NotYet => NoStars F τr τl Pr Pl
+                            | ForStarOnLeft => NoStars ForStarOnRight τr τl Pr Pl
+                            | ForStarOnRight => NoStars ForStarOnLeft τr τl Pr Pl
+                            end
   | StarOnLeft τr => StarOnRight τr
   | StarOnRight τl => StarOnLeft τl
   end.
 
 Lemma flipflip a : flip (flip a) = a.
-  by destruct a.
+  by destruct a; try destruct F.
 Qed.
 
 Lemma flipflipmap l : map flip (map flip l) = l.
@@ -53,5 +57,9 @@ Proof.
   - apply consStarTVarUse with (τr := τl).
     by rewrite list_lookup_fmap e.
   - apply consTVarStarUse with (τl := τr).
+    by rewrite list_lookup_fmap e.
+  - eapply consStarTVarUseX.
+    by rewrite list_lookup_fmap e.
+  - eapply consTVarStarUseX.
     by rewrite list_lookup_fmap e.
 Qed.
