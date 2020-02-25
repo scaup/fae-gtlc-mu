@@ -1,7 +1,6 @@
 From Autosubst Require Export Autosubst.
 From fae_gtlc_mu Require Export prelude.
-From fae_gtlc_mu.cast_calculus Require Export lang types.
-From fae_gtlc_mu Require Export cast_calculus.types.
+From fae_gtlc_mu.cast_calculus Require Export lang types consistency_standard_open.
 
 Reserved Notation "Γ ⊢ₜ e : τ" (at level 74, e, τ at next level).
 
@@ -24,7 +23,7 @@ Inductive typed (Γ : list type) : expr → type → Prop :=
   | Fold_typed e τ : Γ ⊢ₜ e : τ.[TRec τ/] → Γ ⊢ₜ Fold e : TRec τ
   | Unfold_typed e τ : Γ ⊢ₜ e : TRec τ → Γ ⊢ₜ Unfold e : τ.[TRec τ/]
   (* typing for CAST *)
-  | Cast_typed e τi τf : Is_Closed τi -> Is_Closed τf -> open_sym τi τf → Γ ⊢ₜ e : τi → Γ ⊢ₜ Cast e τi τf : τf
+  | Cast_typed e τi τf : Is_Closed τi -> Is_Closed τf -> consistent τi τf → Γ ⊢ₜ e : τi → Γ ⊢ₜ Cast e τi τf : τf
   (* typing for BLAME *)
   | Blame_typed τ : Is_Closed τ → Γ ⊢ₜ Blame : τ
   (* maybe adjust later to allow... *)

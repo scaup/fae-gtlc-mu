@@ -8,6 +8,7 @@ Require Coq.Logic.JMeq.
 just a test to see what the problem is with unfolding types... *)
 
 Notation "⋆" := TUnknown : type_scope.
+(** even this is really hard to prove :( *)
 Infix "×" := TProd (at level 150) : type_scope.
 Infix "+" := TSum.
 Infix "→" := TArrow : type_scope.

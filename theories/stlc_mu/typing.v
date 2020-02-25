@@ -141,6 +141,10 @@ Lemma context_weakening ξ Γ e τ :
   Γ ⊢ₛ e : τ → ξ ++ Γ ⊢ₛ e.[(ren (+ (length ξ)))] : τ.
 Proof. eapply (context_gen_weakening _ []). Qed.
 
+(* Lemma context_gen_reorder Γ'' Γ' Γ τ1 τ2 τe τ : *)
+  (* Γ'' ++ [τ1] ++ Γ' ++ [τ2] ++ Γ ⊢ₛ e : τ → *)
+  (* Γ'' ++ [τ2] ++ Γ' ++ [τ1] ++ Γ' ⊢ₛ e.[upn (length Γ') (ren (+ (length ξ)))] : τ. *)
+
 Lemma closed_context_weakening ξ Γ e τ :
   (∀ f, e.[f] = e) → Γ ⊢ₛ e : τ → ξ ++ Γ ⊢ₛ e : τ.
 Proof. intros H1 H2. erewrite <- H1. by eapply context_weakening. Qed.
@@ -178,3 +182,8 @@ Proof.
   assert (T : τ' :: τ'' :: τ''' :: Γ = [τ' ; τ'' ; τ'''] ++ Γ). done. rewrite T.
   by apply up_type.
 Qed.
+
+
+
+
+Definition unfoldish (τ : type) : type := τ.[TRec τ/].

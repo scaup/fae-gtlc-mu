@@ -29,3 +29,5 @@ Lemma rewrite_for_context_weakening {A} (Γ : list A) τ : τ :: Γ = [τ] ++ Γ
 by simpl.
 Qed.
 
+Definition update {A : Type} (l : list A) (i : nat) (a : A) : list A :=
+  alter (fun _ => a) i l.

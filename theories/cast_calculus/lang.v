@@ -1,6 +1,7 @@
 From Autosubst Require Export Autosubst.
 From iris.program_logic Require Export language ectx_language ectxi_language.
-From fae_gtlc_mu Require Export cast_calculus.types.
+From fae_gtlc_mu.cast_calculus Require Export types.
+From fae_gtlc_mu.cast_calculus.consistency Require Export standard.
 
 Inductive expr :=
 | Var (x : var)
@@ -194,7 +195,7 @@ Inductive head_step : expr → state → list Empty_set → expr → state → l
     to_val e = Some v →
     ((Ground τ) -> False) →
     (¬ (τ = ⋆)) →
-    open_sym τ τG →
+    cons_stand 0 τ τG →
     head_step
       (Cast e τ ⋆) σ []
       (Cast (Cast e τ τG) τG ⋆) σ []
@@ -202,7 +203,7 @@ Inductive head_step : expr → state → list Empty_set → expr → state → l
     to_val e = Some v →
     (notT (Ground τ)) →
     (¬ (τ = ⋆)) →
-    open_sym τ τG →
+    cons_stand 0 τ τG →
     head_step
       (Cast e ⋆ τ) σ []
       (Cast (Cast e ⋆ τG) τG τ) σ []

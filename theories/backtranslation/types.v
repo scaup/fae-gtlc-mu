@@ -11,3 +11,8 @@ Fixpoint backtranslate_type (τ : cast_calculus.types.type) : type :=
   | cast_calculus.types.TVar x => TVar x
   | cast_calculus.types.TUnknown => Universe
   end where "<< e >>" := (backtranslate_type e).
+
+Lemma unfolding_backtranslation_commutes (τ : cast_calculus.types.type) :
+  << (cast_calculus.types.unfoldish τ) >> = stlc_mu.typing.unfoldish << τ >>.
+Proof.
+Admitted.

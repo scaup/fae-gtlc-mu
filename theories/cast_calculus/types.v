@@ -44,6 +44,13 @@ Proof.
   - intros. constructor.
 Qed.
 
+Lemma UBupn τ (P : UB 0 τ) (n : nat) : UB n τ.
+Proof.
+  induction n.
+  auto.
+  by apply UBup.
+Qed.
+
 Definition Is_Unknown_dec (τ : type) : Decision (τ = ⋆).
 Proof.
   destruct τ.
@@ -142,7 +149,7 @@ Definition get_shape (τ : type) : option type :=
   | TSum x x0 => Some (TSum ⋆ ⋆)
   | TArrow x x0 => Some (TArrow ⋆ ⋆)
   | TRec τ => Some (TRec ⋆)
-  | TVar x => Some (TRec ⋆)
+  | TVar x => None
   | TUnknown => None
   end.
 
@@ -152,13 +159,7 @@ Proof.
   destruct τ; simplify_eq; destruct τG; inversion H; constructor.
 Qed.
 
-Definition update {A : Type} (l : list A) (i : nat) (a : A) : list A :=
-  alter (fun _ => a) i l.
 
 
 
-
-
-
-
-
+Definition unfoldish (τ : type) : type := τ.[TRec τ/].

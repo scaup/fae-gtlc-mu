@@ -9,19 +9,28 @@ theories/stlc_mu/lib/fix.v
 ### GRADUAL TYPES ###
 theories/cast_calculus/types.v
 theories/cast_calculus/consistency/standard.v
-theories/cast_calculus/consistency/structural/assumption.v
+# theories/cast_calculus/consistency/structural/assumption.v
 theories/cast_calculus/consistency/structural/definition.v
 theories/cast_calculus/consistency/equivalent/symmetric.v
 # theories/cast_calculus/consistency/equivalent/proof.v
 
+### CAST CALCULUS ###
+theories/cast_calculus/lang.v
+
 ### BACKTRANSLATION ###
-theories/backtranslation/types.v
 theories/backtranslation/cast_help/universe.v
-theories/backtranslation/de_bruijn_hell.v
+theories/backtranslation/types.v
+# theories/backtranslation/technical.v
+# theories/backtranslation/de_bruijn_hell.v
 theories/backtranslation/cast_help/embed.v
 theories/backtranslation/cast_help/extract.v
 theories/backtranslation/cast_help/factorize.v
 theories/backtranslation/cast_help/between.v
+
+theories/backtranslation/cast_help/general.v
+
+# relation
+theories/refinements/static_gradual/rules.v
 
 # theories/backtranslation/cast_help/interp_assumption.v
 
