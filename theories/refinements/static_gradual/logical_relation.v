@@ -3,7 +3,7 @@ From iris.program_logic Require Export weakestpre.
 From iris.base_logic Require Export invariants.
 From fae_gtlc_mu.backtranslation.cast_help Require Export embed.
 From fae_gtlc_mu.refinements Require Export prelude.
-From fae_gtlc_mu.refinements.static_gradual Require Export rules_binary.
+From fae_gtlc_mu.refinements.static_gradual Require Export resources_left resources_right.
 From fae_gtlc_mu.cast_calculus Require Export types.
 From iris.algebra Require Import list.
 From stdpp Require Import tactics.
@@ -236,7 +236,7 @@ Section logrel.
     | TRec τ' => interp_rec (interp τ')
     | TUnknown => interp_unknown
     end.
-  Notation "⟦ τ ⟧" := (interp τ). (** the actual relations on expressions *)
+  Notation "⟦ τ ⟧" := (interp τ). (** the actual relations on values *)
 
   Definition interp_env (Γ : list type)
       (Δ : listO D) (vvs : list (stlc_mu.lang.val * cast_calculus.lang.val)) : iProp Σ :=
@@ -363,3 +363,17 @@ Typeclasses Opaque interp_env.
 Notation "⟦ τ ⟧" := (interp τ).
 Notation "⟦ τ ⟧ₑ" := (interp_expr (interp τ)).
 Notation "⟦ Γ ⟧*" := (interp_env Γ).
+
+From fae_gtlc_mu.cast_calculus Require Export types typing.
+
+Section bin_log_def.
+  Context `{!heapG Σ, !gradRN Σ}.
+  Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iProp Σ).
+
+  Definition bin_log_related
+  (Γ : list cast_calculus.types.type) (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : cast_calculus.types.type) :=
+    ∀ Δ vvs (ei' : cast_calculus.lang.expr), env_Persistent Δ →
+    initially_inv ei' ∗ ⟦ Γ ⟧* Δ vvs ⊢
+    ⟦ τ ⟧ₑ Δ (e.[stlc_mu.typing.env_subst (vvs.*1)], e'.[cast_calculus.typing.env_subst (vvs.*2)]).
+End bin_log_def.
+

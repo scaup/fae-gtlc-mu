@@ -1,4 +1,4 @@
-From fae_gtlc_mu.refinements.static_gradual Require Export rules_binary logrel_binary.
+From fae_gtlc_mu.refinements.static_gradual Require Export resources_right logical_relation.
 From fae_gtlc_mu.cast_calculus Require Export types typing.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 From fae_gtlc_mu.cast_calculus Require Export lang.
@@ -6,17 +6,6 @@ From fae_gtlc_mu.cast_calculus Require Export lang.
 From iris.algebra Require Import list.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Import lifting.
-
-Section bin_log_def.
-  Context `{!heapG Σ, !gradRN Σ}.
-  Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iProp Σ).
-
-  Definition bin_log_related
-  (Γ : list cast_calculus.types.type) (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : cast_calculus.types.type) :=
-    ∀ Δ vvs (ei' : cast_calculus.lang.expr), env_Persistent Δ →
-    initially_inv ei' ∗ ⟦ Γ ⟧* Δ vvs ⊢
-    ⟦ τ ⟧ₑ Δ (e.[stlc_mu.typing.env_subst (vvs.*1)], e'.[cast_calculus.typing.env_subst (vvs.*2)]).
-End bin_log_def.
 
 Notation "Γ ⊨ e '≤log≤' e' : τ" :=
   (bin_log_related Γ e e' τ) (at level 74, e, e', τ at next level).

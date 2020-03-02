@@ -1,7 +1,7 @@
 From iris.algebra Require Import cmra excl auth frac agree gmap list.
 From iris.program_logic Require Import lifting.
 From iris.proofmode Require Import tactics.
-From fae_gtlc_mu.refinements.static_gradual Require Export rules.
+From fae_gtlc_mu.refinements.static_gradual Require Export resources_left.
 From fae_gtlc_mu.cast_calculus Require Export lang.
 Import uPred.
 
