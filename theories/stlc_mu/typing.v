@@ -10,7 +10,7 @@ Inductive type :=
   | TRec (τ : {bind 1 of type})
   | TVar (x : var).
 
-Notation "( τ1 → .. → τm → τn )" := (TArrow τ1 .. (TArrow τm τn) .. ) : type_scope. (* does not work?? *)
+(* Notation "( τ1 → .. → τm → τn )" := (TArrow τ1 .. (TArrow τm τn) .. ) : type_scope. (* does not work?? *) *)
 Infix "×" := TProd (at level 150) : type_scope.
 Infix "+" := TSum : type_scope.
 (* Infix "→" := TArrow : type_scope. *)

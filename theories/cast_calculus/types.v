@@ -4,9 +4,9 @@ Require Coq.Logic.JMeq.
 
 Inductive type :=
   | TUnit : type
-  | TProd : type → type → type
-  | TSum : type → type → type
-  | TArrow : type → type → type
+  | TProd (τ1 τ2 : type) : type
+  | TSum (τ1 τ2 : type) : type
+  | TArrow (τ1 τ2 : type) : type
   | TRec (τ : {bind 1 of type})
   | TVar (x : var)
   | TUnknown : type.

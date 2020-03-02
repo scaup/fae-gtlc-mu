@@ -7,7 +7,7 @@ From fae_gtlc_mu.backtranslation.cast_help Require Export universe embed extract
 Definition identity : expr :=
   Lam (Var 0).
 
-Lemma identity_typed (τ : type) Γ : Γ ⊢ₛ identity : (τ → τ).
+Lemma identity_typed (τ : type) Γ : Γ ⊢ₛ identity : (TArrow τ τ).
 Proof.
   intros.
   apply Lam_typed. by apply Var_typed.
@@ -20,8 +20,8 @@ Definition factorization_up (f : expr) (τG : cast_calculus.types.type) (G : Gro
       embed τG G ((rename (+1) f) (Var 0))
     ).
 
-Lemma factorization_up_typed Γ {f : expr} (τ : type(* backtranslation of something that is not a ground type, nor star *)) (τG : cast_calculus.types.type) (G : Ground τG) (d : Γ ⊢ₛ f : (τ → <<τG>>)) :
-  Γ ⊢ₛ factorization_up f τG G : (τ → Universe).
+Lemma factorization_up_typed Γ {f : expr} (τ : type(* backtranslation of something that is not a ground type, nor star *)) (τG : cast_calculus.types.type) (G : Ground τG) (d : Γ ⊢ₛ f : (TArrow τ <<τG>>)) :
+  Γ ⊢ₛ factorization_up f τG G : (TArrow τ Universe).
 Proof.
   apply Lam_typed.
   apply App_typed with (τ1 := << τG >>).
@@ -36,8 +36,8 @@ Definition factorization_down (f : expr) (τG : cast_calculus.types.type) (G : G
       (rename (+1) f) (extract τG G (Var 0))
     ).
 
-Lemma factorization_down_typed Γ {f : expr} (τ : type(* backtranslation of something that is not a ground type, nor star *)) (τG : cast_calculus.types.type) (G : Ground τG) (d : Γ ⊢ₛ f : (<<τG>> → τ)) :
-  Γ ⊢ₛ factorization_down f τG G : (Universe → τ).
+Lemma factorization_down_typed Γ {f : expr} (τ : type(* backtranslation of something that is not a ground type, nor star *)) (τG : cast_calculus.types.type) (G : Ground τG) (d : Γ ⊢ₛ f : (TArrow <<τG>> τ)) :
+  Γ ⊢ₛ factorization_down f τG G : (TArrow Universe τ).
 Proof.
   apply Lam_typed.
   apply App_typed with (τ1 := << τG >>).

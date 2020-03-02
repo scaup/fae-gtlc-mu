@@ -4,22 +4,28 @@ From fae_gtlc_mu.backtranslation Require Export universe types.
 
 (** Embeddings *)
 
+Definition embedV_TUnit (v : val) : val :=
+  (FoldV (InjLV (InjLV (InjLV (InjLV v))))).
+
 Definition embed_TUnit : expr :=
   Lam (Fold (InjL (InjL (InjL (InjL (Var 0)))))).
 
 Lemma embed_TUnit_typed Γ :
-  Γ ⊢ₛ embed_TUnit : (TUnit → Universe).
+  Γ ⊢ₛ embed_TUnit : (TArrow TUnit Universe).
 Proof.
   apply Lam_typed, Fold_typed.
   repeat apply InjL_typed.
   by apply Var_typed.
 Qed.
 
+Definition embedV_Ground_TSum (s : val) : val :=
+  (FoldV ((InjLV (InjLV (InjLV (InjRV s)))))).
+
 Definition embed_Ground_TSum : expr :=
   Lam (Fold ((InjL (InjL (InjL (InjR (Var 0))))))).
 
 Definition embed_Ground_TSum_typed Γ :
-  Γ ⊢ₛ embed_Ground_TSum : ((Universe + Universe) → Universe)%type.
+  Γ ⊢ₛ embed_Ground_TSum : (TArrow (Universe + Universe) Universe)%type.
 Proof.
   apply Lam_typed.
   apply Fold_typed.
@@ -27,22 +33,28 @@ Proof.
   by apply Var_typed.
 Qed.
 
+Definition embedV_Ground_TProd (p : val) : val :=
+  (FoldV (InjLV (InjLV (InjRV p)))).
+
 Definition embed_Ground_TProd : expr :=
   Lam (Fold (InjL (InjL (InjR (Var 0))))).
 
 Definition embed_Ground_TProd_typed Γ :
-  Γ ⊢ₛ embed_Ground_TProd : ((Universe × Universe) → Universe).
+  Γ ⊢ₛ embed_Ground_TProd : (TArrow (Universe × Universe) Universe).
 Proof.
   apply Lam_typed, Fold_typed.
   repeat apply InjL_typed. asimpl. repeat apply InjR_typed.
   by apply Var_typed.
 Qed.
 
+Definition embedV_Ground_TArrow (v : val) : val :=
+  FoldV (InjLV (InjRV v)).
+
 Definition embed_Ground_TArrow : expr :=
   Lam (Fold (InjL (InjR (Var 0)))).
 
 Definition embed_Ground_TArrow_typed Γ :
-  Γ ⊢ₛ embed_Ground_TArrow : ((Universe → Universe) → Universe).
+  Γ ⊢ₛ embed_Ground_TArrow : (TArrow (TArrow Universe Universe) Universe).
 Proof.
   apply Lam_typed, Fold_typed.
   repeat apply InjL_typed. asimpl. repeat apply InjR_typed.
@@ -50,11 +62,12 @@ Proof.
 Qed.
 
 (* Takes something of μ.Universe, unfolds it so it is in Universe, and then puts in the last branch of the universe *)
+
 Definition embed_Ground_TRec : expr :=
   Lam (Fold (InjR (Unfold (Var 0)))).
 
 Definition embed_Ground_TRec_typed Γ :
-  Γ ⊢ₛ embed_Ground_TRec : (TRec Universe → Universe).
+  Γ ⊢ₛ embed_Ground_TRec : (TArrow (TRec Universe) Universe).
 Proof.
   apply Lam_typed. apply Fold_typed.
   apply InjR_typed.
@@ -73,7 +86,7 @@ Definition embed (τ : cast_calculus.types.type) (G : Ground τ) : expr :=
   end.
 
 Lemma embed_typed {τG : cast_calculus.types.type} {G : Ground τG} Γ :
-  Γ ⊢ₛ (embed τG G) : (<<τG>> → Universe).
+  Γ ⊢ₛ (embed τG G) : (TArrow <<τG>> Universe).
 Proof.
   destruct G.
     + apply embed_TUnit_typed.

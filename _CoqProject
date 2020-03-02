@@ -8,6 +8,7 @@ theories/stlc_mu/lib/fix.v
 
 ### GRADUAL TYPES ###
 theories/cast_calculus/types.v
+theories/cast_calculus/typing.v
 theories/cast_calculus/consistency/standard.v
 # theories/cast_calculus/consistency/structural/assumption.v
 theories/cast_calculus/consistency/structural/definition.v
@@ -16,6 +17,9 @@ theories/cast_calculus/consistency/equivalent/symmetric.v
 
 ### CAST CALCULUS ###
 theories/cast_calculus/lang.v
+
+### EMBEDDING ###
+theories/embedding/expressions.v
 
 ### BACKTRANSLATION ###
 theories/backtranslation/cast_help/universe.v
@@ -31,6 +35,17 @@ theories/backtranslation/cast_help/general.v
 
 # relation
 theories/refinements/static_gradual/rules.v
+theories/refinements/static_gradual/rules_binary.v
+theories/refinements/static_gradual/logrel_binary.v
+theories/refinements/static_gradual/compat_easy.v
+
+# theories/refinements/static_gradual/fundamental_binary.v
+# theories/refinements/static_gradual/context_refinement.v
+# theories/refinements/static_gradual/soundness_binary.v
+
+# prelude (took from...)
+theories/refinements/prelude.v
+
 
 # theories/backtranslation/cast_help/interp_assumption.v
 

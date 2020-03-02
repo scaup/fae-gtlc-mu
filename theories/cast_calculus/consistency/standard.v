@@ -2,7 +2,7 @@ From Autosubst Require Export Autosubst.
 From fae_gtlc_mu Require Import prelude cast_calculus.types.
 Require Coq.Logic.JMeq.
 
-Reserved Notation "n ⊢ τ ~ τ'" (at level 4, τ, τ' at next level).
+Reserved Notation "n |> τ ~ τ'" (at level 4, τ, τ' at next level).
 Inductive cons_stand : nat -> type -> type -> Type :=
 | GenSymUnit n : cons_stand n TUnit TUnit
 | GenSymUnknownL n (τ : type) : (UB n τ) -> cons_stand n ⋆ τ
@@ -27,4 +27,4 @@ Inductive cons_stand : nat -> type -> type -> Type :=
     cons_stand n (TVar i) (TVar i)
 | GenSymRec n (τ τ' : type) (P : cons_stand (S n) τ τ') :
     cons_stand n (TRec τ) (TRec τ')
-where "n ⊢ τ ~ τ'" := (cons_stand n τ τ').
+where "n |> τ ~ τ'" := (cons_stand n τ τ').

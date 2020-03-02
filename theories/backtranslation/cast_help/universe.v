@@ -1,14 +1,14 @@
 From fae_gtlc_mu Require Export stlc_mu.lang.
 From fae_gtlc_mu Require Export stlc_mu.typing.
 
-Infix "→" := TArrow : type_scope.
+(* Infix "→" := TArrow : type_scope. *)
 
 Definition Universe_body : type :=
   (
     TUnit +
     (TVar 0 + TVar 0) +
     (TVar 0 × TVar 0) +
-    (TVar 0 → TVar 0) +
+    (TArrow (TVar 0) (TVar 0)) +
     (TVar 0)
   )%type.
 

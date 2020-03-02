@@ -6,8 +6,8 @@ From fae_gtlc_mu Require Export prelude.
 Definition between_TSum (c1 c2 : expr) : expr :=
   Lam (Case (Var 0) (InjL ((rename (+2) c1) (Var 0))) (InjR ((rename (+2) c2) (Var 0)))).
 
-Lemma between_TSum_typed Γ (τ1 τ2 τ1' τ2' : type) (f1 f2 : expr) (d1 : Γ ⊢ₛ f1 : (τ1 → τ1')) (d2 : Γ ⊢ₛ f2 : (τ2 → τ2')) :
-  Γ ⊢ₛ between_TSum f1 f2 : (τ1 + τ2 → τ1' + τ2')%type.
+Lemma between_TSum_typed Γ (τ1 τ2 τ1' τ2' : type) (f1 f2 : expr) (d1 : Γ ⊢ₛ f1 : (TArrow τ1 τ1')) (d2 : Γ ⊢ₛ f2 : (TArrow τ2 τ2')) :
+  Γ ⊢ₛ between_TSum f1 f2 : (TArrow (τ1 + τ2) (τ1' + τ2'))%type.
 Proof.
   apply Lam_typed.
   eapply Case_typed.
@@ -22,8 +22,8 @@ Qed.
 Definition between_TProd (f1 f2 : expr) : expr :=
   Lam (Pair (rename (+1) f1 (Fst (Var 0))) (rename (+1) f2 (Snd (Var 0)))).
 
-Lemma between_TProd_typed Γ (τ1 τ2 τ1' τ2' : type) (f1 f2 : expr) (d1 : Γ ⊢ₛ f1 : (τ1 → τ1')) (d2 : Γ ⊢ₛ f2 : (τ2 → τ2')) :
-  Γ ⊢ₛ between_TProd f1 f2 : ((τ1 × τ2) → (τ1' × τ2'))%type.
+Lemma between_TProd_typed Γ (τ1 τ2 τ1' τ2' : type) (f1 f2 : expr) (d1 : Γ ⊢ₛ f1 : (TArrow τ1 τ1')) (d2 : Γ ⊢ₛ f2 : (TArrow τ2 τ2')) :
+  Γ ⊢ₛ between_TProd f1 f2 : (TArrow (τ1 × τ2) (τ1' × τ2'))%type.
 Proof.
   apply Lam_typed.
   apply Pair_typed.
@@ -40,8 +40,8 @@ Definition between_TArrow (ca cr : expr) : expr :=
        )
     ).
 
-Lemma between_TArrow_typed Γ (τ1 τ2 τ3 τ4 : type) (ca cr : expr) (da : Γ ⊢ₛ ca : (τ3 → τ1)) (dr : Γ ⊢ₛ cr : (τ2 → τ4)) :
-  Γ ⊢ₛ between_TArrow ca cr : ((τ1 → τ2) → (τ3 → τ4))%type.
+Lemma between_TArrow_typed Γ (τ1 τ2 τ3 τ4 : type) (ca cr : expr) (da : Γ ⊢ₛ ca : (TArrow τ3 τ1)) (dr : Γ ⊢ₛ cr : (TArrow τ2 τ4)) :
+  Γ ⊢ₛ between_TArrow ca cr : (TArrow (TArrow τ1 τ2) (TArrow τ3 τ4))%type.
 Proof.
   repeat apply Lam_typed.
   apply App_typed with (τ1 := τ2).
@@ -63,12 +63,13 @@ Definition between_TRec (f : expr) : expr :=
     ).
 
 Lemma between_TRec_typed Γ (τi τf : type) (Pi : Is_Closed (TRec τi)) (Pf : Is_Closed (TRec τf)) (f : expr)
-      (d : ((TArrow (TRec τi) (TRec τf)):: Γ) ⊢ₛ f : ((τi.[TRec τi/]) → τf.[TRec τf/])) :
-  Γ ⊢ₛ between_TRec f : ((stlc_mu.typing.TRec τi) → (stlc_mu.typing.TRec τf))%type.
+      (d : ((TArrow (TRec τi) (TRec τf)):: Γ) ⊢ₛ f : (TArrow (τi.[TRec τi/]) τf.[TRec τf/])) :
+  Γ ⊢ₛ between_TRec f : (TArrow (stlc_mu.typing.TRec τi) (stlc_mu.typing.TRec τf))%type.
 Proof.
   apply Lam_typed.
   apply App_typed with (τ1 := TRec τi).
-  apply App_typed with (τ1 := ((TRec τi → TRec τf) → (TRec τi → TRec τf))).
+  (* apply App_typed with (τ1 := ((TRec τi → TRec τf) → (TRec τi → TRec τf))). *)
+  eapply App_typed.
   apply Fix_typed; by intro τ; simpl; rewrite -(Pi τ); rewrite -(Pf τ); by simpl.
   apply Lam_typed.
   apply Lam_typed.
