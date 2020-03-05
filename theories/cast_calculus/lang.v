@@ -183,7 +183,7 @@ Inductive head_step : expr → state → list Empty_set → expr → state → l
     to_val e = Some v →
     head_step
       (Cast e (TSum τ1 τ2) (TSum τ1' τ2')) σ []
-      (Case e (Cast (Var 0) τ1 τ1') (Cast (Var 0) τ2 τ2')) σ []
+      (Case e (InjL (Cast (Var 0) τ1 τ1')) (InjR (Cast (Var 0) τ2 τ2'))) σ []
 (* Cast between two recursive casts *)
 | RecursiveCast e v τb τb' σ:
     to_val e = Some v →

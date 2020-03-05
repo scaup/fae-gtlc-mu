@@ -57,6 +57,12 @@ Proof.
     apply IHx.
 Qed.
 
+Lemma typed_n_closed Γ τ e : Γ ⊢ₜ e : τ → (∀ f, e.[upn (length Γ) f] = e).
+Proof.
+  intros H. induction H => f; asimpl; simpl in *; auto with f_equal.
+  apply lookup_lt_Some in H. rewrite iter_up. destruct lt_dec; auto with lia.
+Qed.
+
 Lemma Unfold_typed_help Γ e τ : (τ.[TRec τ/] = τ) → Γ ⊢ₜ e : TRec τ → Γ ⊢ₜ Unfold e : τ.
 Proof.
   intros eq d.

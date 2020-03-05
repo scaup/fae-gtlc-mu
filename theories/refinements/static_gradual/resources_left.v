@@ -127,4 +127,6 @@ Section lang_rules.
     PureExec True 1 (Case (InjR e0) e1 e2) e2.[e0/].
   Proof. solve_pure_exec. Qed.
 
+
+
 End lang_rules.
