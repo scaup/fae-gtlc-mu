@@ -124,8 +124,17 @@ Section compat_cast_all.
       + admit.
     - admit.
     - admit.
-    - admit.
-    - admit.
+    - iDestruct "Hvv'" as "%"; inversion H. simpl in *. rewrite H0 H1. clear v v' H H0 H1.
+      asimpl. wp_head.
+      iMod (step_pure _ ei' K'
+                      (Cast Unit TUnit TUnit)
+                      Unit with "[Hv']") as "Hv'". intros. eapply IdBase. by simpl. auto.
+      iSplitR. done. done. asimpl. wp_value. iExists UnitV. iSplitL. done. done.
+    - asimpl. wp_head.
+      iMod (step_pure _ ei' K'
+                      (Cast (# v') ⋆ ⋆)
+                      (# v') with "[Hv']") as "Hv'". intros. eapply IdStar. by simpl. auto.
+      iSplitR. done. done. asimpl. wp_value. iExists v'. iSplitL. done. done.
     - admit.
     - iDestruct "Hvv'" as ((v1, v1') (v2, v2')) "(% & #H1 & #H2)". simpl in H; inversion H; clear H H1 H2 v v'.
       iDestruct "Hfs" as "[% Hfs']"; iAssert (rel_cast_functions A fs) with "[Hfs']" as "Hfs". iSplit; done. iClear "Hfs'".
