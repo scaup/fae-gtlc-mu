@@ -172,29 +172,23 @@ Section compat_cast_all.
       iClear "Haa'". clear a a'.
       (** using the relatedness of functions *)
       iApply (wp_bind (fill $ [stlc_mu.lang.AppRCtx _ ])).
-      iDestruct "Hff'" 
       iApply (wp_wand with "[-]").
-      iApply ("Hff' (b , b') " with "[]").
-
-      iApply ()
-
-      iApply wp
+      iDestruct ("Hff'" with "Hbb'") as "Hfbf'b' /=".
+      iApply ("Hfbf'b'" $! (CastCtx τ2 τ4 :: K')).
+      simpl.
+      iExact "Hb'".
+      iIntros (r) "HHH". iDestruct "HHH" as (r') "[Hr' Hrr']".
+      simpl.
+      iClear "Hbb'". clear b b'.
+      (** second IH for the results *)
       iApply (wp_wand with "[-]").
-      
-      admit.
-      admit.
-
-
-      (* iApply (IHpC ei' (FoldCtx :: K') w w' (𝓕cV (consTRecTRecExposeCall A τl τr pμτlμτrnotA pC) fs H :: fs)). iSplitL "Hfs". iSplitR; first by done. *)
-
-
-
-
-      (* iIntros  *)
-
-
-
-
+      rewrite -𝓕c_rewrite.
+      iApply (IHpC2 ei' K' r r' with "[-]").
+      iSplitR. done.
+      iSplitL "Hrr'"; try done.
+      iSplitR. done.
+      done.
+      iIntros (s) "HHH". done.
     - (** setting up iLöb *)
       (* iLöb as "IHlob" forall (v v' ei') "Hvv' Hei'". *)
       fold (𝓕c (consTRecTRecExposeCall A τl τr pμτlμτrnotA pC) fs).
