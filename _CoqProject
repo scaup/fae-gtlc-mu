@@ -5,18 +5,19 @@ theories/prelude.v
 theories/stlc_mu/lang.v
 theories/stlc_mu/typing.v
 theories/stlc_mu/lib/fix.v
+theories/stlc_mu/contexts.v
 
 ### GRADUAL TYPES ###
 theories/cast_calculus/types.v
-theories/cast_calculus/typing.v
 theories/cast_calculus/consistency/standard.v
-# theories/cast_calculus/consistency/structural/assumption.v
 theories/cast_calculus/consistency/structural/definition.v
 theories/cast_calculus/consistency/equivalent/symmetric.v
 # theories/cast_calculus/consistency/equivalent/proof.v
 
 ### CAST CALCULUS ###
 theories/cast_calculus/lang.v
+theories/cast_calculus/typing.v
+theories/cast_calculus/contexts.v
 
 ### EMBEDDING ###
 theories/embedding/expressions.v
@@ -34,29 +35,15 @@ theories/backtranslation/cast_help/between.v
 theories/backtranslation/cast_help/general.v
 
 # relation
-theories/refinements/static_gradual/rules.v
-theories/refinements/static_gradual/rules_binary.v
-theories/refinements/static_gradual/logrel_binary.v
+theories/refinements/prelude.v
+theories/refinements/static_gradual/tactics_left.v
+theories/refinements/static_gradual/resources_left.v
+theories/refinements/static_gradual/resources_right.v
+theories/refinements/static_gradual/logical_relation.v
 theories/refinements/static_gradual/compat_easy.v
 
-# theories/refinements/static_gradual/fundamental_binary.v
-# theories/refinements/static_gradual/context_refinement.v
-# theories/refinements/static_gradual/soundness_binary.v
-
-# prelude (took from...)
-theories/refinements/prelude.v
+theories/refinements/static_gradual/help_left.v
 
 
-# theories/backtranslation/cast_help/interp_assumption.v
-
-# theories/cast_calculus/consistency_standard_open.v
-# theories/cast_calculus/consistency_standard_closed.v
-# theories/cast_calculus/consistency_alternative_open.v
-# theories/cast_calculus/lang.v
-# theories/cast_calculus/typing.v
-# 
-# theories/backtranslation/expressions.v
-
-
-# theories/cc/lang.v
-# theories/gtlcu/lang.v
+# compat cast
+theories/refinements/static_gradual/compat_cast/defs.v

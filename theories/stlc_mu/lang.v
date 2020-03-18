@@ -19,10 +19,18 @@ Inductive expr :=
 | Fold (e : expr)
 | Unfold (e : expr).
 
+Coercion App : expr >-> Funclass.
+
 Instance Ids_expr : Ids expr. derive. Defined.
 Instance Rename_expr : Rename expr. derive. Defined.
 Instance Subst_expr : Subst expr. derive. Defined.
 Instance SubstLemmas_expr : SubstLemmas expr. derive. Qed.
+
+Lemma rewrite_subs_app (e1 e2 : expr) σ :
+  (App e1 e2).[σ] = App e1.[σ] e2.[σ].
+Proof.
+  by simpl.
+Qed.
 
 Inductive val :=
 | LamV (e : {bind 1 of expr})
@@ -42,6 +50,8 @@ Fixpoint of_val (v : val) : expr :=
   | FoldV v => Fold (of_val v)
   end.
 Notation "# v" := (of_val v) (at level 20).
+
+Coercion of_val : val >-> expr.
 
 Fixpoint to_val (e : expr) : option val :=
   match e with

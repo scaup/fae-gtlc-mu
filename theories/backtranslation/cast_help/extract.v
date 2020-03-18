@@ -179,3 +179,8 @@ Proof.
     + apply extract_Ground_TArrow_typed.
     + apply extract_Ground_TRec_typed.
 Qed.
+
+Lemma extract_no_subs {τ : cast_calculus.types.type} {G : Ground τ} σ : (extract τ G).[σ] = extract τ G.
+Proof.
+  destruct G; by asimpl.
+Qed.

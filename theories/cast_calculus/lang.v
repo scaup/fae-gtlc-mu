@@ -51,6 +51,8 @@ Fixpoint of_val (v : val) : expr :=
   end.
 Notation "# v" := (of_val v) (at level 20).
 
+Coercion of_val : val >-> expr.
+
 Definition Inert_cast_pair_dec (τi τf : type) : Decision (Inert_cast_pair τi τf).
 destruct τf.
   - apply right. intro aaa. inversion aaa.
@@ -167,10 +169,11 @@ Inductive head_step : expr → state → list Empty_set → expr → state → l
     not (Ground_equal G1 G2) →
     head_step (Cast (Cast e τ1 ⋆) ⋆ τ2) σ [] Blame σ []
 (* Application of function that is casted between arrow types *)
-| AppCast e1 e2 v2 τ1 τ2 τ3 τ4 σ:
+| AppCast e1 v1 e2 v2 τ1 τ2 τ3 τ4 σ:
+    to_val e1 = Some v1 →
     to_val e2 = Some v2 →
     head_step
-      (App (Cast (Lam e1) (TArrow τ1 τ2) (TArrow τ3 τ4)) e2) σ []
+      (App (Cast e1 (TArrow τ1 τ2) (TArrow τ3 τ4)) e2) σ []
       (Cast (App e1 (Cast e2 τ3 τ1)) τ2 τ4) σ []
 (* Cast between two product casts *)
 | ProdCast e v τ1 τ2 τ1' τ2' σ:

@@ -31,17 +31,18 @@ Fixpoint 𝓕 {A : list (types.type * types.type)} {τi τf : cast_calculus.type
       (𝓕 pCons31)
       (𝓕 pCons24)
   | consTRecTRecExposeCall _ τl τr pμτlμτrnotA pUnfτlUnfτr =>
-    between_TRec
+    between_TRec'
       (𝓕 pUnfτlUnfτr)
-  | consTRecTRecUseCall _ τl τr i pμτlμtrinA => Lam ((Var (S i)) (Var 0))
+  (* | consTRecTRecUseCall _ τl τr i pμτlμtrinA => Lam ((Var (S i)) (Var 0)) *)
+  | consTRecTRecUseCall _ τl τr i pμτlμtrinA => Var i
   end.
 
-Lemma 𝓕_is_value {A} {τi τf} (pC : A ⊢ τi ~ τf) : is_Some $ to_val (𝓕 pC).
-Proof.
-  induction pC; try destruct G; simplify_option_eq; eauto.
-Qed.
+(* Lemma 𝓕_is_value {A} {τi τf} (pC : A ⊢ τi ~ τf) : is_Some $ to_val (𝓕 pC). *)
+(* Proof. *)
+(*   induction pC; try destruct G; simplify_option_eq; eauto. *)
+(* Qed. *)
 
-Definition 𝓕V {A} {τi τf} (pC : A ⊢ τi ~ τf) : val := is_Some_proj (𝓕_is_value pC).
+(* Definition 𝓕V {A} {τi τf} (pC : A ⊢ τi ~ τf) : val := is_Some_proj (𝓕_is_value pC). *)
 
 From fae_gtlc_mu.stlc_mu Require Export typing lang lib.fix.
 
@@ -69,13 +70,13 @@ Proof.
   - apply between_TArrow_typed.
     apply IHpτiConsτf1.
     apply IHpτiConsτf2.
-  - apply between_TRec_typed.
+  - apply between_TRec'_typed.
     admit.
     admit.
     rewrite map_cons in IHpτiConsτf.
     repeat rewrite unfolding_backtranslation_commutes in IHpτiConsτf.
     apply IHpτiConsτf.
-  - apply Lam_typed. eapply App_typed. apply Var_typed.
-    simpl. rewrite list_lookup_fmap.
+  - apply Var_typed.
+    rewrite list_lookup_fmap.
     by rewrite pμτlμtrinA.
 Admitted.

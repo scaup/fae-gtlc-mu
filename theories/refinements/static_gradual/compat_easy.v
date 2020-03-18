@@ -186,6 +186,25 @@ Section fundamental.
     iAlways. iExists (_, _). eauto.
   Qed.
 
+  Lemma bin_log_related_unfold Γ e e' τ
+      (IHHtyped : Γ ⊨ e ≤log≤ e' : TRec τ) :
+    Γ ⊨ stlc_mu.lang.Unfold e ≤log≤ Unfold e' : τ.[(TRec τ)/].
+  Proof.
+    iIntros (Δ vvs ρ ?) "#[Hρ HΓ]"; iIntros (K) "Hj /=".
+    iApply (wp_bind (fill [stlc_mu.lang.UnfoldCtx])).
+    iApply (wp_wand with "[Hj]"). iApply ('`IHHtyped _ _ _ (UnfoldCtx :: K)). iFrame. auto.
+    iIntros (v). iDestruct 1 as (v') "[Hw #Hiw]".
+    simpl.
+    rewrite /= fixpoint_interp_rec1_eq /=.
+    change (fixpoint _) with (interp (TRec τ) Δ).
+    iDestruct "Hiw" as ([w w']) "#[% Hiz]"; simplify_eq/=.
+    iMod (step_Fold _ _ K (of_val w') with "[-]") as "Hz"; eauto.
+    iApply wp_pure_step_later; cbn; auto.
+    iNext. iApply wp_value; auto. iExists _; iFrame "Hz".
+      by rewrite -interp_subst.
+  Qed.
+
+
   (* Theorem binary_fundamental_embedding Γ (e : stlc_mu.lang.expr) τ : *)
   (*   Γ ⊢ₛ e : τ → Γ ⊨ e ≤log≤ e : τ. *)
   (* Proof. *)

@@ -95,3 +95,8 @@ Proof.
     + apply embed_Ground_TArrow_typed.
     + apply embed_Ground_TRec_typed.
 Qed.
+
+Lemma embed_no_subs {τ : cast_calculus.types.type} {G : Ground τ} σ : (embed τ G).[σ] = embed τ G.
+Proof.
+  destruct G; by asimpl.
+Qed.

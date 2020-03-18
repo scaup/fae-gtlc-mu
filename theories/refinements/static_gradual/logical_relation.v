@@ -15,8 +15,8 @@ Import uPred.
 (* Definition valO := stlc_mu.lang.valO. *)
 (* Definition valO' := cast_calculus.lang.valO'. *)
 
-Coercion stlc_mu.lang.of_val : stlc_mu.lang.val >-> stlc_mu.lang.expr.
-Coercion cast_calculus.lang.of_val : cast_calculus.lang.val >-> cast_calculus.lang.expr.
+(* Coercion stlc_mu.lang.of_val : stlc_mu.lang.val >-> stlc_mu.lang.expr. *)
+(* Coercion cast_calculus.lang.of_val : cast_calculus.lang.val >-> cast_calculus.lang.expr. *)
 
 (* HACK: move somewhere else *)
 Ltac auto_equiv :=
@@ -97,6 +97,10 @@ Section logrel.
   Lemma fixpoint_interp_rec1_eq (interp : RelV) Δ x :
     fixpoint (interp_rec1 interp Δ) x ≡ interp_rec1 interp Δ (fixpoint (interp_rec1 interp Δ)) x.
   Proof. exact: (fixpoint_unfold (interp_rec1 interp Δ) x). Qed.
+
+  Lemma fixpoint_interp_rec1_eq2 (interp : RelV) Δ :
+    fixpoint (interp_rec1 interp Δ) ≡ interp_rec1 interp Δ (fixpoint (interp_rec1 interp Δ)).
+  Proof. exact: (fixpoint_unfold (interp_rec1 interp Δ)). Qed.
 
   (* Definition interp_rec (interp : RelV) Δ : D := *)
   (*   fixpoint (interp_rec1 interp Δ). *)
@@ -231,23 +235,19 @@ Section logrel.
   Program Definition interp_unknown1' : D -n> D := λne μRc ww',
    (□ (
         (⌜ ww' = (embedV_TUnit (stlc_mu.lang.UnitV) , castupV_TUnit UnitV) ⌝)
-      ∨ (∃ v1v1' v2v2', ⌜ ww' = (embedV_Ground_TProd (stlc_mu.lang.PairV v1v1'.1 v2v2'.1) ,
-                                  castupV_TProd (PairV v1v1'.2 v2v2'.2)) ⌝ ∧
-                         (▷ μRc v1v1') ∧ (▷ μRc v2v2')
+
+      ∨ (∃ v1 v1' v2 v2', ⌜ ww' = (embedV_Ground_TProd (stlc_mu.lang.PairV v1 v2) , castupV_TProd (PairV v1' v2')) ⌝ ∧ (▷ μRc (v1, v1')) ∧ (▷ μRc (v2, v2'))
         )
-      ∨ ((∃ v1v1', ⌜ ww' = (embedV_Ground_TSum (stlc_mu.lang.InjLV v1v1'.1) ,
-                            castupV_TSum (InjLV v1v1'.2)) ⌝ ∧
-                   ▷ μRc v1v1') ∨
-         (∃ v2v2', ⌜ ww' = (embedV_Ground_TSum (stlc_mu.lang.InjLV v2v2'.1) ,
-                            castupV_TSum (InjLV v2v2'.2)) ⌝ ∧
-                   ▷ μRc v2v2')
+
+      ∨ ((∃ v1 v1', ⌜ ww' = (embedV_Ground_TSum (stlc_mu.lang.InjLV v1) , castupV_TSum (InjLV v1')) ⌝ ∧ ▷ μRc (v1 , v1')) ∨
+         (∃ v2 v2', ⌜ ww' = (embedV_Ground_TSum (stlc_mu.lang.InjLV v2) , castupV_TSum (InjLV v2')) ⌝ ∧ ▷ μRc (v2 , v2'))
         )
-      ∨ (∃ ff', ⌜ ww' = (embedV_Ground_TArrow (ff'.1) , castupV_TArrow ff'.2) ⌝ ∧
-                ▷ □ ( ∀ aa', μRc aa' →
-                             ∀ K', currently_half (fill K' (App ff'.2 aa'.2)) → WP (ff'.1 aa'.1) {{ v , ∃ v', currently_half (fill K' (# v')) ∗ μRc (v , v') }} )
+      ∨ (∃ f f', ⌜ ww' = (embedV_Ground_TArrow f , castupV_TArrow f') ⌝ ∧
+                ▷ □ ( ∀ a  a', μRc (a , a') →
+                             ∀ K', currently_half (fill K' (App f' a')) → WP (f a) {{ v , ∃ v', currently_half (fill K' (# v')) ∗ μRc (v , v') }} )
         )
-      ∨ (∃ uu', ⌜ ww' = (stlc_mu.lang.FoldV (stlc_mu.lang.InjRV (uu'.1)) , castupV_TRec (FoldV uu'.2)) ⌝ ∧
-                ▷ μRc uu'
+      ∨ (∃ u u', ⌜ ww' = (stlc_mu.lang.FoldV (stlc_mu.lang.InjRV (u)) , castupV_TRec (FoldV u')) ⌝ ∧
+                ▷ μRc (u , u')
         )
       )
    )%I.
