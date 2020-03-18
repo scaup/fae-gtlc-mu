@@ -135,7 +135,43 @@ Section compat_cast_all.
                       (Cast (# v') ⋆ ⋆)
                       (# v') with "[Hv']") as "Hv'". intros. eapply IdStar. by simpl. auto.
       iSplitR. done. done. asimpl. wp_value. iExists v'. iSplitL. done. done.
-    - admit.
+    - 
+      iDestruct "Hfs" as "[% Hfs']"; iAssert (rel_cast_functions A fs) with "[Hfs']" as "Hfs". iSplit; done. iClear "Hfs'".
+      rewrite /𝓕c /𝓕. fold (𝓕 pC1) (𝓕 pC2). rewrite between_TSum_subst_rewrite.
+      wp_head. asimpl.
+      iMod (step_pure _ ei' K'
+                      (Cast (# v') (τ1 + τ2)%type (τ1' + τ2')%type)
+                      (Case (# v') (InjL (Cast (Var 0) τ1 τ1')) (InjR (Cast (Var 0) τ2 τ2'))) with "[Hv']") as "Hv'".
+      intros. eapply SumCast. by simplify_option_eq. auto. iSplitR; try done.
+      iDestruct "Hvv'" as "[H1 | H2]".
+      + iDestruct "H1" as ((v1 , v1')) "[% Hv1v1']". inversion H0. clear H0 H2 H3 v v'.
+        wp_head. asimpl.
+        iMod ((step_case_inl _ _ _ (# v1'))  with "[Hv']") as "Hv'". auto. iSplitR. try done. done.
+        iApply (wp_bind (fill $ [stlc_mu.lang.InjLCtx])).
+        iApply (wp_wand with "[-]").
+        iApply (IHpC1 ei' (InjLCtx :: K') with "[Hv']").
+        iSplitR; try done.
+        iSplitR; try done.
+        iSplitR; try done.
+        iIntros (v1f) "HHH". iDestruct "HHH" as (v1f') "[Hv1f' Hv1fv1f']".
+        wp_value.
+        iExists (InjLV v1f').
+        iSplitL "Hv1f'". done.
+        iLeft. iExists (v1f , v1f'). by iFrame.
+      + iDestruct "H2" as ((v1 , v1')) "[% Hv1v1']". inversion H0. clear H0 H2 H3 v v'.
+        wp_head. asimpl.
+        iMod ((step_case_inr _ _ K' (# v1'))  with "[Hv']") as "Hv'". auto. iSplitR. try done. simpl. done.
+        iApply (wp_bind (fill $ [stlc_mu.lang.InjRCtx])).
+        iApply (wp_wand with "[-]").
+        iApply (IHpC2 ei' (InjRCtx :: K') with "[Hv']").
+        iSplitR; try done.
+        iSplitR; try done.
+        iSplitR; try done.
+        iIntros (v1f) "HHH". iDestruct "HHH" as (v1f') "[Hv1f' Hv1fv1f']".
+        wp_value.
+        iExists (InjRV v1f').
+        iSplitL "Hv1f'". done.
+        iRight. iExists (v1f , v1f'). by iFrame.
     - iDestruct "Hvv'" as ((v1, v1') (v2, v2')) "(% & #H1 & #H2)". simpl in H; inversion H; clear H H1 H2 v v'.
       iDestruct "Hfs" as "[% Hfs']"; iAssert (rel_cast_functions A fs) with "[Hfs']" as "Hfs". iSplit; done. iClear "Hfs'".
       fold interp.
