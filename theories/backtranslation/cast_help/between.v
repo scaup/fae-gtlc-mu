@@ -16,6 +16,14 @@ Qed.
 Definition between_TSum (c1 c2 : expr) : expr :=
   Lam (Case (Var 0) (InjL ((rename (+2) c1) (Var 0))) (InjR ((rename (+2) c2) (Var 0)))).
 
+Lemma between_TSum_subst_rewrite σ f1 f2 :
+  (between_TSum f1 f2).[σ] =
+  between_TSum f1.[σ] f2.[σ].
+Proof.
+  rewrite /between_TSum.
+  by asimpl.
+Qed.
+
 Lemma between_TSum_typed Γ (τ1 τ2 τ1' τ2' : type) (f1 f2 : expr) (d1 : Γ ⊢ₛ f1 : (TArrow τ1 τ1')) (d2 : Γ ⊢ₛ f2 : (TArrow τ2 τ2')) :
   Γ ⊢ₛ between_TSum f1 f2 : (TArrow (τ1 + τ2) (τ1' + τ2'))%type.
 Proof.
@@ -31,6 +39,14 @@ Qed.
 
 Definition between_TProd (f1 f2 : expr) : expr :=
   Lam (Pair (rename (+1) f1 (Fst (Var 0))) (rename (+1) f2 (Snd (Var 0)))).
+
+Lemma between_TProd_subst_rewrite σ f1 f2 :
+  (between_TProd f1 f2).[σ] =
+  between_TProd f1.[σ] f2.[σ].
+Proof.
+  rewrite /between_TProd.
+  by asimpl.
+Qed.
 
 Lemma between_TProd_typed Γ (τ1 τ2 τ1' τ2' : type) (f1 f2 : expr) (d1 : Γ ⊢ₛ f1 : (TArrow τ1 τ1')) (d2 : Γ ⊢ₛ f2 : (TArrow τ2 τ2')) :
   Γ ⊢ₛ between_TProd f1 f2 : (TArrow (τ1 × τ2) (τ1' × τ2'))%type.
