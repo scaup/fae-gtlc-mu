@@ -158,7 +158,20 @@ Section compat_cast_all.
         rewrite (unfold_fixpoint_interp_unknown1' [] (stlc_mu.lang.FoldV (stlc_mu.lang.InjRV u), CastV (FoldV u') (TRec ⋆) ⋆ (From_ground_to_unknown (TRec ⋆) Ground_TRec))).
         iModIntro. iRight. iRight. iRight. iRight.
         iExists u , u'. iSplit; done.
-    - admit.
+    - rewrite /𝓕c /𝓕. fold (𝓕 pC).
+      iDestruct "Hfs" as "[% Hfs']"; iAssert (rel_cast_functions A fs) with "[Hfs']" as "Hfs". iSplit; done. iClear "Hfs'".
+      rewrite factorization_up_subst_rewrite.
+      fold (𝓕c pC fs).
+      rewrite /factorization_up.
+      wp_head. asimpl. rewrite embed_no_subs.
+      (** IH *)
+      (* embed is a value.. *)
+      admit.
+      (* iApply (wp_bind (fill $ [stlc_mu.lang.AppRCtx _])). *)
+      (** embedding stuff *)
+    - rewrite /𝓕c /𝓕. fold (𝓕 pC).
+      rewrite /factorization_down.
+      admit.
     - iDestruct "Hvv'" as "%"; inversion H. simpl in *. rewrite H0 H1. clear v v' H H0 H1.
       asimpl. wp_head.
       iMod (step_pure _ ei' K'
