@@ -195,10 +195,10 @@ Section compat_cast_all.
                       (# v1') with "[Hv']") as "Hv'".
       intros. eapply FstS. by rewrite to_of_val. by rewrite to_of_val. auto. iSplitR; try done. simpl.
       (** first IH *)
-      iApply (wp_wand with "[Hv']").
+      iApply (wp_wand with "[Hv' Hfs]").
       rewrite -𝓕c_rewrite.
-      iApply (IHpC1 ei' (PairLCtx _ :: K') with "[Hv']").
-      iSplitR; try done.
+      iApply (IHpC1 ei' (PairLCtx _ :: K') with "[Hv' Hfs]").
+      iSplitL "Hfs"; try done.
       iSplitR; try done.
       iSplitR; try done.
       iIntros (v1f) "HHH". iDestruct "HHH" as (v1f') "[Hv2' #Hv1fv1f']".
@@ -286,10 +286,10 @@ Section compat_cast_all.
       done.
       iIntros (s) "HHH". done.
     - (** setting up iLöb *)
-      (* iLöb as "IHlob" forall (v v' ei') "Hvv' Hei'". *)
+      iLöb as "IHlob" forall (v v' ei' K') "Hvv' Hei'".
       fold (𝓕c (consTRecTRecExposeCall A τl τr pμτlμτrnotA pC) fs).
       (* iRevert (ei' K' v v') "Hvv' Hei' Hv'". *)
-      rewrite /𝓕c /𝓕.
+      rewrite {2}/𝓕c. rewrite /𝓕.
       fold (𝓕 pC).
       (** rewriting value relation for v and v' *)
       rewrite fixpoint_interp_rec1_eq.
@@ -305,7 +305,8 @@ Section compat_cast_all.
       (* bringing subs of fs inwards *)
       rewrite rewrite_subs_app.
       do 2 rewrite Fix''_subs_rewrite.
-      asimpl.
+      assert (triv :
+                Fix'' (stlc_mu.lang.Lam (stlc_mu.lang.Lam (stlc_mu.lang.Fold (rename (+1) (𝓕 pC).[upn 1 (ren (+1))] (stlc_mu.lang.Unfold (stlc_mu.lang.Var 0)))))).[up (stlc_mu.typing.env_subst fs)].[stlc_mu.lang.of_val $ stlc_mu.lang.FoldV w/] (stlc_mu.lang.Var 0).[up (stlc_mu.typing.env_subst fs)].[stlc_mu.lang.of_val $ stlc_mu.lang.FoldV w/] = Fix'' (stlc_mu.lang.Lam (stlc_mu.lang.Lam (stlc_mu.lang.Fold ((𝓕 pC).[up (stlc_mu.typing.env_subst fs) >> ren (+1)] (stlc_mu.lang.Unfold (ids 0)))))) (stlc_mu.lang.Fold (w))). by asimpl. rewrite triv. clear triv.
       (* evaluation step of the Fix'' itself *)
       iApply (wp_bind (stlc_mu.lang.fill_item $ stlc_mu.lang.AppLCtx _)).
       iApply wp_fix''.
@@ -315,34 +316,21 @@ Section compat_cast_all.
       iApply wp_value.
       iApply wp_pure_step_later; auto; iNext. (* unfold fold w *)
       (** rewriting *)
-      asimpl.
-      assert (H :
-                (stlc_mu.lang.Lam
-                   (stlc_mu.lang.Unfold
-                      (stlc_mu.lang.Fold
-                         (stlc_mu.lang.Lam
-                            (stlc_mu.lang.Lam
-                               (stlc_mu.lang.Lam
-                                  (stlc_mu.lang.Fold
-                                     ((𝓕 pC).[ids 1
-                                                  .: stlc_mu.typing.env_subst fs >>
-                                                  ren (+4)]
-                                               (stlc_mu.lang.Unfold (ids 0)))))
-                               (stlc_mu.lang.Lam
-                                  (stlc_mu.lang.Unfold (ids 1) (ids 1) (ids 0))))))
-                      (stlc_mu.lang.Fold
-                         (stlc_mu.lang.Lam
-                            (stlc_mu.lang.Lam
-                               (stlc_mu.lang.Lam
-                                  (stlc_mu.lang.Fold
-                                     ((𝓕 pC).[ids 1
-                                                  .: stlc_mu.typing.env_subst fs >>
-                                                  ren (+4)]
-                                               (stlc_mu.lang.Unfold (ids 0)))))
-                               (stlc_mu.lang.Lam
-                                  (stlc_mu.lang.Unfold (ids 1) (ids 1) (ids 0))))))
-                      (ids 0)) = (between_TRec' (𝓕 pC)).[stlc_mu.typing.env_subst fs] )
-             ). by asimpl. rewrite H; clear H.
+
+      assert (triv : ((stlc_mu.lang.Fold ((𝓕 pC).[up (stlc_mu.typing.env_subst fs) >> ren (+1)] (stlc_mu.lang.Unfold (ids 0)))).[up
+                                                                                                                  (stlc_mu.lang.Lam
+                                                                                                                     (rename (+1)
+                                                                                                                        (Fix''
+                                                                                                                           (stlc_mu.lang.Lam
+                                                                                                                              (stlc_mu.lang.Lam
+                                                                                                                                 (stlc_mu.lang.Fold
+                                                                                                                                    ((𝓕 pC).[up
+                                                                                                                                         (stlc_mu.typing.env_subst fs) >>
+                                                                                                                                       ren (+1)]
+                                                                                                                                       (stlc_mu.lang.Unfold (ids 0)))))))
+                                                                                                                        (stlc_mu.lang.Var 0)) .: ids)].[stlc_mu.lang.Fold ( w)/]) = (stlc_mu.lang.Fold ((𝓕 pC).[(between_TRec' (𝓕 pC)).[stlc_mu.typing.env_subst fs] .: stlc_mu.typing.env_subst fs] (stlc_mu.lang.Unfold (stlc_mu.lang.Fold (w)))))).
+
+      by asimpl. rewrite triv. clear triv.
       rewrite between_TRec'_subst_rewrite.
       rewrite between_TRec'_to_value.
       assert (H : (𝓕 pC).[stlc_mu.lang.of_val (between_TRecV' (𝓕 pC).[up (stlc_mu.typing.env_subst fs)]) .: stlc_mu.typing.env_subst fs] = (𝓕 pC).[stlc_mu.typing.env_subst (between_TRecV' (𝓕 pC).[up (stlc_mu.typing.env_subst fs)] :: fs)]); first by simpl. rewrite H; clear H.
@@ -356,13 +344,14 @@ Section compat_cast_all.
                        (𝓕 pC).[up (stlc_mu.typing.env_subst fs)] :: fs)). simpl; auto.
       fold (𝓕c pC (between_TRecV' (𝓕 pC).[up (stlc_mu.typing.env_subst fs)] :: fs)).
       (* fold (𝓕c (consTRecTRecExposeCall A τl τr pμτlμτrnotA pC) fs). *)
-      rewrite 𝓕c_rewrite.
+      rewrite (𝓕c_rewrite pC).
       iApply (wp_bind (stlc_mu.lang.fill_item $ stlc_mu.lang.AppRCtx _)).
       iApply wp_pure_step_later; auto; iNext.
       iApply wp_value.
+      fold (𝓕c (consTRecTRecExposeCall A τl τr pμτlμτrnotA pC) fs).
       simpl. (** hmmm; unfolds IHLöb... *)
       (** rewriting stuff *)
-      rewrite -𝓕c_rewrite /𝓕c.
+      rewrite -(𝓕c_rewrite pC) {2}/𝓕c.
       assert (T : between_TRecV' (𝓕 pC).[up (stlc_mu.typing.env_subst fs)] =
                   (𝓕cV (consTRecTRecExposeCall A τl τr pμτlμτrnotA pC) fs H)
              ). {
@@ -386,7 +375,14 @@ Section compat_cast_all.
       iApply (wp_wand with "[-]").
       iApply (IHpC ei' (FoldCtx :: K') w w' (𝓕cV (consTRecTRecExposeCall A τl τr pμτlμτrnotA pC) fs H :: fs)). iSplitL "Hfs". iSplitR; first by done.
       (** applying IHlob and Hfs *)
-      admit.
+      (* rewrite /𝓕c. *)
+      iSplit.
+      iModIntro. iIntros (v v') "#Hvv'".
+      { clear K'. iIntros (K') "Hv'". iSimpl in "Hv'".
+        rewrite -𝓕c_rewrite.
+        iApply ("IHlob" $! v v' with "Hv' Hvv' Hei'").
+      }
+      done.
       (** other *)
       iSplitR. done. iSplitR. done. by simpl.
       (** finish *)
@@ -401,15 +397,18 @@ Section compat_cast_all.
       iSplitR. done.
       iNext.
       by rewrite (interp_subst [] τr (TRec τr) (v, v')).
-    - 
-      rewrite /𝓕c /𝓕. asimpl.
+    - rewrite /𝓕c /𝓕. asimpl.
       (** getting the information about the length of the list *)
       iDestruct "Hfs" as "[% Hfs']".
       (* iAssert (rel_cast_functions A fs) with "[Hfs']" as "Hfs". iSplit; done. *)
-
       destruct (fs !! i) as [f | abs] eqn:Hf.
-      + simpl.
-        rewrite (stlc_mu.typing.env_subst_lookup _ i f); try done.
+      rewrite (stlc_mu.typing.env_subst_lookup _ i f); try done.
+      { 
+
+
+
+
+
         iDestruct (big_sepL_lookup_acc _  i with "Hfs'") as "HHHH". apply Hf.
 
 
@@ -418,7 +417,7 @@ Section compat_cast_all.
 
 j/sep
         jkjjk
-
+      }
 
       + assert (Hi : i < length fs). rewrite -H. by eapply lookup_lt_Some.
         assert (Hi' : i >= length fs). by apply lookup_ge_None_1. exfalso. lia.
