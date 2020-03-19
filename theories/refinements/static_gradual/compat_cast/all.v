@@ -108,21 +108,56 @@ Section compat_cast_all.
         * iDestruct "Huu'" as (u u') "[% H]"; rewrite (refold_interp_unknown'); inversion H; clear H H1 H2 v v'.
           admit.
         * constructor.
-    - rewrite /𝓕c /𝓕. rewrite embed_no_subs. destruct G.
+    - rewrite /𝓕c /𝓕. rewrite embed_no_subs.
+      destruct G.
       + iDestruct "Hvv'" as "%". simpl in H. inversion H. rewrite H0 H1. clear v v' H H0 H1.
-        admit.
+        wp_head. asimpl. wp_value.
+        iExists (CastV UnitV _ _ (From_ground_to_unknown _ Ground_TUnit)). iSplitL. done.
+        rewrite unfold_fixpoint_interp_unknown1'. simpl. iModIntro.
+        iLeft. done. constructor.
       + iDestruct "Hvv'" as ((v1 , v1') (v2 , v2')) "[% [H1 H2]]". simpl in H; inversion H; clear H H1 H2 v v'.
-        admit.
-      + iDestruct "Hvv'" as "[H1 | H2]".
+        wp_head. asimpl. wp_value.
+        iExists (CastV (PairV v1' v2') _ _ (From_ground_to_unknown _ Ground_TProd)). iSplitL. done.
+        rewrite (unfold_fixpoint_interp_unknown1' [] (stlc_mu.lang.FoldV (stlc_mu.lang.InjLV (stlc_mu.lang.InjLV (stlc_mu.lang.InjRV (stlc_mu.lang.PairV v1 v2)))),
+    CastV (PairV v1' v2') (⋆ × ⋆) ⋆ (From_ground_to_unknown (⋆ × ⋆) Ground_TProd))).
+        iModIntro. iRight. iLeft.
+        iExists v1 , v1' , v2 , v2'. iSplit. done. iSplit; done.
+      + wp_head. asimpl. wp_value.
+        iExists (CastV v' _ _ (From_ground_to_unknown _ Ground_TSum)).
+        iSplitL. done. rewrite unfold_fixpoint_interp_unknown1'.
+        iModIntro. iRight. iRight. iLeft.
+        iDestruct "Hvv'" as "[H1 | H2]".
         * iDestruct "H1" as ((v1 , v1')) "[% H1]".
           simpl in H; inversion H; clear H H1 H2 v v'.
-          admit.
+          iLeft. iExists v1 , v1'. iSplit. done. auto.
         * iDestruct "H2" as ((v2 , v2')) "[% H2]".
           simpl in H; inversion H; clear H H1 H2 v v'.
-          admit.
-      + admit.
-      + admit.
-    - admit.
+          iRight. iExists v2 , v2'. iSplit. done. auto.
+        * constructor.
+      + iDestruct "Hvv'" as "#Hvv'". wp_head. asimpl. wp_value.
+        iExists (CastV v' _ _ (From_ground_to_unknown _ Ground_TArrow)). iSplitL. done.
+        rewrite unfold_fixpoint_interp_unknown1'.
+        iModIntro. iRight. iRight. iRight. iLeft.
+        iExists v , v'. iSplit. done. iModIntro. iModIntro.
+        iIntros (a a').
+        fold (interp_unknown_pre').
+        fold (interp_unknown' [] (a , a')).
+        fold (interp ⋆).
+        iIntros "#Haa'".
+        clear K'. iIntros (K') "Hv'a'".
+        iApply ("Hvv'" $! (a , a') with "Haa' Hv'a'"). constructor.
+      + wp_head. asimpl.
+        (** rewriting value relation for v and v' *)
+        rewrite fixpoint_interp_rec1_eq.
+        iDestruct "Hvv'" as ([u u']) "#[% Huu']". inversion H. clear v v' H H1 H2.
+        (** boring steps *)
+        iApply (wp_bind (fill $ [stlc_mu.lang.InjRCtx ; stlc_mu.lang.FoldCtx])).
+        wp_head. wp_value. simpl. wp_value.
+        iExists (CastV (FoldV u') _ _ (From_ground_to_unknown _ Ground_TRec)).
+        iSplitL. done.
+        rewrite (unfold_fixpoint_interp_unknown1' [] (stlc_mu.lang.FoldV (stlc_mu.lang.InjRV u), CastV (FoldV u') (TRec ⋆) ⋆ (From_ground_to_unknown (TRec ⋆) Ground_TRec))).
+        iModIntro. iRight. iRight. iRight. iRight.
+        iExists u , u'. iSplit; done.
     - admit.
     - iDestruct "Hvv'" as "%"; inversion H. simpl in *. rewrite H0 H1. clear v v' H H0 H1.
       asimpl. wp_head.

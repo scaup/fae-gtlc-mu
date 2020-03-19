@@ -240,7 +240,7 @@ Section logrel.
         )
 
       ∨ ((∃ v1 v1', ⌜ ww' = (embedV_Ground_TSum (stlc_mu.lang.InjLV v1) , castupV_TSum (InjLV v1')) ⌝ ∧ ▷ μRc (v1 , v1')) ∨
-         (∃ v2 v2', ⌜ ww' = (embedV_Ground_TSum (stlc_mu.lang.InjLV v2) , castupV_TSum (InjLV v2')) ⌝ ∧ ▷ μRc (v2 , v2'))
+         (∃ v2 v2', ⌜ ww' = (embedV_Ground_TSum (stlc_mu.lang.InjRV v2) , castupV_TSum (InjRV v2')) ⌝ ∧ ▷ μRc (v2 , v2'))
         )
       ∨ (∃ f f', ⌜ ww' = (embedV_Ground_TArrow f , castupV_TArrow f') ⌝ ∧
                 ▷ □ ( ∀ a  a', μRc (a , a') →
