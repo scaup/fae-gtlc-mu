@@ -403,26 +403,14 @@ Section compat_cast_all.
       (* iAssert (rel_cast_functions A fs) with "[Hfs']" as "Hfs". iSplit; done. *)
       destruct (fs !! i) as [f | abs] eqn:Hf.
       rewrite (stlc_mu.typing.env_subst_lookup _ i f); try done.
-      { 
-
-
-
-
-
-        iDestruct (big_sepL_lookup_acc _  i with "Hfs'") as "HHHH". apply Hf.
-
-
-        iDestruct (big_sepL_lookup_acc (∀ (v0 : stlc_mu.lang.val) (v'0 : val),
-            ⟦ TRec τl ⟧ [] (v0, v'0) → ⟦ TRec τr ⟧ₑ [] (f ( v0), Cast (# v'0) (TRec τl) (TRec τr))) _ i with "Hfs'") as "HHHH". apply Hf.
-
-j/sep
-        jkjjk
+      {
+        iDestruct (big_sepL2_lookup with "Hfs'") as "#Hf". exact pμτlμtrinA. exact Hf.
+        iApply ("Hf" $! v v' with "Hvv'"). done.
       }
-
-      + assert (Hi : i < length fs). rewrite -H. by eapply lookup_lt_Some.
-        assert (Hi' : i >= length fs). by apply lookup_ge_None_1. exfalso. lia.
-
-
+      { (* trivially impossible case *)
+       assert (Hi : i < length fs). rewrite -H. by eapply lookup_lt_Some.
+       assert (Hi' : i >= length fs). by apply lookup_ge_None_1. exfalso. lia.
+      }
   Admitted.
 
 

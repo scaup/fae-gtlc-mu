@@ -64,26 +64,20 @@ Section defs.
   (** We will want to assume these functions to be meaningful..,
       i.e. they properly relate to the casts happening on the right side *)
 
-  Definition rel_cast_functions A (fs : list stlc_mu.lang.val) : iProp Σ := ⌜length A = length fs⌝ ∗
-    [∗] (zip_with (fun p f =>
-    (∀ (v : stlc_mu.lang.val) (v' : cast_calculus.lang.val) ,
-      (⟦ p.1 ⟧ [] (v , v')) → (⟦ p.2 ⟧ₑ [] (((stlc_mu.lang.of_val f) (stlc_mu.lang.of_val v)) , Cast (# v') p.1 p.2)))%I)
-    A fs).
+  Definition rel_cast_functions A (fs : list stlc_mu.lang.val) : iProp Σ :=
+    ⌜length A = length fs⌝ ∗
+    [∗ list] a ; f ∈ A ; fs , (
+                           □ (∀ (v : stlc_mu.lang.val) (v' : cast_calculus.lang.val) ,
+                                 ⟦ a.1 ⟧ [] (v , v') → ⟦ a.2 ⟧ₑ [] ((stlc_mu.lang.of_val f v) , Cast (# v') a.1 a.2))
+                         )%I.
 
   Global Instance rel_cast_functions_persistent A fs :
     Persistent (rel_cast_functions A fs).
   Proof.
-  Admitted.
-
-
-(* "'[∗' 'list]' x1 ; x2 ∈ l1 ; l2 , P" :=  *)
-(* big_sepL2 (fun _ x1 x2 => P) l1 l2 : bi_scope *)
-
-
-(*   big_sepL2_lookup: *)
-
-
-(*     big_sepL2_lookup: *)
+    apply bi.sep_persistent; first by apply bi.pure_persistent.
+    apply big_sepL2_persistent. intros _ (τi , τf) f. simpl.
+    apply bi.intuitionistically_persistent.
+  Qed.
 
   (** The statement that the -- closed up -- back-translated casts behave appropriately.
       (We redefine it here to a new statement, making it a bit more amenable for proving.) *)
