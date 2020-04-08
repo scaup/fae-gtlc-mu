@@ -1,0 +1,19 @@
+- readme file (how to get started with opam...., which versions of coq/iris I am using...)
+- update laatste coq iris, specifieke versies in readme
+- zie dat het compileert
+
+- eerste heflt
+  + (bijna)nodige refactorings (backtranslation als value...)
+  + alle admits klaar hebben voor eerste helft
+
+- bewijs equivalentie consistencies
+  + higher-order stuff
+  + fill in...
+
+- eerste helft opschonen
+  + verwijder onnodige/duplicate definites
+  + voorspelbare namen...
+  + werken met scopes voor tussen twee talen
+  + tactic voor pure steps
+
+- tweede helft
