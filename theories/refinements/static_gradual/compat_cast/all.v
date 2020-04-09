@@ -76,4 +76,13 @@ Section compat_cast_all.
     rewrite (interp_closed' Δ τf). auto. auto.
   Admitted.
 
+
+  Lemma bin_log_related_omega Γ e' τ :
+    Γ ⊨ Ω ≤log≤ e' : τ.
+  Proof.
+    iIntros (Δ vvs ρ ?) "#[Hρ HΓ]"; iIntros (K) "Hj /=".
+    by iApply wp_Ω.
+  Qed.
+
+
 End compat_cast_all.

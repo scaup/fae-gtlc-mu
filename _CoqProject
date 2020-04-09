@@ -57,3 +57,7 @@ theories/refinements/static_gradual/compat_cast/sum_sum.v
 theories/refinements/static_gradual/compat_cast/prod_prod.v
 theories/refinements/static_gradual/compat_cast/arrow_arrow.v
 theories/refinements/static_gradual/compat_cast/identity.v
+theories/refinements/static_gradual/compat_cast/all.v
+
+
+theories/refinements/static_gradual/rel_ref_specs.v

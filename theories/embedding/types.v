@@ -11,3 +11,6 @@ Fixpoint embed_type (τ : stlc_mu.typing.type) : type :=
   | typing.TRec τb => TRec [| τb |]
   | typing.TVar x => TVar x
   end where "[| e |]" := (embed_type e).
+
+Lemma embed_through_unfold τ : [| τ.[typing.TRec τ/] |] = [| τ |].[TRec [| τ |]/].
+Admitted.
