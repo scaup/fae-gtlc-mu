@@ -374,7 +374,7 @@ Section logrel.
     rewrite lookup_zip_with; by simplify_option_eq.
   Qed.
 
-  Lemma interp_env_nil Δ : ⟦ [] ⟧* Δ [].
+  Lemma interp_env_nil Δ : ⊢ ⟦ [] ⟧* Δ [].
   Proof. iSplit; simpl; auto. Qed.
   Lemma interp_env_cons Δ Γ vvs τ vv :
     ⟦ τ :: Γ ⟧* Δ (vv :: vvs) ⊣⊢ ⟦ τ ⟧ Δ vv ∗ ⟦ Γ ⟧* Δ vvs.

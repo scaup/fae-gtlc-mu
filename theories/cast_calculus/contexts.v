@@ -84,8 +84,8 @@ Inductive typed_ctx_item :
      typed_ctx_item CTX_Unfold Γ (TRec τ) Γ τ.[(TRec τ)/]
   | TP_CTX_Cast Γ e τi τf :
       typed Γ e τi ->
-      Is_Closed τi -> Is_Closed τf ->
-      cons_stand 0 τi τf ->
+      TClosed τi -> TClosed τf ->
+      cons_stand τi τf ->
       typed_ctx_item (CTX_Cast τi τf) Γ τi Γ τf.
 
 Lemma typed_ctx_item_typed k Γ τ Γ' τ' e :

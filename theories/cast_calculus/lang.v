@@ -198,7 +198,7 @@ Inductive head_step : expr → state → list Empty_set → expr → state → l
     to_val e = Some v →
     ((Ground τ) -> False) →
     (¬ (τ = ⋆)) →
-    cons_stand 0 τ τG →
+    cons_stand τ τG →
     head_step
       (Cast e τ ⋆) σ []
       (Cast (Cast e τ τG) τG ⋆) σ []
@@ -206,7 +206,7 @@ Inductive head_step : expr → state → list Empty_set → expr → state → l
     to_val e = Some v →
     (notT (Ground τ)) →
     (¬ (τ = ⋆)) →
-    cons_stand 0 τ τG →
+    cons_stand τ τG →
     head_step
       (Cast e ⋆ τ) σ []
       (Cast (Cast e ⋆ τG) τG τ) σ []

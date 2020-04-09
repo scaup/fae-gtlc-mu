@@ -17,14 +17,12 @@ Inductive cons_struct (A : list (type * type)) : type -> type -> Type :=
       A ⊢ τG ~ ⋆
   (** factorization through ground types *)
   | consTauStar τ τG
-      (pUBτ : UB (length A) τ)
       (pτnG : (Ground τ -> False))
       (pτnStar : not (τ = ⋆))
       (pτSτG : (get_shape τ = Some τG))
       (pτConsτG : A ⊢ τ ~ τG) :
       A ⊢ τ ~ ⋆
   | consStarTau τ τG
-      (pUBτ : UB (length A) τ)
       (pτnG : (Ground τ -> False))
       (pτnStar : not (τ = ⋆))
       (pτSτG : (get_shape τ = Some τG))
@@ -61,16 +59,3 @@ Inductive cons_struct (A : list (type * type)) : type -> type -> Type :=
       (pμτlμtrinA : A !! i = Some (TRec τl, TRec τr)) :
       A ⊢ (TRec τl) ~ (TRec τr)
 where "A ⊢ τ ~ τ'" := (cons_struct A τ τ').
-
-(** Notes *) (*
-In the end, we are only concerned with [] ⊢ τ ~ τ' (τ and τ' closed).
-We need to consider derivation trees for this however (we are defining the backtranslation by induction on this relation)..
-
-The assumptions, (A : list Assumption), in this tree will satisfy very particular properties however.
-Every type will be "well-bounded"; that is, we will have UBA A.
-
-Given a derivation A ⊢ τl ~ τr as a subderivation of [] ⊢ τ ~ τ', we will also have that τ and τ' satisfy UB (length A).
-
-These properties do not follow for an arbitrary derivation A ⊢ τ1 ~ τ2; we need to impose them explicitly (using UBA and UB 0).
-
-Maybe later, it'll be more practical to make this properties intrinsic to the inductive type instead of carrying them around with us the whole time...? *)

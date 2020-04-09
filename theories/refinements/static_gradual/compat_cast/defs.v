@@ -68,7 +68,7 @@ Section defs.
     ⌜length A = length fs⌝ ∗
     [∗ list] a ; f ∈ A ; fs , (
                            □ (∀ (v : stlc_mu.lang.val) (v' : cast_calculus.lang.val) ,
-                                 ⟦ a.1 ⟧ [] (v , v') → ⟦ a.2 ⟧ₑ [] ((stlc_mu.lang.of_val f v) , Cast (# v') a.1 a.2))
+                                 ⟦ a.1 ⟧ [] (v , v') → ⟦ a.2 ⟧ₑ [] ((stlc_mu.lang.of_val f v) , Cast (v') a.1 a.2))
                          )%I.
 
   Global Instance rel_cast_functions_persistent A fs :
@@ -84,8 +84,8 @@ Section defs.
 
   Definition back_cast_ar {A} {τi τf} (pC : cons_struct A τi τf) :=
   ∀ ei' K' v v' fs, bi_entails
-                      (rel_cast_functions A fs ∗ interp τi [] (v, v') ∗ initially_inv ei' ∗ currently_half (fill K' (Cast (# v') τi τf)))
-                      (WP (𝓕c pC fs (stlc_mu.lang.of_val v)) {{ w, ∃ w', currently_half (fill K' (# w')) ∗ interp τf [] (w, w') }})%I.
+                      (rel_cast_functions A fs ∗ interp τi [] (v, v') ∗ initially_inv ei' ∗ currently_half (fill K' (Cast (cast_calculus.lang.of_val v') τi τf)))
+                      (WP (𝓕c pC fs (stlc_mu.lang.of_val v)) {{ w, ∃ w', currently_half (fill K' (cast_calculus.lang.of_val w')) ∗ interp τf [] (w, w') }})%I.
 
 
 End defs.

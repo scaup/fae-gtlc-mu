@@ -128,5 +128,7 @@ Section lang_rules.
   Proof. solve_pure_exec. Qed.
 
 
+ Ltac wp_head := iApply wp_pure_step_later; auto; iNext.
+
 
 End lang_rules.

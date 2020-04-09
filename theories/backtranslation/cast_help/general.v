@@ -10,10 +10,10 @@ Fixpoint 𝓕 {A : list (types.type * types.type)} {τi τf : cast_calculus.type
   match P with
   | consStarTGround _ τG G => extract τG G
   | consTGroundStar _ τG G => embed τG G
-  | consTauStar _ τ τG pUBτ pτnG pτnStar pτSτG pτConsτG =>
+  | consTauStar _ τ τG pτnG pτnStar pτSτG pτConsτG =>
     factorization_up
       (𝓕 pτConsτG) τG (get_shape_is_ground pτSτG)
-  | consStarTau _ τ τG pUBτ pτnG pτnStar pτSτG pτGConsτ =>
+  | consStarTau _ τ τG pτnG pτnStar pτSτG pτGConsτ =>
     factorization_down
       (𝓕 pτGConsτ) τG (get_shape_is_ground pτSτG)
   | consBaseBase _ => identity

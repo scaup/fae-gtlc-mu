@@ -15,43 +15,7 @@ Notation "⋆" := TUnknown : type_scope.
 Infix "×" := TProd (at level 150) : type_scope.
 Infix "+" := TSum : type_scope.
 
-Inductive UB (n : nat) : type -> Type :=
-| UBUnit : UB n TUnit
-| UBProd τ τ' : UB n τ -> UB n τ' -> UB n (TProd τ τ')
-| UBSum τ τ' : UB n τ -> UB n τ' -> UB n (TSum τ τ')
-| UBArrow τ τ' : UB n τ -> UB n τ' -> UB n (TArrow τ τ')
-| UBRec τ : UB (S n) τ -> UB n (TRec τ)
-| UBVar i : i < n -> UB n (TVar i)
-| UBStar : UB n ⋆.
-
-Lemma UBup τ (n : nat) (P : UB n τ) : UB (S n) τ.
-Proof.
-  generalize dependent n.
-  induction τ.
-  - constructor.
-  - constructor.
-      apply IHτ1; by inversion P.
-      apply IHτ2; by inversion P.
-  - constructor.
-      apply IHτ1; by inversion P.
-      apply IHτ2; by inversion P.
-  - constructor.
-      apply IHτ1; by inversion P.
-      apply IHτ2; by inversion P.
-  - constructor.
-      apply IHτ; by inversion P.
-  - intros. constructor. inversion P. lia.
-  - intros. constructor.
-Qed.
-
-Lemma UBupn τ (P : UB 0 τ) (n : nat) : UB n τ.
-Proof.
-  induction n.
-  auto.
-  by apply UBup.
-Qed.
-
-Definition Is_Unknown_dec (τ : type) : Decision (τ = ⋆).
+Instance Is_Unknown_dec (τ : type) : Decision (τ = ⋆).
 Proof.
   destruct τ.
   apply right; auto.
@@ -69,6 +33,8 @@ Instance Subst_type : Subst type. derive. Defined.
 Instance SubstLemmas_typer : SubstLemmas type. derive. Qed.
 
 Definition Is_Closed τ := forall τ', τ.[τ'/] = τ.
+
+Definition TClosed τ := forall σ, τ.[σ] = τ.
 
 Inductive Ground : type → Type :=
   | Ground_TUnit : Ground TUnit

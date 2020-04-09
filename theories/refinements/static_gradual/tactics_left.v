@@ -1,259 +1,286 @@
-From fae_gtlc_mu.refinements.static_gradual Require Export resources_right logical_relation.
-From fae_gtlc_mu.cast_calculus Require Export types typing.
 From fae_gtlc_mu.stlc_mu Require Export lang.
-From fae_gtlc_mu.cast_calculus Require Export lang.
-From fae_gtlc_mu.cast_calculus Require Export lang.
-From iris.algebra Require Import list.
-From iris.proofmode Require Import tactics.
+(* From iris.heap_lang Require Export lang. *)
+(* Set Default Proof Using "Type". *)
+(* Import heap_lang. *)
+
+(* Ltac reshape_expr e tac := *)
+(*   let rec go K e := *)
+(*       match e with *)
+(*       | _ => tac K e *)
+(*       (* | Var x => *) *)
+(*       (* | Lam e =>  *) *)
+(*       | App (of_val ?v1) ?e2 => go (AppRCtx v1 :: K) e2 *)
+(*       | App ?e1 ?e2 => match (to_val e1) with *)
+(*       (* | App ?e1 ?e2 => match (to_val e1) with *) *)
+(*                       (* | Some v1 => go (AppRCtx (LamV e1) :: K) e2 *) *)
+(*                       (* | None => go (AppLCtx e1 :: K) e2 *) *)
+(*                       (* end *) *)
+(*       (* | Unit => *) *)
+(*       | Pair (of_val ?v1) ?e2 => go (PairRCtx v1 :: K) e2 *)
+(*       (* | Pair ?e1 ?e2 => match (to_val e1) with *) *)
+(*                        (* | Some ?v1 => go (PairRCtx v1 :: K) e2 *) *)
+(*                        (* | None => go (PairLCtx e1 :: K) e2 *) *)
+(*                        (* end *) *)
+(*       | Fst ?e => go (FstCtx :: K) e *)
+(*       | Snd ?e => go (SndCtx :: K) e *)
+(*       | InjL ?e => go (InjLCtx :: K) e *)
+(*       | InjR ?e => go (InjRCtx :: K) e *)
+(*       | Case ?e0 ?e1 ?e2 => go (CaseCtx e1 e2 :: K) e0 *)
+(*       | Fold ?f => go (FoldCtx :: K) f *)
+(*       | Unfold ?f => go (UnfoldCtx :: K) f *)
+(*       end *)
+(*   in *)
+(*   go (@nil ectx_item) e. *)
+
+From iris.proofmode Require Import coq_tactics reduction.
+From iris.proofmode Require Export tactics.
+From iris.program_logic Require Import atomic.
+Set Default Proof Using "Type".
+Import uPred.
+
+(* From fae_gtlc_mu.cast_calculus Require Export types typing. *)
+(* From fae_gtlc_mu.cast_calculus Require Export lang. *)
+(* From fae_gtlc_mu.cast_calculus Require Export lang. *)
+(* From iris.algebra Require Import list. *)
+(* From iris.proofmode Require Import tactics. *)
 From iris.program_logic Require Import lifting.
+From fae_gtlc_mu.refinements.static_gradual Require Export resources_left.
+From fae_gtlc_mu.backtranslation.cast_help Require Export extract embed.
+
+
+Ltac fetch_eval e tac :=
+  let rec go K e :=
+      match e with
+      (* | Var x => *)
+      (* | Lam e =>  *)
+      | App (of_val ?v1) ?e2 => go (AppRCtx v1 :: K) e2
+      | App ?e1 ?e2 => go (AppLCtx e1 :: K) e2
+      (* | Unit => *)
+      | Pair (of_val ?v1) ?e2 => go (PairRCtx v1 :: K) e2
+      | Pair ?e1 ?e2 => go (PairLCtx e1 :: K) e2
+      | Fst ?e => go (FstCtx :: K) e
+      | Snd ?e => go (SndCtx :: K) e
+      | InjL ?e => go (InjLCtx :: K) e
+      | InjR ?e => go (InjRCtx :: K) e
+      | Case ?e0 ?e1 ?e2 => fail "testing"
+      (* | Case ?e0 ?e1 ?e2 => go (CaseCtx e1 e2 :: K) e0 *)
+      | Fold e => go (FoldCtx :: K) e
+      | Unfold e => go (UnfoldCtx :: K) e
+      | _ => tac K e
+      end
+  in
+  go (@nil ectx_item) e.
+
+
+
+
+Ltac wp_step :=
+  iStartProof;
+  lazymatch goal with
+  | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
+    let e := eval simpl in e in
+        fetch_eval e ltac:(fun K e' =>
+                              iApply (wp_bind (fill K))
+                          (* [iSolveTC                       (* PureExec *) *)
+                          (* |iSolveTC                       (* IntoLaters *) *)
+                          )
+        || fail "wp_pure: cannot finot a redex"
+  | _ => fail "wp_pure: not a 'wp'"
+  end.
+
+
+
+
 
 Ltac wp_head := iApply wp_pure_step_later; auto; iNext.
 Ltac wp_value := iApply wp_value.
 
-(* Section tactics_left. *)
-(*   Context `{!heapG Σ,!gradRN Σ}. *)
-(*   Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iPropO Σ). *)
-(*   (* Implicit Types e : stlc_mu.lang.expr. *) *)
-(*   Local Hint Resolve to_of_val : core. *)
+(** We are working with deterministic programs; we should have a tactic wp_step *)
 
-(*   Local Tactic Notation "smart_wp_bind" uconstr(ctx) ident(v) ident(w) *)
-(*         constr(Hv) uconstr(Hp) := *)
-(*     iApply (wp_bind (fill [ctx])); *)
-(*     iApply (wp_wand with "[-]"); *)
-(*       [iApply Hp; iFrame "#"; trivial|]; *)
-(*     iIntros (v); iDestruct 1 as (w) Hv. *)
 
-(*   (* Put all quantifiers at the outer level *) *)
-(*   Lemma bin_log_related_alt {Γ e e' τ} : Γ ⊨ e ≤log≤ e' : τ → ∀ Δ vvs ei' K', *)
-(*     env_Persistent Δ → *)
-(*     initially_inv ei' ∗ ⟦ Γ ⟧* Δ vvs ∗ currently_half (fill K' (e'.[cast_calculus.typing.env_subst (vvs.*2)])) *)
-(*     ⊢ WP e.[stlc_mu.typing.env_subst (vvs.*1)] {{ v, ∃ v', *)
-(*         currently_half (fill K' (cast_calculus.lang.of_val v')) ∗ interp τ Δ (v, v') }}. *)
+
+
+Lemma tac_wp_expr_eval `{!heapG Σ} Δ s E Φ e e' :
+  (∀ (e'':=e'), e = e'') →
+  envs_entails Δ (WP e' @ s; E {{ Φ }}) → envs_entails Δ (WP e @ s; E {{ Φ }}).
+Proof. by intros ->. Qed.
+(* Lemma tac_twp_expr_eval `{!heapG Σ} Δ s E Φ e e' : *)
+(*   (∀ (e'':=e'), e = e'') → *)
+(*   envs_entails Δ (WP e' @ s; E [{ Φ }]) → envs_entails Δ (WP e @ s; E [{ Φ }]). *)
+(* Proof. by intros ->. Qed. *)
+
+Tactic Notation "wp_expr_eval" tactic3(t) :=
+  iStartProof;
+  lazymatch goal with
+  | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
+    eapply tac_wp_expr_eval;
+    [let x := fresh in intros x; t; unfold x; reflexivity|]
+  | _ => fail "wp_expr_eval: not a 'wp'"
+  end.
+
+Lemma tac_wp_pure `{!heapG Σ} Δ Δ' s E e1 e2 φ n Φ :
+  PureExec φ n e1 e2 →
+  φ →
+  MaybeIntoLaterNEnvs n Δ Δ' →
+  envs_entails Δ' (WP e2 @ s; E {{ Φ }}) →
+  envs_entails Δ (WP e1 @ s; E {{ Φ }}).
+Proof.
+  rewrite envs_entails_eq=> ??? HΔ'. rewrite into_laterN_env_sound /=.
+  rewrite HΔ' -lifting.wp_pure_step_later //.
+Qed.
+
+Lemma tac_wp_value `{!heapG Σ} Δ s E Φ v :
+  envs_entails Δ (Φ v) → envs_entails Δ (WP (of_val v) @ s; E {{ Φ }}).
+Proof. rewrite envs_entails_eq=> ->. by apply wp_value. Qed.
+(* Lemma tac_twp_value `{!heapG Σ} Δ s E Φ v : *)
+(*   envs_entails Δ (Φ v) → envs_entails Δ (WP (Val v) @ s; E [{ Φ }]). *)
+(* Proof. rewrite envs_entails_eq=> ->. by apply twp_value. Qed. *)
+
+Ltac wp_expr_simpl := wp_expr_eval simpl.
+
+Ltac wp_value_head :=
+  first [apply tac_wp_value].
+
+Ltac wp_finish :=
+  wp_expr_simpl;      (* simplify occurences of subst/fill *)
+  try wp_value_head;  (* in case we have reached a value, get rid of the WP *)
+  pm_prettify.        (* prettify ▷s caused by [MaybeIntoLaterNEnvs] and
+                         λs caused by wp_value *)
+
+Ltac solve_vals_compare_safe :=
+  (* The first branch is for when we have [vals_compare_safe] in the context.
+     The other two branches are for when either one of the branches reduces to
+     [True] or we have it in the context. *)
+  fast_done || (left; fast_done) || (right; fast_done).
+
+(** The argument [efoc] can be used to specify the construct that should be
+      reduced. For example, you can write [wp_pure (EIf _ _ _)], which will search
+      for an [EIf _ _ _] in the expression, and reduce it.
+
+      The use of [open_constr] in this tactic is essential. It will convert all holes
+      (i.e. [_]s) into evars, that later get unified when an occurences is found
+      (see [unify e' efoc] in the code below). *)
+
+(* Tactic Notation "wp_pure" open_constr(efoc) := *)
+(*   iStartProof; *)
+(*   lazymatch goal with *)
+(*   | |- envs_entails _ (wp ?s ?E ?e ?Q) => *)
+(*     let e := eval simpl in e in *)
+(*         reshape_expr e ltac:(fun K e' => *)
+(*                                unify e' efoc; *)
+(*                                eapply (tac_wp_pure _ _ _ _ (fill K e')); *)
+(*                                [iSolveTC                       (* PureExec *) *)
+(*                                |try solve_vals_compare_safe    (* The pure condition for PureExec -- handles trivial goals, including [vals_compare_safe] *) *)
+(*                                |iSolveTC                       (* IntoLaters *) *)
+(*                                |wp_finish                      (* new goal *) *)
+(*                             ]) *)
+(*         || fail "wp_pure: cannot find" efoc "in" e "or" efoc "is not a redex" *)
+(*   | _ => fail "wp_pure: not a 'wp'" *)
+(*   end. *)
+
+(* TODO: do this in one go, without [repeat]. *)
+(* Ltac wp_pures := *)
+(*   iStartProof; *)
+(*   repeat (wp_pure _; []). (* The `;[]` makes sure that no side-condition *)
+(*                              magically spawns. *) *)
+
+(** Unlike [wp_pures], the tactics [wp_rec] and [wp_lam] should also reduce
+lambdas/recs that are hidden behind a definition, i.e. they should use
+[AsRecV_recv] as a proper instance instead of a [Hint Extern].
+
+We achieve this by putting [AsRecV_recv] in the current environment so that it
+can be used as an instance by the typeclass resolution system. We then perform
+the reduction, and finally we clear this new hypothesis. *)
+(* Tactic Notation "wp_rec" := *)
+(*   let H := fresh in *)
+(*   assert (H := AsRecV_recv); *)
+(*   wp_pure (App _ _); *)
+(*   clear H. *)
+
+(* Tactic Notation "wp_if" := wp_pure (If _ _ _). *)
+(* Tactic Notation "wp_if_true" := wp_pure (If (LitV (LitBool true)) _ _). *)
+(* Tactic Notation "wp_if_false" := wp_pure (If (LitV (LitBool false)) _ _). *)
+(* Tactic Notation "wp_unop" := wp_pure (UnOp _ _). *)
+(* Tactic Notation "wp_binop" := wp_pure (BinOp _ _ _). *)
+(* Tactic Notation "wp_op" := wp_unop || wp_binop. *)
+(* Tactic Notation "wp_lam" := wp_rec. *)
+(* Tactic Notation "wp_let" := wp_pure (Rec BAnon (BNamed _) _); wp_lam. *)
+(* Tactic Notation "wp_seq" := wp_pure (Rec BAnon BAnon _); wp_lam. *)
+(* Tactic Notation "wp_proj" := wp_pure (Fst _) || wp_pure (Snd _). *)
+(* Tactic Notation "wp_case" := wp_pure (Case _ _ _). *)
+(* Tactic Notation "wp_match" := wp_case; wp_pure (Rec _ _ _); wp_lam. *)
+(* Tactic Notation "wp_inj" := wp_pure (InjL _) || wp_pure (InjR _). *)
+(* Tactic Notation "wp_pair" := wp_pure (Pair _ _). *)
+(* Tactic Notation "wp_closure" := wp_pure (Rec _ _ _). *)
+
+(* Lemma tac_wp_bind `{!heapG Σ} K Δ s E Φ e f : *)
+(*   f = (λ e, fill K e) → (* as an eta expanded hypothesis so that we can `simpl` it *) *)
+(*   envs_entails Δ (WP e @ s; E {{ v, WP f (Val v) @ s; E {{ Φ }} }})%I → *)
+(*   envs_entails Δ (WP fill K e @ s; E {{ Φ }}). *)
+(* Proof. rewrite envs_entails_eq=> -> ->. by apply: wp_bind. Qed. *)
+(* Lemma tac_twp_bind `{!heapG Σ} K Δ s E Φ e f : *)
+(*   f = (λ e, fill K e) → (* as an eta expanded hypothesis so that we can `simpl` it *) *)
+(*   envs_entails Δ (WP e @ s; E [{ v, WP f (Val v) @ s; E [{ Φ }] }])%I → *)
+(*   envs_entails Δ (WP fill K e @ s; E [{ Φ }]). *)
+(* Proof. rewrite envs_entails_eq=> -> ->. by apply: twp_bind. Qed. *)
+
+(* Ltac wp_bind_core K := *)
+(*   lazymatch eval hnf in K with *)
+(*   | [] => idtac *)
+(*   | _ => eapply (tac_wp_bind K); [simpl; reflexivity|reduction.pm_prettify] *)
+(*   end. *)
+(* Ltac twp_bind_core K := *)
+(*   lazymatch eval hnf in K with *)
+(*   | [] => idtac *)
+(*   | _ => eapply (tac_twp_bind K); [simpl; reflexivity|reduction.pm_prettify] *)
+(*   end. *)
+
+(* Tactic Notation "wp_bind" open_constr(efoc) := *)
+(*   iStartProof; *)
+(*   lazymatch goal with *)
+(*   | |- envs_entails _ (wp ?s ?E ?e ?Q) => *)
+(*     reshape_expr e ltac:(fun K e' => unify e' efoc; wp_bind_core K) *)
+(*     || fail "wp_bind: cannot find" efoc "in" e *)
+(*   | |- envs_entails _ (twp ?s ?E ?e ?Q) => *)
+(*     reshape_expr e ltac:(fun K e' => unify e' efoc; twp_bind_core K) *)
+(*     || fail "wp_bind: cannot find" efoc "in" e *)
+(*   | _ => fail "wp_bind: not a 'wp'" *)
+(*   end. *)
+
+(* Section compat_cast_all. *)
+(*   Context `{!heapG Σ}. *)
+
+
+
+(*   Lemma wp_extract_TUnit_embed_TProd v1 v2 Φ : *)
+(*     (True -∗ WP (extract_TUnit (embedV_Ground_TProd (stlc_mu.lang.PairV v1 v2))) {{ Φ }})%I. *)
 (*   Proof. *)
-(*     iIntros (Hlog Δ vvs K ρ ?) "[#Hρ [HΓ Hj]]". asimpl. *)
-(*     iApply (Hlog with "[HΓ]"); iFrame. eauto. *)
-(*   Qed. *)
+(*     iIntros (_). *)
+(*     rewrite /extract_TUnit /embedV_Ground_TProd. *)
+(*     wp_pure _. *)
+(*     wp_pure _. *)
+(*     wp_pure _. *)
+(*     wp_pure _. *)
+(*     wp_pure _. *)
+(*     wp_pure _. *)
+(*     wp_pure (Unfold (Fold _)). *)
+(*     wp_pure (Case _ _ _). *)
+(*     wp_pure (Case _ _ _). *)
+(*     wp_pure (Case _ _ _). *)
 
-(*   Notation "'` H" := (bin_log_related_alt H) (at level 8). *)
-
-(*   Lemma bin_log_related_var Γ x τ : *)
-(*     Γ !! x = Some τ → Γ ⊨ stlc_mu.lang.Var x ≤log≤ cast_calculus.lang.Var x : τ. *)
-(*   Proof. *)
-(*     iIntros (? Δ vvs ρ ?) "[#Hρ #HΓ]". iIntros (K) "Hj /=". *)
-(*     iDestruct (interp_env_Some_l with "HΓ") as ([v v']) "[Heq Hv]"; first done. *)
-(*     iDestruct "Heq" as %Heq. *)
-(*     erewrite !stlc_mu.typing.env_subst_lookup; rewrite ?list_lookup_fmap ?Heq; eauto. *)
-(*     erewrite !cast_calculus.typing.env_subst_lookup; rewrite ?list_lookup_fmap ?Heq; eauto. *)
-(*     iApply wp_value. eauto. *)
-(*   Qed. *)
-
-(*   Lemma bin_log_related_unit Γ : Γ ⊨ stlc_mu.lang.Unit ≤log≤ cast_calculus.lang.Unit : TUnit. *)
-(*   Proof. *)
-(*     iIntros (Δ vvs ρ ?) "#[Hρ HΓ]". iIntros (K) "Hj /=". *)
-(*     iApply wp_value. iExists UnitV; eauto. *)
-(*   Qed. *)
-
-(*   Lemma bin_log_related_pair Γ e1 e2 e1' e2' τ1 τ2 *)
-(*       (IHHtyped1 : Γ ⊨ e1 ≤log≤ e1' : τ1) *)
-(*       (IHHtyped2 : Γ ⊨ e2 ≤log≤ e2' : τ2) : *)
-(*     Γ ⊨ stlc_mu.lang.Pair e1 e2 ≤log≤ Pair e1' e2' : TProd τ1 τ2. *)
-(*   Proof. *)
-(*     iIntros (Δ vvs ρ ?) "#[Hρ HΓ]"; iIntros (K) "Hj /=". *)
-(*     smart_wp_bind (stlc_mu.lang.PairLCtx e2.[stlc_mu.typing.env_subst _]) v v' "[Hv #Hiv]" *)
-(*       ('`IHHtyped1 _ _ _ ((PairLCtx e2'.[env_subst _]) :: K)). *)
-(*     smart_wp_bind (stlc_mu.lang.PairRCtx v) w w' "[Hw #Hiw]" *)
-(*       ('`IHHtyped2 _ _ _ ((PairRCtx v') :: K)). *)
-(*     iApply wp_value. *)
-(*     iExists (PairV v' w'); iFrame "Hw". *)
-(*     iExists (v, v'), (w, w'); simpl; repeat iSplit; trivial. *)
-(*   Qed. *)
-
-(*   Lemma bin_log_related_fst Γ e e' τ1 τ2 *)
-(*       (IHHtyped : Γ ⊨ e ≤log≤ e' : TProd τ1 τ2) : *)
-(*     Γ ⊨ stlc_mu.lang.Fst e ≤log≤ Fst e' : τ1. *)
-(*   Proof. *)
-(*     iIntros (Δ vvs ρ ?) "[#Hρ #HΓ]"; iIntros (K) "Hj /=". *)
-(*     smart_wp_bind (stlc_mu.lang.FstCtx) v v' "[Hv #Hiv]" ('`IHHtyped _ _ _ (FstCtx :: K)); cbn. *)
-(*     iDestruct "Hiv" as ([w1 w1'] [w2 w2']) "#[% [Hw1 Hw2]]"; simplify_eq. *)
-(*     iMod (step_fst _ _ K (of_val w1') (of_val w2') with "[-]") as "Hw"; eauto. *)
-(*     iApply wp_pure_step_later; auto. iApply wp_value; auto. *)
-(*   Qed. *)
-
-(*   Lemma bin_log_related_snd Γ e e' τ1 τ2 *)
-(*       (IHHtyped : Γ ⊨ e ≤log≤ e' : TProd τ1 τ2) : *)
-(*     Γ ⊨ stlc_mu.lang.Snd e ≤log≤ Snd e' : τ2. *)
-(*   Proof. *)
-(*     iIntros (Δ vvs ρ ?) "#[Hρ HΓ]"; iIntros (K) "Hj /=". *)
-(*     smart_wp_bind (stlc_mu.lang.SndCtx) v v' "[Hv #Hiv]" ('`IHHtyped _ _ _ (SndCtx :: K)); cbn. *)
-(*     iDestruct "Hiv" as ([w1 w1'] [w2 w2']) "#[% [Hw1 Hw2]]"; simplify_eq. *)
-(*     iMod (step_snd _ _ K (of_val w1') (of_val w2') with "[-]") as "Hw"; eauto. *)
-(*     iApply wp_pure_step_later; auto. iApply wp_value; auto. *)
-(*   Qed. *)
-
-(*   Lemma bin_log_related_injl Γ e e' τ1 τ2 *)
-(*       (IHHtyped : Γ ⊨ e ≤log≤ e' : τ1) : *)
-(*     Γ ⊨ stlc_mu.lang.InjL e ≤log≤ InjL e' : (TSum τ1 τ2). *)
-(*   Proof. *)
-(*     iIntros (Δ vvs ρ ?) "#[Hρ HΓ]"; iIntros (K) "Hj /=". *)
-(*     smart_wp_bind (stlc_mu.lang.InjLCtx) v v' "[Hv #Hiv]" *)
-(*       ('`IHHtyped _ _ _ (InjLCtx :: K)); cbn. *)
-(*     iApply wp_value. repeat rewrite /= to_of_val. eauto. *)
-(*     iExists (InjLV v'); iFrame "Hv". *)
-(*     iLeft; iExists (_,_); eauto 10. *)
-(*   Qed. *)
-
-(*   Lemma bin_log_related_injr Γ e e' τ1 τ2 *)
-(*       (IHHtyped : Γ ⊨ e ≤log≤ e' : τ2) : *)
-(*     Γ ⊨ stlc_mu.lang.InjR e ≤log≤ InjR e' : TSum τ1 τ2. *)
-(*   Proof. *)
-(*     iIntros (Δ vvs ρ ?) "#[Hρ HΓ]"; iIntros (K) "Hj /=". *)
-(*     smart_wp_bind (stlc_mu.lang.InjRCtx) v v' "[Hv #Hiv]" *)
-(*       ('`IHHtyped _ _ _ (InjRCtx :: K)); cbn. *)
-(*     iApply wp_value. repeat rewrite /= to_of_val. eauto. *)
-(*     iExists (InjRV v'); iFrame "Hv". *)
-(*     iRight; iExists (_,_); eauto 10. *)
-(*   Qed. *)
-
-(*   Lemma bin_log_related_case Γ (e0 e1 e2 : stlc_mu.lang.expr) (e0' e1' e2' : cast_calculus.lang.expr) τ1 τ2 τ3 *)
-(*       (Hclosed2 : ∀ f, e1.[upn (S (length Γ)) f] = e1) *)
-(*       (Hclosed3 : ∀ f, e2.[upn (S (length Γ)) f] = e2) *)
-(*       (Hclosed2' : ∀ f, e1'.[upn (S (length Γ)) f] = e1') *)
-(*       (Hclosed3' : ∀ f, e2'.[upn (S (length Γ)) f] = e2') *)
-(*       (IHHtyped1 : Γ ⊨ e0 ≤log≤ e0' : TSum τ1 τ2) *)
-(*       (IHHtyped2 : τ1 :: Γ ⊨ e1 ≤log≤ e1' : τ3) *)
-(*       (IHHtyped3 : τ2 :: Γ ⊨ e2 ≤log≤ e2' : τ3) : *)
-(*     Γ ⊨ stlc_mu.lang.Case e0 e1 e2 ≤log≤ Case e0' e1' e2' : τ3. *)
-(*   Proof. *)
-(*     iIntros (Δ vvs ρ ?) "#[Hρ HΓ]"; iIntros (K) "Hj /=". *)
-(*     iDestruct (interp_env_length with "HΓ") as %?. *)
-(*     smart_wp_bind (stlc_mu.lang.CaseCtx _ _) v v' "[Hv #Hiv]" *)
-(*       ('`IHHtyped1 _ _ _ ((CaseCtx _ _) :: K)); cbn. *)
-(*     iDestruct "Hiv" as "[Hiv|Hiv]". *)
-(*     - iDestruct "Hiv" as ([w w']) "[% Hw]"; simplify_eq. *)
-(*       iMod (step_case_inl _ _ K (of_val w') with "[-]") as "Hz"; eauto. *)
-(*       simpl. *)
-(*       iApply wp_pure_step_later; auto 1 using to_of_val. iNext. *)
-(*       asimpl. iApply ('`IHHtyped2 _ ((w,w') :: vvs)); repeat iSplit; eauto. *)
-(*       iApply interp_env_cons; auto. *)
-(*     - iDestruct "Hiv" as ([w w']) "[% Hw]"; simplify_eq. *)
-(*       iMod (step_case_inr _ _ K (of_val w') with "[-]") as "Hz"; eauto. *)
-(*       simpl. *)
-(*       iApply wp_pure_step_later; auto 1 using to_of_val. iNext. *)
-(*       asimpl. iApply ('`IHHtyped3 _ ((w,w') :: vvs)); repeat iSplit; eauto. *)
-(*       iApply interp_env_cons; auto. *)
-(*   Qed. *)
-
-(*   Lemma bin_log_related_lam Γ (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) τ1 τ2 *)
-(*       (Hclosed : ∀ f, e.[upn (S (length Γ)) f] = e) *)
-(*       (Hclosed' : ∀ f, e'.[upn (S (length Γ)) f] = e') *)
-(*       (IHHtyped : τ1 :: Γ ⊨ e ≤log≤ e' : τ2) : *)
-(*     Γ ⊨ stlc_mu.lang.Lam e ≤log≤ Lam e' : TArrow τ1 τ2. *)
-(*   Proof. *)
-(*     iIntros (Δ vvs ρ ?) "#[Hρ HΓ]"; iIntros (K) "Hj /=". *)
-(*     iApply wp_value. iExists (LamV _). iIntros "{$Hj} !#". *)
-(*     iIntros ([v v']) "#Hiv". iIntros (K') "Hj". *)
-(*     iDestruct (interp_env_length with "HΓ") as %?. *)
-(*     iApply wp_pure_step_later; auto 1 using to_of_val. iNext. *)
-(*     iMod (step_lam _ _ K' _ (of_val v') with "[-]") as "Hz"; eauto. *)
-(*     asimpl. iApply ('`IHHtyped _ ((v,v') :: vvs)); repeat iSplit; eauto. *)
-(*     iApply interp_env_cons; iSplit; auto. *)
-(*   Qed. *)
-
-(*   Lemma bin_log_related_app Γ e1 e2 e1' e2' τ1 τ2 *)
-(*       (IHHtyped1 : Γ ⊨ e1 ≤log≤ e1' : TArrow τ1 τ2) *)
-(*       (IHHtyped2 : Γ ⊨ e2 ≤log≤ e2' : τ1) : *)
-(*     Γ ⊨ stlc_mu.lang.App e1 e2 ≤log≤ App e1' e2' :  τ2. *)
-(*   Proof. *)
-(*     iIntros (Δ vvs ρ ?) "#[Hρ HΓ]"; iIntros (K) "Hj /=". *)
-(*     smart_wp_bind (stlc_mu.lang.AppLCtx (e2.[stlc_mu.typing.env_subst (vvs.*1)])) v v' "[Hv #Hiv]" *)
-(*       ('`IHHtyped1 _ _ _ (((AppLCtx (e2'.[env_subst (vvs.*2)]))) :: K)); cbn. *)
-(*     smart_wp_bind (stlc_mu.lang.AppRCtx v) w w' "[Hw #Hiw]" *)
-(*                   ('`IHHtyped2 _ _ _ ((AppRCtx v') :: K)); cbn. *)
-(*     iApply ("Hiv" $! (w, w') with "Hiw"); simpl; eauto. *)
-(*   Qed. *)
-
-(*   Lemma bin_log_related_fold Γ e e' τ *)
-(*       (IHHtyped : Γ ⊨ e ≤log≤ e' : τ.[(TRec τ)/]) : *)
-(*     Γ ⊨ stlc_mu.lang.Fold e ≤log≤ cast_calculus.lang.Fold e' : TRec τ. *)
-(*   Proof. *)
-(*     iIntros (Δ vvs ρ ?) "#[Hρ HΓ]"; iIntros (K) "Hj /=". *)
-(*     iApply (wp_bind (fill [stlc_mu.lang.FoldCtx])). *)
-(*     iApply (wp_wand with "[Hj]"). iApply ('`IHHtyped _ _ _ (FoldCtx :: K)). iFrame. auto. *)
-(*     iIntros (v); iDestruct 1 as (v') "[Hv #Hiv]". *)
-(*     iApply wp_value. *)
-(*     iExists (FoldV v'). iFrame "Hv". *)
-(*     rewrite fixpoint_interp_rec1_eq /= -interp_subst. *)
-(*     iAlways. iExists (_, _). eauto. *)
-(*   Qed. *)
-
-(*   Lemma bin_log_related_unfold Γ e e' τ *)
-(*       (IHHtyped : Γ ⊨ e ≤log≤ e' : TRec τ) : *)
-(*     Γ ⊨ stlc_mu.lang.Unfold e ≤log≤ Unfold e' : τ.[(TRec τ)/]. *)
-(*   Proof. *)
-(*     iIntros (Δ vvs ρ ?) "#[Hρ HΓ]"; iIntros (K) "Hj /=". *)
-(*     iApply (wp_bind (fill [stlc_mu.lang.UnfoldCtx])). *)
-(*     iApply (wp_wand with "[Hj]"). iApply ('`IHHtyped _ _ _ (UnfoldCtx :: K)). iFrame. auto. *)
-(*     iIntros (v). iDestruct 1 as (v') "[Hw #Hiw]". *)
-(*     simpl. *)
-(*     rewrite /= fixpoint_interp_rec1_eq /=. *)
-(*     change (fixpoint _) with (interp (TRec τ) Δ). *)
-(*     iDestruct "Hiw" as ([w w']) "#[% Hiz]"; simplify_eq/=. *)
-(*     iMod (step_Fold _ _ K (of_val w') with "[-]") as "Hz"; eauto. *)
-(*     iApply wp_pure_step_later; cbn; auto. *)
-(*     iNext. iApply wp_value; auto. iExists _; iFrame "Hz". *)
-(*       by rewrite -interp_subst. *)
-(*   Qed. *)
+(*     wp_step. wp_value. simpl. *)
+(*     wp_step. wp_value. simpl. *)
+(*     wp_step. wp_value. simpl. *)
 
 
-(*   (* Theorem binary_fundamental_embedding Γ (e : stlc_mu.lang.expr) τ : *) *)
-(*   (*   Γ ⊢ₛ e : τ → Γ ⊨ e ≤log≤ e : τ. *) *)
-(*   (* Proof. *) *)
-(*   (*   induction 1. *) *)
-(*   (*   - by apply bin_log_related_var. *) *)
-(*   (*   - by apply bin_log_related_unit. *) *)
-(*   (*   - apply bin_log_related_pair; eauto. *) *)
-(*   (*   - eapply bin_log_related_fst; eauto. *) *)
-(*   (*   - eapply bin_log_related_snd; eauto. *) *)
-(*   (*   - eapply bin_log_related_injl; eauto. *) *)
-(*   (*   - eapply bin_log_related_injr; eauto. *) *)
-(*   (*   - eapply bin_log_related_case; eauto; *) *)
-(*   (*       match goal with H : _ |- _ => eapply (typed_n_closed _ _ _ H) end. *) *)
-(*   (*   - eapply bin_log_related_lam; eauto; *) *)
-(*   (*       match goal with H : _ |- _ => eapply (typed_n_closed _ _ _ H) end. *) *)
-(*   (*   - eapply bin_log_related_app; eauto. *) *)
-(*   (*   - eapply bin_log_related_tlam; eauto with typeclass_instances. *) *)
-(*   (*   - eapply bin_log_related_tapp; eauto. *) *)
-(*   (*   - eapply bin_log_related_fold; eauto. *) *)
-(*   (*   - eapply bin_log_related_unfold; eauto. *) *)
-(*   (*   - eapply bin_log_related_alloc; eauto. *) *)
-(*   (*   - eapply bin_log_related_load; eauto. *) *)
-(*   (*   - eapply bin_log_related_store; eauto. *) *)
-(*   (* Qed. *) *)
 
-(*   (* Theorem binary_fundamental_embedding Γ e τ : *) *)
-(*   (*   Γ ⊢ₜ e : τ → Γ ⊨ e ≤log≤ e : τ. *) *)
-(*   (* Proof. *) *)
-(*   (*   induction 1. *) *)
-(*   (*   - by apply bin_log_related_var. *) *)
-(*   (*   - by apply bin_log_related_unit. *) *)
-(*   (*   - apply bin_log_related_pair; eauto. *) *)
-(*   (*   - eapply bin_log_related_fst; eauto. *) *)
-(*   (*   - eapply bin_log_related_snd; eauto. *) *)
-(*   (*   - eapply bin_log_related_injl; eauto. *) *)
-(*   (*   - eapply bin_log_related_injr; eauto. *) *)
-(*   (*   - eapply bin_log_related_case; eauto; *) *)
-(*   (*       match goal with H : _ |- _ => eapply (typed_n_closed _ _ _ H) end. *) *)
-(*   (*   - eapply bin_log_related_lam; eauto; *) *)
-(*   (*       match goal with H : _ |- _ => eapply (typed_n_closed _ _ _ H) end. *) *)
-(*   (*   - eapply bin_log_related_app; eauto. *) *)
-(*   (*   - eapply bin_log_related_tlam; eauto with typeclass_instances. *) *)
-(*   (*   - eapply bin_log_related_tapp; eauto. *) *)
-(*   (*   - eapply bin_log_related_fold; eauto. *) *)
-(*   (*   - eapply bin_log_related_unfold; eauto. *) *)
-(*   (*   - eapply bin_log_related_alloc; eauto. *) *)
-(*   (*   - eapply bin_log_related_load; eauto. *) *)
-(*   (*   - eapply bin_log_related_store; eauto. *) *)
-(*   (* Qed. *) *)
+(*  Lemma wp_fix'' (f : stlc_mu.lang.expr) Φ : *)
 
 
-(* End fundamental. *)
+
+(*    (▷ ▷ WP f (stlc_mu.lang.Lam (rename (+1) (Fix'' f) (stlc_mu.lang.Var 0)))   {{ Φ }} -∗ (WP (Fix'' f) {{ Φ }}))%I. *)
+
+
+
+
+
