@@ -25,3 +25,8 @@ Inductive cons_stand : type -> type -> Type :=
     cons_stand (TVar i) (TVar i)
 | GenSymRec (τ τ' : type) (P : cons_stand τ τ') :
     cons_stand (TRec τ) (TRec τ').
+
+
+Lemma cons_stand_dec τ1 τ2 : TDecision (cons_stand τ1 τ2).
+Proof.
+Admitted.

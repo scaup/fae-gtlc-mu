@@ -1,10 +1,7 @@
 From fae_gtlc_mu.cast_calculus Require Import lang.
-From fae_gtlc_mu.stlc_mu Require Import lang lib.universe lib.cast_emulations.
-(* From fae_gtlc_mu Require Import stlc_mu.typing cast_calculus.typing. *)
+From fae_gtlc_mu.stlc_mu Require Import lang.
+From fae_gtlc_mu.backtranslation Require Import cast_help.general.
 
-(* expr defaults to stlc_mu.lang..., because it is loaded later *)
-
-(** n keeps track under how many binders we have gone through *)
 Reserved Notation "<< e >>" (at level 4, e at next level).
 Fixpoint backtranslate_expr (e : cast_calculus.lang.expr) : expr :=
   match e with
@@ -20,7 +17,10 @@ Fixpoint backtranslate_expr (e : cast_calculus.lang.expr) : expr :=
   | cast_calculus.lang.Case e0 e1 e2 => Case <<e0>> <<e1>> <<e2>>
   | cast_calculus.lang.Fold e => Fold <<e>>
   | cast_calculus.lang.Unfold e => Unfold <<e>>
-  | Cast e τi τf => match 
-    (𝓕 τi τf ) <<e>>
+  | Cast e τi τf =>
+    match (cons_stand_dec τi τf, decide (TClosed τi) , decide (TClosed τf)) with
+    | (inl pC , left pi, left pf) => 𝓕c (cons_co τi pi τf pf pC) []
+    | _ => Unit
+    end
   | Blame => Ω
   end where "<< e >>" := (backtranslate_expr e).

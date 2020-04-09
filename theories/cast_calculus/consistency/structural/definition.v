@@ -1,6 +1,6 @@
 From Autosubst Require Export Autosubst.
 From fae_gtlc_mu.cast_calculus Require Export types.
-(* From fae_gtlc_mu.cast_calculus.consistency.structural Require Export assumption. *)
+From fae_gtlc_mu.cast_calculus.consistency Require Export standard.
 From fae_gtlc_mu Require Import prelude.
 Require Coq.Logic.JMeq.
 
@@ -59,3 +59,7 @@ Inductive cons_struct (A : list (type * type)) : type -> type -> Type :=
       (pμτlμtrinA : A !! i = Some (TRec τl, TRec τr)) :
       A ⊢ (TRec τl) ~ (TRec τr)
 where "A ⊢ τ ~ τ'" := (cons_struct A τ τ').
+
+
+Lemma cons_co τi (pτic : TClosed τi) τf (pτfc : TClosed τf) : cons_stand τi τf → cons_struct [] τi τf.
+Admitted.

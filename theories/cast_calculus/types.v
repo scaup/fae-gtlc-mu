@@ -36,6 +36,9 @@ Definition Is_Closed τ := forall τ', τ.[τ'/] = τ.
 
 Definition TClosed τ := forall σ, τ.[σ] = τ.
 
+Instance TClosed_dec τ : Decision (TClosed τ).
+Admitted.
+
 Inductive Ground : type → Type :=
   | Ground_TUnit : Ground TUnit
   | Ground_TProd : Ground (TProd TUnknown TUnknown)
