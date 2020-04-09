@@ -11,7 +11,7 @@ theories/stlc_mu/contexts.v
 theories/cast_calculus/types.v
 theories/cast_calculus/consistency/standard.v
 theories/cast_calculus/consistency/structural/definition.v
-theories/cast_calculus/consistency/equivalent/symmetric.v
+# theories/cast_calculus/consistency/equivalent/symmetric.v
 # theories/cast_calculus/consistency/equivalent/proof.v
 
 ### CAST CALCULUS ###
@@ -47,3 +47,13 @@ theories/refinements/static_gradual/help_left.v
 
 # compat cast
 theories/refinements/static_gradual/compat_cast/defs.v
+theories/refinements/static_gradual/compat_cast/between_rec.v
+theories/refinements/static_gradual/compat_cast/extract_embed.v
+theories/refinements/static_gradual/compat_cast/ground_star.v
+theories/refinements/static_gradual/compat_cast/star_ground.v
+theories/refinements/static_gradual/compat_cast/tau_star.v
+theories/refinements/static_gradual/compat_cast/star_tau.v
+theories/refinements/static_gradual/compat_cast/sum_sum.v
+theories/refinements/static_gradual/compat_cast/prod_prod.v
+theories/refinements/static_gradual/compat_cast/arrow_arrow.v
+theories/refinements/static_gradual/compat_cast/identity.v
