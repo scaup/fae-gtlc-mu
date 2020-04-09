@@ -127,21 +127,21 @@ Section between_rec.
                                                                                                                                         (stlc_mu.typing.env_subst fs) >>
                                                                                                                                       ren (+1)]
                                                                                                                                       (stlc_mu.lang.Unfold (ids 0)))))))
-                                                                                                                      (stlc_mu.lang.Var 0)) .: ids)].[stlc_mu.lang.Fold ( w)/]) = (stlc_mu.lang.Fold ((𝓕 pC).[(between_TRec' (𝓕 pC)).[stlc_mu.typing.env_subst fs] .: stlc_mu.typing.env_subst fs] (stlc_mu.lang.Unfold (stlc_mu.lang.Fold (w)))))).
+                                                                                                                      (stlc_mu.lang.Var 0)) .: ids)].[stlc_mu.lang.Fold ( w)/]) = (stlc_mu.lang.Fold ((𝓕 pC).[(between_TRec (𝓕 pC)).[stlc_mu.typing.env_subst fs] .: stlc_mu.typing.env_subst fs] (stlc_mu.lang.Unfold (stlc_mu.lang.Fold (w)))))).
 
     by asimpl. rewrite triv. clear triv.
-    rewrite between_TRec'_subst_rewrite.
-    rewrite between_TRec'_to_value.
-    assert (H : (𝓕 pC).[stlc_mu.lang.of_val (between_TRecV' (𝓕 pC).[up (stlc_mu.typing.env_subst fs)]) .: stlc_mu.typing.env_subst fs] = (𝓕 pC).[stlc_mu.typing.env_subst (between_TRecV' (𝓕 pC).[up (stlc_mu.typing.env_subst fs)] :: fs)]); first by simpl. rewrite H; clear H.
+    rewrite between_TRec_subst_rewrite.
+    rewrite between_TRec_to_value.
+    assert (H : (𝓕 pC).[stlc_mu.lang.of_val (between_TRecV (𝓕 pC).[up (stlc_mu.typing.env_subst fs)]) .: stlc_mu.typing.env_subst fs] = (𝓕 pC).[stlc_mu.typing.env_subst (between_TRecV (𝓕 pC).[up (stlc_mu.typing.env_subst fs)] :: fs)]); first by simpl. rewrite H; clear H.
     (** easy steps *)
     iApply (wp_bind (stlc_mu.lang.fill_item $ stlc_mu.lang.FoldCtx)).
     iDestruct "Hfs" as "[% Hfs']"; iAssert (rel_cast_functions A fs) with "[Hfs']" as "Hfs". iSplit; done.
     (* iDestruct "Hfs" as "[% Hfs]". *)
     assert (Hs : length ((TRec τl, TRec τr) :: A) =
                 length
-                  (between_TRecV'
+                  (between_TRecV
                       (𝓕 pC).[up (stlc_mu.typing.env_subst fs)] :: fs)). simpl; auto.
-    fold (𝓕c pC (between_TRecV' (𝓕 pC).[up (stlc_mu.typing.env_subst fs)] :: fs)).
+    fold (𝓕c pC (between_TRecV (𝓕 pC).[up (stlc_mu.typing.env_subst fs)] :: fs)).
     (* fold (𝓕c (consTRecTRecExposeCall A τl τr pμτlμτrnotA pC) fs). *)
     rewrite (𝓕c_rewrite pC).
     iApply (wp_bind (stlc_mu.lang.fill_item $ stlc_mu.lang.AppRCtx _)).
@@ -151,12 +151,12 @@ Section between_rec.
     simpl. (** hmmm; unfolds IHLöb... *)
     (** rewriting stuff *)
     rewrite -(𝓕c_rewrite pC) {2}/𝓕c.
-    assert (T : between_TRecV' (𝓕 pC).[up (stlc_mu.typing.env_subst fs)] =
+    assert (T : between_TRecV (𝓕 pC).[up (stlc_mu.typing.env_subst fs)] =
                 (𝓕cV (consTRecTRecExposeCall A τl τr pμτlμτrnotA pC) fs H)
             ). {
       apply stlc_mu.lang.of_val_inj.
-      rewrite -between_TRec'_to_value.
-      rewrite -between_TRec'_subst_rewrite.
+      rewrite -between_TRec_to_value.
+      rewrite -between_TRec_subst_rewrite.
       by simpl.
       (* rewrite -𝓕c_rewrite. rewrite /𝓕c. *)
       (* by simpl. *)

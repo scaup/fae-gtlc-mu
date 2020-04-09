@@ -32,6 +32,8 @@ Proof.
   by simpl.
 Qed.
 
+Definition EClosed (e : expr) := forall σ, e.[σ] = e.
+
 Inductive val :=
 | LamV (e : {bind 1 of expr})
 | UnitV
@@ -50,6 +52,11 @@ Fixpoint of_val (v : val) : expr :=
   | FoldV v => Fold (of_val v)
   end.
 Notation "# v" := (of_val v) (at level 20).
+
+Definition VClosed (v : val) := forall σ, (# v).[σ] = # v.
+
+Lemma ve_closed v : VClosed v → EClosed (# v).
+Proof. intro H. intro w. apply H. Qed.
 
 Coercion of_val : val >-> expr.
 

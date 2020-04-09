@@ -25,42 +25,6 @@ Section defs.
   (* Implicit Types a : (cast_calculus.types.type * cast_calculus.types.type). *)
   Local Hint Resolve to_of_val : core.
 
-  (** We need to "close up" 𝓕 pC with functions... *)
-
-  Definition 𝓕c {A} {τi τf} (pC : cons_struct A τi τf) fs : stlc_mu.lang.expr :=
-    (𝓕 pC).[stlc_mu.typing.env_subst fs].
-
-  (** 𝓕 pC is a value after substitution *)
-
-  Lemma 𝓕c_is_value {A} {τi τf} (pC : cons_struct A τi τf) fs (H : length A = length fs) :
-    is_Some (stlc_mu.lang.to_val (𝓕c pC fs)).
-  Proof.
-    induction pC; rewrite /𝓕c; asimpl; try destruct G; try by econstructor.
-    assert (Hi : i < length fs). rewrite -H; apply lookup_lt_is_Some; by econstructor.
-    destruct (fs !! i) eqn:Hf.
-    rewrite (stlc_mu.typing.env_subst_lookup _ _ v).
-    rewrite stlc_mu.lang.to_of_val.
-    by econstructor.
-    done.
-    exfalso. assert (abs : length fs <= i). by apply lookup_ge_None. lia.
-  Qed.
-
-  Definition 𝓕cV {A} {τi τf} (pC : cons_struct A τi τf) fs (H : length A = length fs) : stlc_mu.lang.val :=
-    is_Some_proj (𝓕c_is_value pC fs H).
-
-  (** just redifine 𝓕C as value.. *)
-  Lemma 𝓕c_rewrite {A} {τi τf} (pC : cons_struct A τi τf) fs (H : length A = length fs) : 𝓕c pC fs = stlc_mu.lang.of_val (𝓕cV pC fs H).
-  Proof.
-    unfold 𝓕cV.
-    induction pC; rewrite /𝓕c; asimpl; try destruct G; try by econstructor.
-    assert (Hi : i < length fs). rewrite -H; apply lookup_lt_is_Some; by econstructor.
-    destruct (fs !! i) eqn:Hf.
-    destruct (𝓕c_is_value
-         (consTRecTRecUseCall A τl τr i pμτlμtrinA) fs H).
-    admit.
-    exfalso. assert (abs : length fs <= i). by apply lookup_ge_None. lia.
-  Admitted.
-
   (** We will want to assume these functions to be meaningful..,
       i.e. they properly relate to the casts happening on the right side *)
 

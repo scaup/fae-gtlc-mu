@@ -24,13 +24,6 @@ Section compat_cast_all.
 
   (** Proving it *)
 
-  (* Lemma rewrite_subs_app (e1 e2 : expr) σ : *)
-  (*   (App e1 e2).[σ] = App e1.[σ] e2.[σ]. *)
-  (* Proof. *)
-  (*     by simpl. *)
-  (* Qed. *)
-
-
   Lemma back_cast_ar_all {A} {τi τf} (pC : cons_struct A τi τf) : back_cast_ar pC.
   Proof.
     induction pC.
@@ -47,33 +40,40 @@ Section compat_cast_all.
     - by apply back_cast_ar_trec_trec_use.
   Qed.
 
-  Lemma bin_log_related_back_cast Γ e e' τi τf (pC : cons_struct [] τi τf)
+  Notation "'` H" := (bin_log_related_alt H) (at level 8).
+
+  Lemma interp_closed Δ τ (pτc : TClosed τ) :
+    ⟦ τ ⟧ Δ
+    ≡ ⟦ τ ⟧ [].
+  Proof. Admitted.
+
+  Lemma interp_closed' Δ τ vv' (pτc : TClosed τ) :
+    ⟦ τ ⟧ Δ vv'
+    ≡ ⟦ τ ⟧ [] vv'.
+  Proof. Admitted.
+
+
+  Lemma bin_log_related_back_cast Γ e e' τi τf (pC : cons_struct [] τi τf) (pτic : TClosed τi) (pτfc : TClosed τf)
       (IHHtyped : Γ ⊨ e ≤log≤ e' : τi) :
     Γ ⊨ 𝓕c pC [] e ≤log≤ Cast e' τi τf : τf.
   Proof.
     iIntros (Δ vvs ei ?) "#[Hρ HΓ]"; iIntros (K) "Hj /=".
+    rewrite 𝓕c_closed; try auto.
     rewrite 𝓕c_rewrite.
-
-
-
-    iApply (wp_bind (fill [stlc_mu.lang.UnfoldCtx])).
-    iApply (wp_wand with "[Hj]"). iApply ('`IHHtyped _ _ _ (UnfoldCtx :: K)). iFrame. auto.
-    iIntros (v). iDestruct 1 as (v') "[Hw #Hiw]".
-    simpl.
-    rewrite /= fixpoint_interp_rec1_eq /=.
-    change (fixpoint _) with (interp (TRec τ) Δ).
-    iDestruct "Hiw" as ([w w']) "#[% Hiz]"; simplify_eq/=.
-    iMod (step_Fold _ _ K (of_val w') with "[-]") as "Hz"; eauto.
-    iApply wp_pure_step_later; cbn; auto.
-    iNext. iApply wp_value; auto. iExists _; iFrame "Hz".
-      by rewrite -interp_subst.
-  Qed.
-
-
-
-
-
+    iApply (wp_bind (fill [stlc_mu.lang.AppRCtx _])).
+    iApply (wp_wand with "[Hj]"). iApply ('`IHHtyped _ _ _ (CastCtx τi τf :: K)). iFrame. auto.
+    iIntros (v). iDestruct 1 as (v') "[Hv' Hvv']". simpl.
+    rewrite -𝓕c_rewrite.
+    rewrite (interp_closed' _ τi); auto.
+    iApply (wp_wand with "[-]").
+    iApply ((back_cast_ar_all pC) with "[-]").
+    iSplitR. unfold rel_cast_functions. iSplit; auto.
+    iSplitL "Hvv'". auto. auto.
+    clear v v'.
+    iIntros (v). iDestruct 1 as (v') "[Hv' Hvv']".
+    iExists v'.
+    auto.
+    rewrite (interp_closed' Δ τf). auto. auto.
+  Admitted.
 
 End compat_cast_all.
-
-

@@ -7,8 +7,8 @@ From fae_gtlc_mu.backtranslation Require Export universe types.
 Definition embedV_TUnit (v : val) : val :=
   (FoldV (InjLV (InjLV (InjLV (InjLV v))))).
 
-Definition embed_TUnit : expr :=
-  Lam (Fold (InjL (InjL (InjL (InjL (Var 0)))))).
+Definition embed_TUnit : val :=
+  LamV (Fold (InjL (InjL (InjL (InjL (Var 0)))))).
 
 Lemma embed_TUnit_typed Γ :
   Γ ⊢ₛ embed_TUnit : (TArrow TUnit Universe).
@@ -21,8 +21,8 @@ Qed.
 Definition embedV_Ground_TSum (s : val) : val :=
   (FoldV ((InjLV (InjLV (InjLV (InjRV s)))))).
 
-Definition embed_Ground_TSum : expr :=
-  Lam (Fold ((InjL (InjL (InjL (InjR (Var 0))))))).
+Definition embed_Ground_TSum : val :=
+  LamV (Fold ((InjL (InjL (InjL (InjR (Var 0))))))).
 
 Definition embed_Ground_TSum_typed Γ :
   Γ ⊢ₛ embed_Ground_TSum : (TArrow (Universe + Universe) Universe)%type.
@@ -36,8 +36,8 @@ Qed.
 Definition embedV_Ground_TProd (p : val) : val :=
   (FoldV (InjLV (InjLV (InjRV p)))).
 
-Definition embed_Ground_TProd : expr :=
-  Lam (Fold (InjL (InjL (InjR (Var 0))))).
+Definition embed_Ground_TProd : val :=
+  LamV (Fold (InjL (InjL (InjR (Var 0))))).
 
 Definition embed_Ground_TProd_typed Γ :
   Γ ⊢ₛ embed_Ground_TProd : (TArrow (Universe × Universe) Universe).
@@ -50,8 +50,8 @@ Qed.
 Definition embedV_Ground_TArrow (v : val) : val :=
   FoldV (InjLV (InjRV v)).
 
-Definition embed_Ground_TArrow : expr :=
-  Lam (Fold (InjL (InjR (Var 0)))).
+Definition embed_Ground_TArrow : val :=
+  LamV (Fold (InjL (InjR (Var 0)))).
 
 Definition embed_Ground_TArrow_typed Γ :
   Γ ⊢ₛ embed_Ground_TArrow : (TArrow (TArrow Universe Universe) Universe).
@@ -63,8 +63,8 @@ Qed.
 
 (* Takes something of μ.Universe, unfolds it so it is in Universe, and then puts in the last branch of the universe *)
 
-Definition embed_Ground_TRec : expr :=
-  Lam (Fold (InjR (Unfold (Var 0)))).
+Definition embed_Ground_TRec : val :=
+  LamV (Fold (InjR (Unfold (Var 0)))).
 
 Definition embed_Ground_TRec_typed Γ :
   Γ ⊢ₛ embed_Ground_TRec : (TArrow (TRec Universe) Universe).
@@ -76,7 +76,7 @@ Proof.
   by apply Var_typed.
 Qed.
 
-Definition embed (τ : cast_calculus.types.type) (G : Ground τ) : expr :=
+Definition embed (τ : cast_calculus.types.type) (G : Ground τ) : val :=
   match G with
   | Ground_TUnit => embed_TUnit
   | Ground_TProd => embed_Ground_TProd
@@ -96,7 +96,7 @@ Proof.
     + apply embed_Ground_TRec_typed.
 Qed.
 
-Lemma embed_no_subs {τ : cast_calculus.types.type} {G : Ground τ} σ : (embed τ G).[σ] = embed τ G.
+Lemma embed_no_subs {τ : cast_calculus.types.type} {G : Ground τ} σ : (# (embed τ G)).[σ] = embed τ G.
 Proof.
   destruct G; by asimpl.
 Qed.

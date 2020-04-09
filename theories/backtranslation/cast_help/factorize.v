@@ -4,8 +4,8 @@ From fae_gtlc_mu.backtranslation.cast_help Require Export universe embed extract
 
 (** Trivial stuff *)
 
-Definition identity : expr :=
-  Lam (Var 0).
+Definition identity : val :=
+  LamV (Var 0).
 
 Lemma identity_typed (τ : type) Γ : Γ ⊢ₛ identity : (TArrow τ τ).
 Proof.
@@ -15,12 +15,12 @@ Qed.
 
 (** Factorisations *)
 
-Definition factorization_up (f : expr) (τG : cast_calculus.types.type) (G : Ground τG) : expr :=
-  Lam (
+Definition factorization_up (f : expr) (τG : cast_calculus.types.type) (G : Ground τG) : val :=
+  LamV (
       embed τG G ((rename (+1) f) (Var 0))
     ).
 
-Lemma factorization_up_subst_rewrite (f : expr) (τG : cast_calculus.types.type) (G : Ground τG) σ : (factorization_up f τG G).[σ] = factorization_up f.[σ] τG G.
+Lemma factorization_up_subst_rewrite (f : expr) (τG : cast_calculus.types.type) (G : Ground τG) σ : (# (factorization_up f τG G)).[σ] = factorization_up f.[σ] τG G.
 Proof.
   rewrite /factorization_up.
   asimpl. by rewrite embed_no_subs.
@@ -37,12 +37,12 @@ Proof.
   by apply Var_typed.
 Qed.
 
-Definition factorization_down (f : expr) (τG : cast_calculus.types.type) (G : Ground τG) : expr :=
-  Lam (
+Definition factorization_down (f : expr) (τG : cast_calculus.types.type) (G : Ground τG) : val :=
+  LamV (
       (rename (+1) f) (extract τG G (Var 0))
     ).
 
-Lemma factorization_down_subst_rewrite (f : expr) (τG : cast_calculus.types.type) (G : Ground τG) σ : (factorization_down f τG G).[σ] = factorization_down f.[σ] τG G.
+Lemma factorization_down_subst_rewrite (f : expr) (τG : cast_calculus.types.type) (G : Ground τG) σ : (# (factorization_down f τG G)).[σ] = factorization_down f.[σ] τG G.
 Proof.
   rewrite /factorization_down.
   asimpl. by rewrite extract_no_subs.

@@ -27,8 +27,8 @@ Proof.
     + by apply Var_typed.
 Qed.
 
-Definition extract_TUnit : expr :=
-  Lam (Case (Unfold (Var 0))
+Definition extract_TUnit : val :=
+  LamV (Case (Unfold (Var 0))
             (Case (Var 0)
                   (Case (Var 0)
                         (Case (Var 0)
@@ -63,8 +63,8 @@ Proof.
   - by apply Ω_typed.
 Qed.
 
-Definition extract_Ground_TSum : expr :=
-  Lam (Case (Unfold (Var 0))
+Definition extract_Ground_TSum : val :=
+  LamV (Case (Unfold (Var 0))
             (Case (Var 0)
                   (Case (Var 0)
                         (Case (Var 0)
@@ -96,8 +96,8 @@ Proof.
   - by apply Ω_typed.
 Qed.
 
-Definition extract_Ground_TProd : expr :=
-  Lam (Case (Unfold (Var 0))
+Definition extract_Ground_TProd : val :=
+  LamV (Case (Unfold (Var 0))
             (Case (Var 0)
                   (Case (Var 0)
                         (Ω)
@@ -123,8 +123,8 @@ Proof.
   - by apply Ω_typed.
 Qed.
 
-Definition extract_Ground_TArrow : expr :=
-  Lam (Case (Unfold (Var 0))
+Definition extract_Ground_TArrow : val :=
+  LamV (Case (Unfold (Var 0))
             (Case (Var 0)
                   (Ω)
                   (Var 0)
@@ -144,8 +144,8 @@ Proof.
   - by apply Ω_typed.
 Qed.
 
-Definition extract_Ground_TRec : expr :=
-  Lam (Case (Unfold (Var 0))
+Definition extract_Ground_TRec : val :=
+  LamV (Case (Unfold (Var 0))
             (Ω)
             (Fold (Var 0))
       ).
@@ -154,13 +154,15 @@ Definition extract_Ground_TRec_typed Γ : Γ ⊢ₛ extract_Ground_TRec : (TArro
 Proof.
   apply Lam_typed.
   apply Case_typed with (τ1 := (TUnit + (TVar 0 + TVar 0) + (TVar 0 × TVar 0) + (TArrow (TVar 0) (TVar 0))).[Universe/]%type)
-                         (τ2 := Universe).
+
+
+                        (τ2 := Universe).
   - eapply Unfold_typed_help_2 with (τ := Universe_body). by asimpl. by apply Var_typed.
   - by apply Ω_typed.
   - apply Fold_typed. by apply Var_typed.
 Qed.
 
-Definition extract (τ : cast_calculus.types.type) (G : Ground τ) : expr :=
+Definition extract (τ : cast_calculus.types.type) (G : Ground τ) : val :=
   match G with
   | Ground_TUnit => extract_TUnit
   | Ground_TProd => extract_Ground_TProd
@@ -180,7 +182,7 @@ Proof.
     + apply extract_Ground_TRec_typed.
 Qed.
 
-Lemma extract_no_subs {τ : cast_calculus.types.type} {G : Ground τ} σ : (extract τ G).[σ] = extract τ G.
+Lemma extract_no_subs {τ : cast_calculus.types.type} {G : Ground τ} σ : (# (extract τ G)).[σ] = extract τ G.
 Proof.
   destruct G; by asimpl.
 Qed.
