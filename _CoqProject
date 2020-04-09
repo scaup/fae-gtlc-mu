@@ -20,6 +20,7 @@ theories/cast_calculus/contexts.v
 ### EMBEDDING ###
 theories/embedding/expressions.v
 theories/embedding/contexts.v
+theories/embedding/types.v
 
 ### BACKTRANSLATION ###
 theories/backtranslation/cast_help/universe.v
