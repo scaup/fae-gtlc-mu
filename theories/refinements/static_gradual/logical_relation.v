@@ -36,7 +36,7 @@ Definition logN : namespace := nroot .@ "logN".
 
 (** interp : is a binary logical relation. *)
 Section logrel.
-  Context `{!heapG Σ, !gradRN Σ}.
+  Context `{!implG Σ, !specG Σ}.
   Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iPropO Σ).
   Implicit Types τi : D.
   Implicit Types Δ : listO D.
@@ -401,7 +401,7 @@ Notation "⟦ Γ ⟧*" := (interp_env Γ).
 From fae_gtlc_mu.cast_calculus Require Export types typing.
 
 Section bin_log_def.
-  Context `{!heapG Σ, !gradRN Σ}.
+  Context `{!implG Σ, !specG Σ}.
   Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iProp Σ).
 
   Definition bin_log_related

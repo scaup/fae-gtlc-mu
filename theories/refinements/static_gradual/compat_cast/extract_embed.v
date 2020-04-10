@@ -37,7 +37,7 @@ Ltac reshape_expr e tac :=
 Import uPred.
 
 Section extract_embed.
-  Context `{!heapG Σ,!gradRN Σ}.
+  Context `{!implG Σ,!specG Σ}.
   Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iPropO Σ).
   (* Implicit Types e : stlc_mu.lang.expr. *)
   (* Implicit Types e : stlc_mu.lang.expr. *)
@@ -47,7 +47,7 @@ Section extract_embed.
   (* Implicit Types a : (cast_calculus.types.type * cast_calculus.types.type). *)
   Local Hint Resolve to_of_val : core.
 
-  Lemma tac_wp_expr_eval `{!heapG Σ} Δ s E Φ e e' :
+  Lemma tac_wp_expr_eval `{!implG Σ} Δ s E Φ e e' :
     (∀ (e'':=e'), e = e'') →
     envs_entails Δ (WP e' @ s; E {{ Φ }}) → envs_entails Δ (WP e @ s; E {{ Φ }}).
   Proof. by intros ->. Qed.
@@ -61,7 +61,7 @@ Tactic Notation "wp_expr_eval" tactic3(t) :=
   | _ => fail "wp_expr_eval: not a 'wp'"
   end.
 
-Lemma tac_wp_pure `{!heapG Σ} Δ Δ' s E e1 e2 φ n Φ :
+Lemma tac_wp_pure `{!implG Σ} Δ Δ' s E e1 e2 φ n Φ :
   PureExec φ n e1 e2 →
   φ →
   MaybeIntoLaterNEnvs n Δ Δ' →
@@ -72,7 +72,7 @@ Proof.
   rewrite HΔ' -lifting.wp_pure_step_later //.
 Qed.
 
-Lemma tac_wp_value `{!heapG Σ} Δ s E Φ v :
+Lemma tac_wp_value `{!implG Σ} Δ s E Φ v :
   envs_entails Δ (Φ v) → envs_entails Δ (WP (stlc_mu.lang.of_val v) @ s; E {{ Φ }}).
 Proof. rewrite envs_entails_eq=> ->. by apply wp_value. Qed.
 

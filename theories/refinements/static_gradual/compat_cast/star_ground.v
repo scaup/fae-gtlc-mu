@@ -11,7 +11,7 @@ From fae_gtlc_mu.refinements.static_gradual Require Export tactics_left.
 From fae_gtlc_mu.cast_calculus Require Export types typing.
 
 Section star_ground.
-  Context `{!heapG Σ,!gradRN Σ}.
+  Context `{!implG Σ,!specG Σ}.
   Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iPropO Σ).
   (* Implicit Types e : stlc_mu.lang.expr. *)
   (* Implicit Types e : stlc_mu.lang.expr. *)

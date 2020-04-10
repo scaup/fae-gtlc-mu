@@ -26,7 +26,7 @@ Ltac fold_interp :=
   end.
 
 Section relation_for_specification_lemma.
-  Context `{!heapG Σ, !gradRN Σ}.
+  Context `{!implG Σ, !specG Σ}.
 
   (* Notation "Γ ⊨ e '≤log≤' e' : τ" := *)
     (* (bin_log_related Γ e e' τ) (at level 74, e, e', τ at next level). *)

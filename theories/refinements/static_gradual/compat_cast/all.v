@@ -11,7 +11,7 @@ From fae_gtlc_mu.backtranslation Require Export cast_help.general cast_help.extr
 From fae_gtlc_mu.refinements.static_gradual.compat_cast Require Export between_rec star_ground ground_star tau_star star_tau prod_prod sum_sum arrow_arrow identity.
 
 Section compat_cast_all.
-  Context `{!heapG Σ,!gradRN Σ}.
+  Context `{!implG Σ,!specG Σ}.
   Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iPropO Σ).
   (* Implicit Types e : stlc_mu.lang.expr. *)
   (* Implicit Types e : stlc_mu.lang.expr. *)

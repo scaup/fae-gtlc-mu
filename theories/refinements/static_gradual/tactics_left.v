@@ -100,11 +100,11 @@ Ltac wp_value := iApply wp_value.
 
 
 
-Lemma tac_wp_expr_eval `{!heapG Σ} Δ s E Φ e e' :
+Lemma tac_wp_expr_eval `{!implG Σ} Δ s E Φ e e' :
   (∀ (e'':=e'), e = e'') →
   envs_entails Δ (WP e' @ s; E {{ Φ }}) → envs_entails Δ (WP e @ s; E {{ Φ }}).
 Proof. by intros ->. Qed.
-(* Lemma tac_twp_expr_eval `{!heapG Σ} Δ s E Φ e e' : *)
+(* Lemma tac_twp_expr_eval `{!implG Σ} Δ s E Φ e e' : *)
 (*   (∀ (e'':=e'), e = e'') → *)
 (*   envs_entails Δ (WP e' @ s; E [{ Φ }]) → envs_entails Δ (WP e @ s; E [{ Φ }]). *)
 (* Proof. by intros ->. Qed. *)
@@ -118,7 +118,7 @@ Tactic Notation "wp_expr_eval" tactic3(t) :=
   | _ => fail "wp_expr_eval: not a 'wp'"
   end.
 
-Lemma tac_wp_pure `{!heapG Σ} Δ Δ' s E e1 e2 φ n Φ :
+Lemma tac_wp_pure `{!implG Σ} Δ Δ' s E e1 e2 φ n Φ :
   PureExec φ n e1 e2 →
   φ →
   MaybeIntoLaterNEnvs n Δ Δ' →
@@ -129,10 +129,10 @@ Proof.
   rewrite HΔ' -lifting.wp_pure_step_later //.
 Qed.
 
-Lemma tac_wp_value `{!heapG Σ} Δ s E Φ v :
+Lemma tac_wp_value `{!implG Σ} Δ s E Φ v :
   envs_entails Δ (Φ v) → envs_entails Δ (WP (of_val v) @ s; E {{ Φ }}).
 Proof. rewrite envs_entails_eq=> ->. by apply wp_value. Qed.
-(* Lemma tac_twp_value `{!heapG Σ} Δ s E Φ v : *)
+(* Lemma tac_twp_value `{!implG Σ} Δ s E Φ v : *)
 (*   envs_entails Δ (Φ v) → envs_entails Δ (WP (Val v) @ s; E [{ Φ }]). *)
 (* Proof. rewrite envs_entails_eq=> ->. by apply twp_value. Qed. *)
 
@@ -213,12 +213,12 @@ the reduction, and finally we clear this new hypothesis. *)
 (* Tactic Notation "wp_pair" := wp_pure (Pair _ _). *)
 (* Tactic Notation "wp_closure" := wp_pure (Rec _ _ _). *)
 
-(* Lemma tac_wp_bind `{!heapG Σ} K Δ s E Φ e f : *)
+(* Lemma tac_wp_bind `{!implG Σ} K Δ s E Φ e f : *)
 (*   f = (λ e, fill K e) → (* as an eta expanded hypothesis so that we can `simpl` it *) *)
 (*   envs_entails Δ (WP e @ s; E {{ v, WP f (Val v) @ s; E {{ Φ }} }})%I → *)
 (*   envs_entails Δ (WP fill K e @ s; E {{ Φ }}). *)
 (* Proof. rewrite envs_entails_eq=> -> ->. by apply: wp_bind. Qed. *)
-(* Lemma tac_twp_bind `{!heapG Σ} K Δ s E Φ e f : *)
+(* Lemma tac_twp_bind `{!implG Σ} K Δ s E Φ e f : *)
 (*   f = (λ e, fill K e) → (* as an eta expanded hypothesis so that we can `simpl` it *) *)
 (*   envs_entails Δ (WP e @ s; E [{ v, WP f (Val v) @ s; E [{ Φ }] }])%I → *)
 (*   envs_entails Δ (WP fill K e @ s; E [{ Φ }]). *)
@@ -248,7 +248,7 @@ the reduction, and finally we clear this new hypothesis. *)
 (*   end. *)
 
 (* Section compat_cast_all. *)
-(*   Context `{!heapG Σ}. *)
+(*   Context `{!implG Σ}. *)
 
 
 

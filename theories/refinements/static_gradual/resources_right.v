@@ -11,27 +11,26 @@ Definition gradualN := nroot .@ "gradual".
 
 Canonical Structure exprO := leibnizO expr.
 
-Definition gradR := prodR fracR (agreeR exprO).
-(* Definition cfgUR := prodUR (optionUR (exclR exprO)) (gen_heapUR loc val). *)
+Definition specR := prodR fracR (agreeR exprO).
 
 (** The CMRA for the thread pool. *)
-Class gradRN Σ := CFGSG { gradR_inG :> inG Σ gradR; grad_name : gname }.
+Class specG Σ := SpecG { specR_inG :> inG Σ specR; spec_name : gname }.
 
-Definition currently `{gradRN Σ} (e : expr) : iProp Σ :=
-  own grad_name ((1%Qp , to_agree e) : gradR).
+Definition currently `{specG Σ} (e : expr) : iProp Σ :=
+  own spec_name ((1%Qp , to_agree e) : specR).
 
-Definition currently_half `{gradRN Σ} (e : expr) : iProp Σ :=
-  own grad_name (((1 / 2)%Qp , to_agree e) : gradR).
+Definition currently_half `{specG Σ} (e : expr) : iProp Σ :=
+  own spec_name (((1 / 2)%Qp , to_agree e) : specR).
 
-Definition initially_body `{gradRN Σ} (ei' : expr) : iProp Σ :=
+Definition initially_body `{specG Σ} (ei' : expr) : iProp Σ :=
   (∃ e', (currently_half e')
             ∗ ⌜rtc erased_step ([ei'] , tt) ([e'] , tt)⌝)%I.
 
-Definition initially_inv `{gradRN Σ} `{invG Σ} (ei' : expr) : iProp Σ :=
+Definition initially_inv `{specG Σ} `{invG Σ} (ei' : expr) : iProp Σ :=
   inv gradualN (initially_body ei').
 
 (* Section definitionsS. *)
-  (* Context `{gradRN Σ}. *)
+  (* Context `{specG Σ}. *)
 
   (* Definition heapS_mapsto (l : loc) (q : Qp) (v: val) : iProp Σ := *)
     (* own cfg_name (◯ (ε, {[ l := (q, to_agree v) ]})). *)
@@ -51,7 +50,7 @@ Definition initially_inv `{gradRN Σ} `{invG Σ} (ei' : expr) : iProp Σ :=
 (* Notation "⤇ e" := (tpool_mapsto e) (at level 20) : bi_scope. *)
 
 Section cfg.
-  Context `{!gradRN Σ}.
+  Context `{!specG Σ}.
   Context `{!invG Σ}.
   Implicit Types P Q : iProp Σ.
   Implicit Types Φ : val → iProp Σ.

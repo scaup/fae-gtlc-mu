@@ -11,7 +11,7 @@ Notation "Γ ⊨ e '≤log≤' e' : τ" :=
   (bin_log_related Γ e e' τ) (at level 74, e, e', τ at next level).
 
 Section fundamental.
-  Context `{!heapG Σ,!gradRN Σ}.
+  Context `{!implG Σ,!specG Σ}.
   Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iPropO Σ).
   (* Implicit Types e : stlc_mu.lang.expr. *)
   Local Hint Resolve to_of_val : core.

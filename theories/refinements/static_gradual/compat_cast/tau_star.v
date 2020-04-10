@@ -10,7 +10,7 @@ From fae_gtlc_mu.backtranslation Require Export cast_help.general cast_help.extr
 From fae_gtlc_mu.cast_calculus Require Export types.
 
 Section compat_cast_tau_star.
-  Context `{!heapG Σ,!gradRN Σ}.
+  Context `{!implG Σ,!specG Σ}.
   Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iPropO Σ).
   (* Implicit Types e : stlc_mu.lang.expr. *)
   (* Implicit Types e : stlc_mu.lang.expr. *)

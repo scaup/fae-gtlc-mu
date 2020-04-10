@@ -7,13 +7,12 @@ From iris.base_logic Require Export gen_heap.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 Import uPred.
 
-Class heapG Σ := HeapG {
-  heapG_invG : invG Σ;
-  heapG_gen_heapG :> gen_heapG unit unit Σ
+Class implG Σ := ImplG { (* resources for the implementation side *)
+  implG_invG : invG Σ; (* for fancy updates, invariants... *)
 }.
 
-Instance heapG_irisG `{heapG Σ} : irisG lang Σ := {
-  iris_invG := heapG_invG;
+Instance implG_irisG `{implG Σ} : irisG lang Σ := {
+  iris_invG := implG_invG;
   state_interp σ κs _ := True%I;
   fork_post _ := True%I;
 }.
@@ -29,7 +28,7 @@ Global Opaque iris_invG.
 (* Notation "l ↦ -" := (l ↦{1} -)%I (at level 20) : bi_scope. *)
 
 Section lang_rules.
-  Context `{heapG Σ}.
+  Context `{implG Σ}.
   Implicit Types P Q : iProp Σ.
   Implicit Types Φ : val → iProp Σ.
   (* Implicit Types σ : state. *)

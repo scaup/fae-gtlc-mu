@@ -16,7 +16,7 @@ From fae_gtlc_mu.cast_calculus Require Export lang types.
 (* Coercion of_val : val >-> expr. *)
 
 Section between_rec.
-  Context `{!heapG Σ,!gradRN Σ}.
+  Context `{!implG Σ,!specG Σ}.
   Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iPropO Σ).
   (* Implicit Types e : stlc_mu.lang.expr. *)
   (* Implicit Types e : stlc_mu.lang.expr. *)

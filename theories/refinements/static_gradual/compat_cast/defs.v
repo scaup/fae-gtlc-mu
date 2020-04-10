@@ -15,7 +15,7 @@ From fae_gtlc_mu.backtranslation Require Export cast_help.general cast_help.extr
 (* Notation "# v" := (of_val v) (at level 20). *)
 
 Section defs.
-  Context `{!heapG Σ,!gradRN Σ}.
+  Context `{!implG Σ,!specG Σ}.
   Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iPropO Σ).
   (* Implicit Types e : stlc_mu.lang.expr. *)
   (* Implicit Types e : stlc_mu.lang.expr. *)
