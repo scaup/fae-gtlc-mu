@@ -5,7 +5,7 @@ From fae_gtlc_mu.refinements.static_gradual Require Export resources_left.
 From fae_gtlc_mu.cast_calculus Require Export lang.
 Import uPred.
 
-Definition gradualN := nroot .@ "gradual".
+Definition specN := nroot .@ "gradual".
 
 (** The CMRA for the heap of the specification. *)
 
@@ -27,7 +27,7 @@ Definition initially_body `{specG Σ} (ei' : expr) : iProp Σ :=
             ∗ ⌜rtc erased_step ([ei'] , tt) ([e'] , tt)⌝)%I.
 
 Definition initially_inv `{specG Σ} `{invG Σ} (ei' : expr) : iProp Σ :=
-  inv gradualN (initially_body ei').
+  inv specN (initially_body ei').
 
 (* Section definitionsS. *)
   (* Context `{specG Σ}. *)
@@ -70,12 +70,12 @@ Section cfg.
   Local Set Warnings "-notation-overridden".
   Lemma step_pure E ei' K e1' e2' :
     (∀ σ, head_step e1' σ [] e2' σ []) →
-    nclose gradualN ⊆ E →
+    nclose specN ⊆ E →
     initially_inv ei' ∗ currently_half (fill K e1') ={E}=∗ currently_half (fill K e2').
   Proof.
     iIntros (??) "[Hinv Hj]".
     rewrite /initially_inv /initially_body.
-    iInv gradualN as ">Hinit" "Hclose".
+    iInv specN as ">Hinit" "Hclose".
     iDestruct "Hinit" as (ef') "[Hown %]".
     rewrite /currently_half.
     iDestruct (own_valid_2 with "Hown Hj") as %cpa.
@@ -104,12 +104,12 @@ Section cfg.
 
   Lemma step_fst E ei' K e1' e2' :
     AsVal e1' → AsVal e2' →
-    nclose gradualN ⊆ E →
+    nclose specN ⊆ E →
     initially_inv ei' ∗ currently_half (fill K (Fst (Pair e1' e2'))) ={E}=∗ currently_half (fill K e1').
   Proof. intros [? <-] [? <-]. apply step_pure => σ; econstructor; eauto. Qed.
 
   Lemma step_snd E ei' K e1' e2' :
-    AsVal e1' → AsVal e2' → nclose gradualN ⊆ E →
+    AsVal e1' → AsVal e2' → nclose specN ⊆ E →
     initially_inv ei' ∗ currently_half (fill K (Snd (Pair e1' e2'))) ={E}=∗ currently_half (fill K e2').
   Proof. intros [? <-] [? <-]; apply step_pure => σ; econstructor; eauto. Qed.
 
@@ -185,7 +185,7 @@ Section cfg.
   (* Qed. *)
 
   Lemma step_lam E ei' K e1' e2' :
-    AsVal e2' → nclose gradualN ⊆ E →
+    AsVal e2' → nclose specN ⊆ E →
     initially_inv ei' ∗ currently_half (fill K (App (Lam e1') e2'))
     ={E}=∗ currently_half (fill K (e1'.[e2'/])).
   Proof. intros [? <-]; apply step_pure => σ; econstructor; eauto. Qed.
@@ -196,18 +196,18 @@ Section cfg.
   (* Proof. apply step_pure => σ; econstructor; eauto. Qed. *)
 
   Lemma step_Fold E ei' K e' :
-    AsVal e' → nclose gradualN ⊆ E →
+    AsVal e' → nclose specN ⊆ E →
     initially_inv ei' ∗ currently_half (fill K (Unfold (Fold e'))) ={E}=∗ currently_half (fill K e').
   Proof. intros [? <-]; apply step_pure => σ; econstructor; eauto. Qed.
 
   Lemma step_case_inl E ei' K e0' e1' e2' :
-    AsVal e0' → nclose gradualN ⊆ E →
+    AsVal e0' → nclose specN ⊆ E →
     initially_inv ei' ∗ currently_half (fill K (Case (InjL e0') e1' e2'))
       ={E}=∗ currently_half (fill K (e1'.[e0'/])).
   Proof. intros [? <-]; apply step_pure => σ; econstructor; eauto. Qed.
 
   Lemma step_case_inr E ei' K e0' e1' e2' :
-    AsVal e0' → nclose gradualN ⊆ E →
+    AsVal e0' → nclose specN ⊆ E →
     initially_inv ei' ∗ currently_half (fill K (Case (InjR e0') e1' e2'))
       ={E}=∗ currently_half (fill K (e2'.[e0'/])).
   Proof. intros [? <-]; apply step_pure => σ; econstructor; eauto. Qed.
