@@ -7,19 +7,22 @@ From fae_gtlc_mu.refinements.static_gradual Require Export rel_ref_specs.
 From fae_gtlc_mu.embedding Require Import types expressions.
 From fae_gtlc_mu.backtranslation Require Import contexts.
 
+Definition Halts_grad := cast_calculus.lang.Halts.
+
+Definition Halts_stat := stlc_mu.lang.Halts.
 
 Section soundness.
   Context `{!inG Σ specR, !invPreG Σ}.
 
   Lemma soundness
-    (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : cast_calculus.types.type) (v : stlc_mu.lang.val) :
+    (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : cast_calculus.types.type) :
     (∀ `{!implG Σ, !specG Σ}, [] ⊨ e ≤log≤ e' : τ) →
-    rtc (@erased_step stlc_mu.lang.lang) ([e], tt) (stlc_mu.lang.of_val v :: [], tt) →
-    (∃ v', rtc (@erased_step cast_calculus.lang.lang) ([e'], tt) (of_val v' :: [], tt)).
+    (Halts_stat e) →
+    (Halts_grad e').
   Proof.
     intros Hlog Hsteps.
     cut (adequate NotStuck e tt (λ _ _, ∃ v', rtc erased_step ([e'], tt) (of_val v' :: [], tt))).
-    { destruct 1; naive_solver. }
+    { rewrite /Halts_stat in Hsteps. rewrite /stlc_mu.lang.Halts in Hsteps. destruct 1. naive_solver. }
     eapply (wp_adequacy Σ); first by apply _.
     iIntros (Hinv ?).
     iMod (own_alloc ((((1/2)%Qp , to_agree e') ⋅ ((1/2)%Qp , to_agree e')) : specR)) as (spec_name) "[Hs1 Hs2]".
@@ -48,3 +51,11 @@ Section soundness.
   Qed.
 
 End soundness.
+
+Definition actualΣ : gFunctors := #[ invΣ ; GFunctor specR ].
+
+Instance subG_inG_specR {Σ} : subG (GFunctor specR) Σ → inG Σ specR.
+Proof. solve_inG. Qed.
+
+(* Lemma actualΣ_inG_specR : invPreG actualΣ. *)
+(* Proof. apply subG_invΣ. rewrite /actualΣ. solve_inG. :( *)

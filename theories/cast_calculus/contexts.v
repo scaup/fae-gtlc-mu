@@ -118,9 +118,15 @@ Proof.
 Qed.
 
 Definition ctx_refines (Γ : list type)
-    (e e' : expr) (τ : type) := ∀ K v,
-  typed_ctx K Γ τ [] TUnit →
-  rtc erased_step ([fill_ctx K e], tt) ([ of_val v ] , tt) →
-  ∃ v', rtc erased_step ([fill_ctx K e'], tt) ([ of_val v' ], tt).
+    (e e' : expr) (τ : type) := ∀ K, typed_ctx K Γ τ [] TUnit →
+      Halts (fill_ctx K e) → Halts (fill_ctx K e').
 Notation "Γ ⊨ e '≤ctx≤' e' : τ" :=
   (ctx_refines Γ e e' τ) (at level 74, e, e', τ at next level).
+
+Definition ctx_equiv (Γ : list type)
+    (e e' : expr) (τ : type) := Γ ⊢ₜ e : τ ∧ Γ ⊢ₜ e' : τ ∧
+  ∀ K, typed_ctx K Γ τ [] TUnit →
+  (Halts (fill_ctx K e) → Halts (fill_ctx K e')) ∧
+  (Halts (fill_ctx K e') → Halts (fill_ctx K e)).
+Notation "Γ ⊨ e '=ctx-' e' : τ" :=
+  (ctx_equiv Γ e e' τ) (at level 74, e, e', τ at next level).

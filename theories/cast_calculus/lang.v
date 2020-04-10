@@ -336,3 +336,6 @@ Hint Extern 10 (IntoVal _ _) =>
 Hint Extern 5 (AsVal _) => eexists; eapply of_to_val; fast_done : typeclass_instances.
 Hint Extern 10 (AsVal _) =>
   eexists; rewrite /IntoVal; eapply of_to_val; rewrite /= !to_of_val /=; solve [ eauto ] : typeclass_instances.
+
+Definition Halts (e : expr) :=
+  ∃ v, rtc erased_step ([e], tt) ([of_val v], tt).
