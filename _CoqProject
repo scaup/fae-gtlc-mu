@@ -1,4 +1,15 @@
 -Q theories fae_gtlc_mu
+
+# equivalence of alternative relation; first in a separate folder omitting repetitive cases
+theories/equivalence/types.v
+theories/equivalence/consistency_standard.v
+theories/equivalence/consistency_intermediate.v
+theories/equivalence/wf_order.v
+theories/equivalence/closures.v
+theories/equivalence/upper_bound.v
+
+
+
 theories/prelude.v
 
 ### STLC ###
