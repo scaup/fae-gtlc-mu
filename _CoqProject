@@ -5,7 +5,6 @@
 theories/equivalence/types.v
 theories/equivalence/consistency_standard.v
 theories/equivalence/consistency_intermediate.v
-theories/equivalence/wf_order.v
 theories/equivalence/listset_ext.v
 theories/equivalence/closed_rec_types.v
 theories/equivalence/upper_bound.v

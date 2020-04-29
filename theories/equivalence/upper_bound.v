@@ -42,6 +42,15 @@ Proof.
   rewrite size_singleton. lia.
 Qed.
 
+Lemma upper_bound_symmetric A τ τ' :
+  # A τ τ' = # A τ' τ.
+Proof.
+  rewrite /upper_bound.
+  assert (triv : combinations τ τ' ≡ combinations τ' τ).
+  { apply set_subseteq_antisymm; apply subseteq_comp_contravariant; apply listset_prod_subseteq; set_solver. }
+  by rewrite triv.
+Qed.
+
 (** if types are structurally smaller, then upper_bound is smaller or equal *)
 
 Lemma upper_bound_le_arrow_r A τ1 τ2 τ1' τ2' :
@@ -60,6 +69,42 @@ Proof.
   apply subseteq_size.
   apply difference_mono_r.
   rewrite /combinations.
+  apply subseteq_comp_contravariant; apply listset_prod_subseteq; set_solver.
+Qed.
+
+Lemma upper_bound_le_arrow_unknown_cov A τ1 τ2 :
+  # A τ2 TUnknown ≤ # A (TArrow τ1 τ2) TUnknown.
+Proof.
+  rewrite /upper_bound.
+  apply subseteq_size.
+  apply difference_mono_r.
+  apply subseteq_comp_normal; apply listset_prod_subseteq; set_solver.
+Qed.
+
+Lemma upper_bound_le_unknown_arrow_cov A τ1 τ2 :
+  # A TUnknown τ2 ≤ # A TUnknown (TArrow τ1 τ2).
+Proof.
+  rewrite /upper_bound.
+  apply subseteq_size.
+  apply difference_mono_r.
+  apply subseteq_comp_normal; apply listset_prod_subseteq; set_solver.
+Qed.
+
+Lemma upper_bound_le_unknown_arrow_con A τ1 τ2 :
+  # A τ1 TUnknown ≤ # A TUnknown (TArrow τ1 τ2).
+Proof.
+  rewrite /upper_bound.
+  apply subseteq_size.
+  apply difference_mono_r.
+  apply subseteq_comp_contravariant; apply listset_prod_subseteq; set_solver.
+Qed.
+
+Lemma upper_bound_le_arrow_unknown_con A τ1 τ2 :
+  # A TUnknown τ1 ≤ # A (TArrow τ1 τ2) TUnknown.
+Proof.
+  rewrite /upper_bound.
+  apply subseteq_size.
+  apply difference_mono_r.
   apply subseteq_comp_contravariant; apply listset_prod_subseteq; set_solver.
 Qed.
 
