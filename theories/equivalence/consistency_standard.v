@@ -43,17 +43,15 @@ Proof.
       by apply IHτ.
   - intros k τ' pC. inversion_clear pC.
     + asimpl; constructor.
-    + intro. destruct (decide (x < k)).
-      * repeat rewrite subst_fv_no; auto. apply GenSymVar.
-      * assert (H : k ≤ x). lia.
-        assert (H' : (∃ z : nat, x = k + z)). by apply nat_le_sum.
-        (* destruct H' as [z ->]. *)
-        (* destruct (nat_le_sum _ _ H) as [AAA]. [z ->]. *)
-        (* repeat rewrite subst_fv. *)
-        admit.
+    + intro.
+      destruct (subst_fv_upn_cases x k (α .: ids)) as [[-> plt] | [j [eq ->]] ];
+      destruct (subst_fv_upn_cases x k (α' .: ids)) as [[-> plt'] | [j' [eq' ->]]]; try by (exfalso; lia).
+      * apply GenSymVar.
+      * assert (triv : j' = j). lia. rewrite triv. clear triv.
+        destruct j; asimpl. by rewrite pα pα'. apply GenSymVar.
   - intros k τ' pC.
     asimpl; constructor.
-Admitted.
+Qed.
 
 Lemma cons_stand_unfold τ (pτ : TClosed (TRec τ)) τ' (pτ' : TClosed (TRec τ')) : cons_stand (TRec τ) (TRec τ') → cons_stand τ.[TRec τ/] τ'.[TRec τ'/].
 Proof.

@@ -1,11 +1,13 @@
 -Q theories fae_gtlc_mu
 
 # equivalence of alternative relation; first in a separate folder omitting repetitive cases
+
 theories/equivalence/types.v
 theories/equivalence/consistency_standard.v
 theories/equivalence/consistency_intermediate.v
 theories/equivalence/wf_order.v
-theories/equivalence/closures.v
+theories/equivalence/listset_ext.v
+theories/equivalence/closed_rec_types.v
 theories/equivalence/upper_bound.v
 
 
@@ -44,6 +46,8 @@ theories/backtranslation/cast_help/general.v
 
 theories/backtranslation/expressions.v
 theories/backtranslation/contexts.v
+theories/backtranslation/well_typedness.v
+
 
 # relation
 theories/refinements/prelude.v

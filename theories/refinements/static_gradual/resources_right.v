@@ -69,7 +69,7 @@ Section cfg.
 
   Local Set Warnings "-notation-overridden".
   Lemma step_pure E ei' K e1' e2' :
-    (∀ σ, head_step e1' σ [] e2' σ []) →
+    (head_step e1' tt [] e2' tt []) →
     nclose specN ⊆ E →
     initially_inv ei' ∗ currently_half (fill K e1') ={E}=∗ currently_half (fill K e2').
   Proof.
@@ -77,138 +77,62 @@ Section cfg.
     rewrite /initially_inv /initially_body.
     iInv specN as ">Hinit" "Hclose".
     iDestruct "Hinit" as (ef') "[Hown %]".
+    (** fill K e1' = ef' *)
     rewrite /currently_half.
-    iDestruct (own_valid_2 with "Hown Hj") as %cpa.
-    iDestruct (@own_valid_2 with "Hown Hj") as %[aa bb].
-    admit.
-  (*   simpl in bb. *)
-  (*   iDestruct agree_op_inv' with "bb". *)
-
-
-  (*   (* iDestruct agree_op_inv' with  as %HHH. *) *)
-  (*   %agree_op_inv' *)
-  (*   rewrite -pair_op in asf. *)
-  (*   iSimpl in "asf".  *)
-
-  (*   rewrite currently_half. *)
-  (*   iDestruct (@own_valid_2 with "Hown Hj") *)
-  (*     as %[[?%Excl_included%leibniz_equiv _]%prod_included Hvalid]%auth_both_valid; subst. *)
-  (*   iMod (own_update_2 with "Hown Hj") as "[Hown Hj]". *)
-  (*   { by eapply auth_update, prod_local_update_1, option_local_update, *)
-  (*       (exclusive_local_update _ (Excl (fill K e'))). } *)
-  (*   iFrame "Hj". *)
-  (*   iApply "Hclose". iNext. iExists (fill K e'). iExists σ. iFrame. *)
-  (*   iPureIntro. eapply rtc_r, step_insert_no_fork; eauto. *)
-  (* Qed. *)
-  Admitted.
+    iDestruct (own_valid_2 with "Hown Hj") as "#eee".
+    rewrite -pair_op frac_op' Qp_half_half.
+    iDestruct "eee" as %[_ ->%agree_op_inv'%leibniz_equiv]%pair_valid.
+    (** update *)
+    (* bring together *)
+    iDestruct (equiv_entails_sym _ _ (own_op _ _ _) with "[Hj Hown]") as "HOwnOne".
+    iFrame.
+    (* actually update *)
+    rewrite -pair_op frac_op' Qp_half_half.
+    iMod (own_update _ _ (1%Qp, to_agree (fill K e2')) with "HOwnOne") as "HOwnOne".
+    rewrite agree_idemp.
+    { apply cmra_update_exclusive. done. }
+    rewrite -Qp_half_half -frac_op' -(agree_idemp (to_agree (fill K e2'))).
+    iDestruct "HOwnOne" as "[Hown1 Hown2]".
+    rewrite frac_op' Qp_half_half (agree_idemp (to_agree (fill K e2'))).
+    (** close invariant *)
+    iApply fupd_wand_r. iSplitL "Hclose Hown1". iApply ("Hclose" with "[Hown1]").
+    iNext. iExists (fill K e2'). iFrame.
+    iPureIntro.
+    eapply rtc_r, step_insert_no_fork; eauto.
+    iIntros (_). done.
+  Qed.
 
   Lemma step_fst E ei' K e1' e2' :
     AsVal e1' → AsVal e2' →
     nclose specN ⊆ E →
     initially_inv ei' ∗ currently_half (fill K (Fst (Pair e1' e2'))) ={E}=∗ currently_half (fill K e1').
-  Proof. intros [? <-] [? <-]. apply step_pure => σ; econstructor; eauto. Qed.
+  Proof. intros [? <-] [? <-]. apply step_pure; econstructor; eauto. Qed.
 
   Lemma step_snd E ei' K e1' e2' :
     AsVal e1' → AsVal e2' → nclose specN ⊆ E →
     initially_inv ei' ∗ currently_half (fill K (Snd (Pair e1' e2'))) ={E}=∗ currently_half (fill K e2').
-  Proof. intros [? <-] [? <-]; apply step_pure => σ; econstructor; eauto. Qed.
-
-  (* Lemma step_alloc E ρ K e v: *)
-  (*   IntoVal e v → nclose specN ⊆ E → *)
-  (*   spec_inv ρ ∗ ⤇ fill K (Alloc e) ={E}=∗ ∃ l, ⤇ fill K (Loc l) ∗ l ↦ₛ v. *)
-  (* Proof. *)
-  (*   iIntros (<- ?) "[#Hinv Hj]". rewrite /spec_ctx /tpool_mapsto. *)
-  (*   iInv specN as ">Hinv'" "Hclose". iDestruct "Hinv'" as (e2 σ) "[Hown %]". *)
-  (*   destruct (exist_fresh (dom (gset positive) σ)) as [l Hl%not_elem_of_dom]. *)
-  (*   iDestruct (own_valid_2 _ with "Hown Hj") *)
-  (*     as %[[?%Excl_included%leibniz_equiv _]%prod_included ?]%auth_both_valid. *)
-  (*   subst. *)
-  (*   iMod (own_update_2 with "Hown Hj") as "[Hown Hj]". *)
-  (*   { by eapply auth_update, prod_local_update_1, option_local_update, *)
-  (*      (exclusive_local_update _ (Excl (fill K (Loc l)))). } *)
-  (*   iMod (own_update with "Hown") as "[Hown Hl]". *)
-  (*   { eapply auth_update_alloc, prod_local_update_2, *)
-  (*       (alloc_singleton_local_update _ l (1%Qp,to_agree v)); last done. *)
-  (*     by apply lookup_to_gen_heap_None. } *)
-  (*   iExists l. rewrite /heapS_mapsto. iFrame "Hj Hl". iApply "Hclose". iNext. *)
-  (*   iExists (fill K (Loc l)), (<[l:=v]>σ). *)
-  (*   rewrite to_gen_heap_insert; last eauto. iFrame. iPureIntro. *)
-  (*   eapply rtc_r, step_insert_no_fork; eauto. econstructor; eauto. *)
-  (* Qed. *)
-
-  (* Lemma step_load E ρ K l q v: *)
-  (*   nclose specN ⊆ E → *)
-  (*   spec_inv ρ ∗ ⤇ fill K (Load (Loc l)) ∗ l ↦ₛ{q} v *)
-  (*   ={E}=∗ ⤇ fill K (of_val v) ∗ l ↦ₛ{q} v. *)
-  (* Proof. *)
-  (*   iIntros (?) "(#Hinv & Hj & Hl)". *)
-  (*   rewrite /spec_ctx /tpool_mapsto /heapS_mapsto. *)
-  (*   iInv specN as ">Hinv'" "Hclose". iDestruct "Hinv'" as (e2 σ) "[Hown %]". *)
-  (*   iDestruct (own_valid_2 _ with "Hown Hj") *)
-  (*     as %[[?%Excl_included%leibniz_equiv _]%prod_included ?]%auth_both_valid. *)
-  (*   subst. *)
-  (*   iDestruct (own_valid_2 with "Hown Hl") *)
-  (*     as %[[_ ?%gen_heap_singleton_included]%prod_included _]%auth_both_valid. *)
-  (*   iMod (own_update_2 with "Hown Hj") as "[Hown Hj]". *)
-  (*   { by eapply auth_update, prod_local_update_1, option_local_update, *)
-  (*       (exclusive_local_update _ (Excl (fill K (of_val v)))). } *)
-  (*   iFrame "Hj Hl". iApply "Hclose". iNext. *)
-  (*   iExists (fill K (of_val v)), σ. *)
-  (*   iFrame. iPureIntro. *)
-  (*   eapply rtc_r, step_insert_no_fork; eauto. econstructor; eauto. *)
-  (* Qed. *)
-
-  (* Lemma step_store E ρ K l v' e v: *)
-  (*   IntoVal e v → nclose specN ⊆ E → *)
-  (*   spec_inv ρ ∗ ⤇ fill K (Store (Loc l) e) ∗ l ↦ₛ v' *)
-  (*   ={E}=∗ ⤇ fill K Unit ∗ l ↦ₛ v. *)
-  (* Proof. *)
-  (*   iIntros (<- ?) "(#Hinv & Hj & Hl)". *)
-  (*   rewrite /spec_ctx /tpool_mapsto /heapS_mapsto. *)
-  (*   iInv specN as ">Hinv'" "Hclose". iDestruct "Hinv'" as (e2 σ) "[Hown %]". *)
-  (*   iDestruct (own_valid_2 _ with "Hown Hj") *)
-  (*     as %[[?%Excl_included%leibniz_equiv _]%prod_included ?]%auth_both_valid. *)
-  (*   subst. *)
-  (*   iDestruct (own_valid_2 _ with "Hown Hl") *)
-  (*     as %[[_ Hl%gen_heap_singleton_included]%prod_included _]%auth_both_valid. *)
-  (*   iMod (own_update_2 with "Hown Hj") as "[Hown Hj]". *)
-  (*   { by eapply auth_update, prod_local_update_1, option_local_update, *)
-  (*       (exclusive_local_update _ (Excl (fill K Unit))). } *)
-  (*   iMod (own_update_2 with "Hown Hl") as "[Hown Hl]". *)
-  (*   { eapply auth_update, prod_local_update_2, singleton_local_update, *)
-  (*       (exclusive_local_update _ (1%Qp, to_agree v)); last done. *)
-  (*     by rewrite /to_gen_heap lookup_fmap Hl. } *)
-  (*   iFrame "Hj Hl". iApply "Hclose". iNext. *)
-  (*   iExists (fill K Unit), (<[l:=v]>σ). *)
-  (*   rewrite to_gen_heap_insert; last eauto. iFrame. iPureIntro. *)
-  (*   eapply rtc_r, step_insert_no_fork; eauto. econstructor; eauto. *)
-  (* Qed. *)
+  Proof. intros [? <-] [? <-]; apply step_pure; econstructor; eauto. Qed.
 
   Lemma step_lam E ei' K e1' e2' :
     AsVal e2' → nclose specN ⊆ E →
     initially_inv ei' ∗ currently_half (fill K (App (Lam e1') e2'))
     ={E}=∗ currently_half (fill K (e1'.[e2'/])).
-  Proof. intros [? <-]; apply step_pure => σ; econstructor; eauto. Qed.
-
-  (* Lemma step_tlam E ρ K e : *)
-  (*   nclose specN ⊆ E → *)
-  (*   spec_inv ρ ∗ ⤇ fill K (TApp (TLam e)) ={E}=∗ ⤇ fill K e. *)
-  (* Proof. apply step_pure => σ; econstructor; eauto. Qed. *)
+  Proof. intros [? <-]; apply step_pure; econstructor; eauto. Qed.
 
   Lemma step_Fold E ei' K e' :
     AsVal e' → nclose specN ⊆ E →
     initially_inv ei' ∗ currently_half (fill K (Unfold (Fold e'))) ={E}=∗ currently_half (fill K e').
-  Proof. intros [? <-]; apply step_pure => σ; econstructor; eauto. Qed.
+  Proof. intros [? <-]; apply step_pure; econstructor; eauto. Qed.
 
   Lemma step_case_inl E ei' K e0' e1' e2' :
     AsVal e0' → nclose specN ⊆ E →
     initially_inv ei' ∗ currently_half (fill K (Case (InjL e0') e1' e2'))
       ={E}=∗ currently_half (fill K (e1'.[e0'/])).
-  Proof. intros [? <-]; apply step_pure => σ; econstructor; eauto. Qed.
+  Proof. intros [? <-]; apply step_pure; econstructor; eauto. Qed.
 
   Lemma step_case_inr E ei' K e0' e1' e2' :
     AsVal e0' → nclose specN ⊆ E →
     initially_inv ei' ∗ currently_half (fill K (Case (InjR e0') e1' e2'))
       ={E}=∗ currently_half (fill K (e2'.[e0'/])).
-  Proof. intros [? <-]; apply step_pure => σ; econstructor; eauto. Qed.
+  Proof. intros [? <-]; apply step_pure; econstructor; eauto. Qed.
 End cfg.
