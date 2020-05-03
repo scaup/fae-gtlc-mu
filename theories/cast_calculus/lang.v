@@ -37,7 +37,7 @@ Inductive val :=
 | InjLV (v : val)
 | InjRV (v : val)
 | FoldV (v : val)
-| CastV (v : val) (τi τf : type) (Ip : Inert_cast_pair τi τf).
+| CastV (v : val) (τi τf : type) (Ip : ICP τi τf).
 
 Fixpoint of_val (v : val) : expr :=
   match v with
@@ -47,13 +47,13 @@ Fixpoint of_val (v : val) : expr :=
   | InjLV v => InjL (of_val v)
   | InjRV v => InjR (of_val v)
   | FoldV v => Fold (of_val v)
-  | CastV v τi τf _ => Cast (of_val v) τi τf
+  | CastV v τi τf Ip => Cast (of_val v) τi τf
   end.
 Notation "# v" := (of_val v) (at level 20).
 
 Coercion of_val : val >-> expr.
 
-Definition Inert_cast_pair_dec (τi τf : type) : Decision (Inert_cast_pair τi τf).
+Definition ICP_dec (τi τf : type) : Decision (ICP τi τf).
 destruct τf.
   - apply right. intro aaa. inversion aaa.
   - apply right. intro aaa. inversion aaa.
@@ -81,7 +81,7 @@ Fixpoint to_val (e : expr) : option val :=
   | InjL e => InjLV <$> to_val e
   | InjR e => InjRV <$> to_val e
   | Fold e => v ← to_val e; Some (FoldV v)
-  | Cast e τi τf => match (Inert_cast_pair_dec τi τf) with
+  | Cast e τi τf => match (ICP_dec τi τf) with
                      | left Ip => v ← to_val e; Some (CastV v τi τf Ip)
                      | right _ => None
                    end
@@ -198,7 +198,7 @@ Inductive head_step : expr → state → list Empty_set → expr → state → l
     to_val e = Some v →
     ((Ground τ) -> False) →
     (¬ (τ = ⋆)) →
-    cons_stand τ τG →
+    cons_stand_open τ τG →
     head_step
       (Cast e τ ⋆) σ []
       (Cast (Cast e τ τG) τG ⋆) σ []
@@ -206,7 +206,7 @@ Inductive head_step : expr → state → list Empty_set → expr → state → l
     to_val e = Some v →
     (notT (Ground τ)) →
     (¬ (τ = ⋆)) →
-    cons_stand τ τG →
+    cons_stand_open τ τG →
     head_step
       (Cast e ⋆ τ) σ []
       (Cast (Cast e ⋆ τG) τG τ) σ []
@@ -221,15 +221,15 @@ Lemma to_of_val v : to_val (of_val v) = Some v.
 Proof.
   induction v; simplify_option_eq; try done.
   (* extra case *)
-  destruct (Inert_cast_pair_dec τi τf).
-  - rewrite IHv. simpl. by rewrite (Unique_Inert_cast_pair_proof τi τf Ip i).
+  destruct (ICP_dec τi τf).
+  - rewrite IHv. simpl. by rewrite (Unique_ICP_proof τi τf Ip i).
   - (* impossible case *) exfalso. apply n. apply Ip.
 Qed.
 
 Lemma of_to_val e v : to_val e = Some v → of_val v = e.
 Proof.
   revert v; induction e; intros; simplify_option_eq; auto with f_equal.
-  destruct (Inert_cast_pair_dec τi τf).
+  destruct (ICP_dec τi τf).
   - destruct (to_val e); simplify_option_eq; by rewrite IHe.
   - inversion H.
 Qed.
@@ -240,7 +240,7 @@ Proof. by intros ?? Hv; apply (inj Some); rewrite -!to_of_val Hv. Qed.
 Lemma fill_item_val Ki e :
   is_Some (to_val (fill_item Ki e)) → is_Some (to_val e).
 Proof. intros [v ?]. destruct Ki; simplify_option_eq; eauto.
-destruct (Inert_cast_pair_dec τi τf).
+destruct (ICP_dec τi τf).
   simplify_option_eq. by eexists. inversion H.
 Qed.
 
@@ -252,19 +252,19 @@ Lemma val_stuck e1 σ1 κ e2 σ2 ef :
 Proof.
   destruct 1; try naive_solver.
   - simpl.
-    destruct (Inert_cast_pair_dec ⋆ τ).
+    destruct (ICP_dec ⋆ τ).
     destruct (Ground_dec τ); simplify_option_eq.
     inversion i. inversion G. done. done.
   - simpl.
-    destruct (Inert_cast_pair_dec ⋆ τ2).
+    destruct (ICP_dec ⋆ τ2).
     destruct (Ground_dec τ1); simplify_option_eq.
     inversion i. inversion G. auto. auto.
   - simpl.
     by destruct (Ground_dec τ); simplify_option_eq.
   - simpl.
-    destruct (Inert_cast_pair_dec τ ⋆).
+    destruct (ICP_dec τ ⋆).
     inversion i; by exfalso.
-    destruct (Inert_cast_pair_dec ⋆ τ).
+    destruct (ICP_dec ⋆ τ).
     inversion i. by exfalso.
     done.
 Qed.
@@ -294,21 +294,21 @@ Qed.
 Lemma val_head_stuck e1 σ1 κ e2 σ2 efs : head_step e1 σ1 κ e2 σ2 efs → to_val e1 = None.
 Proof. destruct 1; try naive_solver.
   - simpl.
-    destruct (Inert_cast_pair_dec ⋆ τ).
+    destruct (ICP_dec ⋆ τ).
     destruct (Ground_dec τ); simplify_option_eq.
     inversion i. inversion G. done. done.
   - simpl.
-    destruct (Inert_cast_pair_dec ⋆ τ2).
+    destruct (ICP_dec ⋆ τ2).
     destruct (Ground_dec τ1); simplify_option_eq.
     inversion i. inversion G. auto. auto.
-  - destruct (Inert_cast_pair_dec τ ⋆).
+  - destruct (ICP_dec τ ⋆).
     by inversion i.
     simpl.
     by destruct (Ground_dec τ); simplify_option_eq.
-  - destruct (Inert_cast_pair_dec ⋆ τ).
+  - destruct (ICP_dec ⋆ τ).
     by inversion i.
     simpl.
-    destruct (Inert_cast_pair_dec ⋆ τ).
+    destruct (ICP_dec ⋆ τ).
     by exfalso; done. done.
 Qed.
 

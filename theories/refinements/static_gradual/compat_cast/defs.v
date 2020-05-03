@@ -6,7 +6,7 @@ From iris.algebra Require Import list.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Import lifting.
 From fae_gtlc_mu.cast_calculus Require Export types.
-From fae_gtlc_mu.cast_calculus Require Export consistency.structural.definition.
+From fae_gtlc_mu.cast_calculus Require Export consistency.structural.
 From fae_gtlc_mu.backtranslation Require Export cast_help.general cast_help.extract cast_help.embed.
 
 (* Coercion stlc_mu.lang.of_val : stlc_mu.lang.val >-> stlc_mu.lang.expr. *)
@@ -32,7 +32,7 @@ Section defs.
     ⌜length A = length fs⌝ ∗
     [∗ list] a ; f ∈ A ; fs , (
                            □ (∀ (v : stlc_mu.lang.val) (v' : cast_calculus.lang.val) ,
-                                 ⟦ a.1 ⟧ [] (v , v') → ⟦ a.2 ⟧ₑ [] ((stlc_mu.lang.of_val f v) , Cast (v') a.1 a.2))
+                                 ⟦ a.1 ⟧ (v , v') → ⟦ a.2 ⟧ₑ ((stlc_mu.lang.of_val f v) , Cast (v') a.1 a.2))
                          )%I.
 
   Global Instance rel_cast_functions_persistent A fs :
@@ -47,9 +47,6 @@ Section defs.
       (We redefine it here to a new statement, making it a bit more amenable for proving.) *)
 
   Definition back_cast_ar {A} {τi τf} (pC : cons_struct A τi τf) :=
-  ∀ ei' K' v v' fs, bi_entails
-                      (rel_cast_functions A fs ∗ interp τi [] (v, v') ∗ initially_inv ei' ∗ currently_half (fill K' (Cast (cast_calculus.lang.of_val v') τi τf)))
-                      (WP (𝓕c pC fs (stlc_mu.lang.of_val v)) {{ w, ∃ w', currently_half (fill K' (cast_calculus.lang.of_val w')) ∗ interp τf [] (w, w') }})%I.
-
-
+  ∀ ei' K' v v' fs, (rel_cast_functions A fs ∗ ⟦ τi ⟧ (v, v') ∗ initially_inv ei' ∗ currently_half (fill K' (Cast (cast_calculus.lang.of_val v') τi τf)))
+                     ⊢ (WP (𝓕c pC fs (stlc_mu.lang.of_val v)) {{ w, ∃ w', currently_half (fill K' (cast_calculus.lang.of_val w')) ∗ ⟦ τf ⟧ (w, w') }})%I.
 End defs.

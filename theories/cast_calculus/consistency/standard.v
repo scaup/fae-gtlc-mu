@@ -6,7 +6,7 @@ From stdpp Require Import base list.
 From Autosubst Require Export Autosubst.
 Require Export Utf8_core.
 
-Inductive cons_stand_open : type -> type -> Type :=
+Inductive cons_stand_open : type -> type -> Prop :=
 | GenSymUnit :
     cons_stand_open TUnit TUnit
 | GenSymUnknownL τ :
@@ -81,6 +81,29 @@ Qed.
 
 Definition cons_stand τ (pτ : TClosed τ) τ' (pτ' : TClosed τ') : Type := cons_stand_open τ τ'.
 
-(* Lemma cons_stand_dec τ1 τ2 : TDecision (cons_stand τ1 τ2). *)
-(* Proof. *)
-(* Admitted. *)
+Instance cons_stand_open_dec τ τ' : Decision (cons_stand_open τ τ').
+Proof.
+  generalize dependent τ'.
+  induction τ; intro τ'; destruct τ'; ((by (apply left; by constructor)) || (try by apply right; intro abs; inversion abs)); try specialize (IHτ1 τ'1); try specialize (IHτ2 τ'2); try specialize (IHτ τ0).
+  - destruct IHτ1.
+    destruct IHτ2.
+    apply left; by constructor.
+    apply right. intro abs. inversion abs. contradiction.
+    apply right. intro abs. inversion abs. contradiction.
+  - destruct IHτ1.
+    destruct IHτ2.
+    apply left; by constructor.
+    apply right. intro abs. inversion abs. contradiction.
+    apply right. intro abs. inversion abs. contradiction.
+  - destruct IHτ1.
+    destruct IHτ2.
+    apply left; by constructor.
+    apply right. intro abs. inversion abs. contradiction.
+    apply right. intro abs. inversion abs. contradiction.
+  - destruct IHτ.
+    apply left; by constructor.
+    apply right. intro abs. inversion abs. contradiction.
+  - destruct (decide (x = x0)).
+    apply left. rewrite e. eapply GenSymVar.
+    apply right. intro abs. inversion abs. contradiction.
+Qed.

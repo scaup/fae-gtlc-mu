@@ -1,10 +1,10 @@
-From fae_gtlc_mu.refinements.static_gradual Require Export tactics_left logical_relation resources_right compat_easy help_left compat_cast.defs.
+From fae_gtlc_mu.refinements.static_gradual Require Export logical_relation resources_right compat_easy help_left compat_cast.defs.
 From fae_gtlc_mu.cast_calculus Require Export types typing.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 From iris.algebra Require Import list.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Import lifting.
-From fae_gtlc_mu.cast_calculus Require Export consistency.structural.definition.
+From fae_gtlc_mu.cast_calculus Require Export consistency.structural.
 From fae_gtlc_mu.backtranslation Require Export cast_help.general cast_help.extract cast_help.embed.
 From fae_gtlc_mu.cast_calculus Require Export lang types.
 
@@ -34,12 +34,13 @@ Section compat_cast_identity.
   Proof.
     intros A.
     rewrite /back_cast_ar. iIntros (ei' K' v v' fs) "(#Hfs & #Hvv' & #Hei' & Hv')".
+    rewrite interp_rw_TUnit.
     iDestruct "Hvv'" as "%"; inversion H. simpl in *. rewrite H0 H1. clear v v' H H0 H1.
     asimpl. wp_head.
     iMod (step_pure _ ei' K'
                     (Cast Unit TUnit TUnit)
                     Unit with "[Hv']") as "Hv'". intros. eapply IdBase. by simpl. auto.
-    iSplitR. done. done. asimpl. wp_value. iExists UnitV. iSplitL. done. done.
+    iSplitR. done. done. asimpl. wp_value. iExists UnitV. iSplitL. done. rewrite interp_rw_TUnit. done.
   Qed.
 
   Lemma back_cast_ar_star_star:

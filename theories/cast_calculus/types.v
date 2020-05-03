@@ -11,17 +11,37 @@ Inductive type :=
   | TVar (x : var)
   | TUnknown : type.
 
-Instance Is_Unknown_dec (τ : type) : Decision (τ = TUnknown).
+Instance type_eqdec : EqDecision type.
 Proof.
-  destruct τ.
-  apply right; auto.
-  apply right; auto.
-  apply right; auto.
-  apply right; auto.
-  apply right; auto.
-  apply right; auto.
-  apply left; auto.
+  unfold EqDecision.
+  intro τ.
+  induction τ; intros τ'; destruct τ'; try (by (apply right; intro abs; inversion abs)).
+  - by apply left.
+  - destruct (IHτ1 τ'1) as [-> | neq].
+    + destruct (IHτ2 τ'2) as [-> | neq].
+      * by apply left.
+      * apply right. intro abs. inversion abs. contradiction.
+    + apply right. intro abs. inversion abs. contradiction.
+  - destruct (IHτ1 τ'1) as [-> | neq].
+    + destruct (IHτ2 τ'2) as [-> | neq].
+      * by apply left.
+      * apply right. intro abs. inversion abs. contradiction.
+    + apply right. intro abs. inversion abs. contradiction.
+  - destruct (IHτ1 τ'1) as [-> | neq].
+    + destruct (IHτ2 τ'2) as [-> | neq].
+      * by apply left.
+      * apply right. intro abs. inversion abs. contradiction.
+    + apply right. intro abs. inversion abs. contradiction.
+  - destruct (IHτ τ0) as [-> | neq].
+    + by apply left.
+    + apply right. intro abs. inversion abs. contradiction.
+  - destruct (decide (x = x0)) as [-> | neq].
+    + by apply left.
+    + apply right. intro abs. inversion abs. contradiction.
+  - by apply left.
 Qed.
+
+Instance Is_Unknown_dec (τ : type) : Decision (τ = TUnknown) := type_eqdec τ TUnknown.
 
 Instance Ids_type : Ids type. derive. Defined.
 Instance Rename_type : Rename type. derive. Defined.
@@ -31,10 +51,6 @@ Instance SubstLemmas_typer : SubstLemmas type. derive. Qed.
 Definition Is_Closed τ := forall τ', τ.[τ'/] = τ.
 
 Definition TClosed τ := forall σ, τ.[σ] = τ.
-
-(* Instance TClosed_dec τ : Decision (TClosed τ). *)
-(* Admitted. *)
-
 (* boring properties about substitution {{{ *)
 
 Lemma scomp_comp (σ1 σ2 : var → type) τ : (subst σ1 ∘ subst σ2) τ = subst (σ2 >> σ1) τ.
@@ -391,16 +407,16 @@ Defined.
 Definition Ground_equal {τ1 τ2 : type} (G1 : Ground τ1) (G2 : Ground τ2) : Prop := τ1 = τ2.
 
 (* Distinction between inert and active as in formalisation of Jeremy *)
-Inductive Inert_cast_pair : type → type → Prop :=
-  | Between_arrow_types τ1 τ2 τ1' τ2' : Inert_cast_pair (TArrow τ1 τ2) (TArrow τ1' τ2')
-  | From_ground_to_unknown τ (G : Ground τ) : Inert_cast_pair τ TUnknown.
+Inductive ICP : type → type → Prop :=
+  | TArrow_TArrow_icp τ1 τ2 τ1' τ2' : ICP (TArrow τ1 τ2) (TArrow τ1' τ2')
+  | TGround_TUnknown_icp {τ} (G : Ground τ) : ICP τ TUnknown.
 
 Lemma Unique_Ground_Proof τ (G1 : Ground τ) (G2 : Ground τ) : G1 = G2.
 Proof.
   destruct G1; generalize_eqs G2; intros; destruct G2; try inversion H; try by rewrite H0.
 Qed.
 
-Lemma Unique_Inert_cast_pair_proof τi τf (Ip1 : Inert_cast_pair τi τf) (Ip2 : Inert_cast_pair τi τf) : Ip1 = Ip2.
+Lemma Unique_ICP_proof τi τf (Ip1 : ICP τi τf) (Ip2 : ICP τi τf) : Ip1 = Ip2.
 Proof.
   destruct Ip1.
   - generalize_eqs Ip2.
@@ -452,3 +468,33 @@ Infix "×" := TProd (at level 150) : type_scope.
 Infix "+" := TSum : type_scope.
 
 (* }}} *)
+
+
+
+Lemma TClosed_easy : forall τ n, τ.[upn n (TUnit .: ids)] = τ → TnClosed n τ.
+Proof.
+  intro τ.
+  induction τ; intros n eq.
+  - intro σ; by asimpl.
+  - asimpl in eq. inversion eq.
+    specialize (IHτ1 n H0). specialize (IHτ2 n H1).
+    rewrite IHτ1 IHτ2. intro σ. asimpl. by rewrite IHτ1 IHτ2.
+  - asimpl in eq. inversion eq.
+    specialize (IHτ1 n H0). specialize (IHτ2 n H1).
+    rewrite IHτ1 IHτ2. intro σ. asimpl. by rewrite IHτ1 IHτ2.
+  - asimpl in eq. inversion eq.
+    specialize (IHτ1 n H0). specialize (IHτ2 n H1).
+    rewrite IHτ1 IHτ2. intro σ. asimpl. by rewrite IHτ1 IHτ2.
+  - apply TRec_nclosed. apply IHτ. asimpl in eq. inversion eq. by do 2 rewrite H0.
+  - asimpl in eq. destruct (iter_up_cases x n (TUnit .: ids)) as [[a p]| [j [b eq']]].
+    by apply TnClosed_var. exfalso. rewrite eq in eq'. destruct j; asimpl in eq'. inversion eq'.
+    inversion eq'. lia.
+  - intro σ; by asimpl.
+Qed.
+
+Instance TClosed_dec τ : Decision (TClosed τ).
+Proof.
+  destruct (decide (τ.[TUnit/] = τ)).
+  apply left. cut (TnClosed 0 τ). by simpl. apply TClosed_easy. by asimpl.
+  apply right. intro abs. assert (H : τ.[TUnit/] = τ). by rewrite abs. contradiction.
+Qed.

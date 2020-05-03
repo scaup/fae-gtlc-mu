@@ -61,10 +61,10 @@ Section between_rec.
   Qed.
 
   Lemma wp_fix'' (f : stlc_mu.lang.expr) Φ :
-    ⊢ (▷ ▷ WP f (stlc_mu.lang.Lam (rename (+1) (Fix'' f) (stlc_mu.lang.Var 0)))   {{ Φ }} -∗ (WP (Fix'' f) {{ Φ }}))%I.
+    ⊢ (▷ ▷ WP f (stlc_mu.lang.Lam (rename (+1) (Fix f) (stlc_mu.lang.Var 0)))   {{ Φ }} -∗ (WP (Fix f) {{ Φ }}))%I.
   Proof.
     iIntros "H".
-    rewrite{2} /Fix''.
+    rewrite{2} /Fix.
     iApply (wp_bind $ stlc_mu.lang.fill_item $ stlc_mu.lang.AppLCtx _).
     apply (@ectxi_lang_ctx_item stlc_mu.lang.ectxi_lang). (* hmmmm :( *)
     wp_head.
@@ -103,10 +103,10 @@ Section between_rec.
     iApply wp_pure_step_later; auto; iNext.
     (* bringing subs of fs inwards *)
     rewrite rewrite_subs_app.
-    do 2 rewrite Fix''_subs_rewrite.
+    do 2 rewrite Fix_subs_rewrite.
     assert (triv :
-              Fix'' (stlc_mu.lang.Lam (stlc_mu.lang.Lam (stlc_mu.lang.Fold (rename (+1) (𝓕 pC).[upn 1 (ren (+1))] (stlc_mu.lang.Unfold (stlc_mu.lang.Var 0)))))).[up (stlc_mu.typing.env_subst fs)].[stlc_mu.lang.of_val $ stlc_mu.lang.FoldV w/] (stlc_mu.lang.Var 0).[up (stlc_mu.typing.env_subst fs)].[stlc_mu.lang.of_val $ stlc_mu.lang.FoldV w/] = Fix'' (stlc_mu.lang.Lam (stlc_mu.lang.Lam (stlc_mu.lang.Fold ((𝓕 pC).[up (stlc_mu.typing.env_subst fs) >> ren (+1)] (stlc_mu.lang.Unfold (ids 0)))))) (stlc_mu.lang.Fold (w))). by asimpl. rewrite triv. clear triv.
-    (* evaluation step of the Fix'' itself *)
+              Fix (stlc_mu.lang.Lam (stlc_mu.lang.Lam (stlc_mu.lang.Fold (rename (+1) (𝓕 pC).[upn 1 (ren (+1))] (stlc_mu.lang.Unfold (stlc_mu.lang.Var 0)))))).[up (stlc_mu.typing.env_subst fs)].[stlc_mu.lang.of_val $ stlc_mu.lang.FoldV w/] (stlc_mu.lang.Var 0).[up (stlc_mu.typing.env_subst fs)].[stlc_mu.lang.of_val $ stlc_mu.lang.FoldV w/] = Fix (stlc_mu.lang.Lam (stlc_mu.lang.Lam (stlc_mu.lang.Fold ((𝓕 pC).[up (stlc_mu.typing.env_subst fs) >> ren (+1)] (stlc_mu.lang.Unfold (ids 0)))))) (stlc_mu.lang.Fold (w))). by asimpl. rewrite triv. clear triv.
+    (* evaluation step of the Fix itself *)
     iApply (wp_bind (stlc_mu.lang.fill_item $ stlc_mu.lang.AppLCtx _)).
     iApply wp_fix''.
     (** easy steps *)
@@ -119,7 +119,7 @@ Section between_rec.
     assert (triv : ((stlc_mu.lang.Fold ((𝓕 pC).[up (stlc_mu.typing.env_subst fs) >> ren (+1)] (stlc_mu.lang.Unfold (ids 0)))).[up
                                                                                                                 (stlc_mu.lang.Lam
                                                                                                                     (rename (+1)
-                                                                                                                      (Fix''
+                                                                                                                      (Fix
                                                                                                                           (stlc_mu.lang.Lam
                                                                                                                             (stlc_mu.lang.Lam
                                                                                                                                 (stlc_mu.lang.Fold

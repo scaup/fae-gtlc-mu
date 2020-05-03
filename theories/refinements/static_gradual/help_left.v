@@ -6,8 +6,11 @@ From iris.algebra Require Import list.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Import lifting.
 From fae_gtlc_mu.cast_calculus Require Export types.
-From fae_gtlc_mu.cast_calculus Require Export consistency.structural.definition.
+From fae_gtlc_mu.cast_calculus Require Export consistency.structural.
 From fae_gtlc_mu.backtranslation Require Export cast_help.general cast_help.extract cast_help.embed.
+
+Ltac wp_head := iApply wp_pure_step_later; auto; iNext.
+Ltac wp_value := iApply wp_value.
 
 Section extract_embed.
   Context `{!implG Σ,!specG Σ}.
