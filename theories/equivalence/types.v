@@ -276,3 +276,4 @@ Lemma TRec_closed_unfold {τ} : TClosed (TRec τ) → TClosed (τ.[TRec τ/]).
 Proof. intro. cut (TnClosed 0 τ.[TRec τ/]). by simpl. apply TnClosed_subst.
        apply TRec_nclosed. by simpl. by simpl.
 Qed.
+

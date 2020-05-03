@@ -1,39 +1,55 @@
 From Autosubst Require Export Autosubst.
-From fae_gtlc_mu Require Import prelude.
-Require Coq.Logic.JMeq.
+From fae_gtlc_mu Require Export prelude.
+From fae_gtlc_mu Require Export stlc_mu.lang.
+From Coq Require Import List.
 
 Inductive type :=
   | TUnit : type
-  | TProd (τ1 τ2 : type) : type
-  | TSum (τ1 τ2 : type) : type
-  | TArrow (τ1 τ2 : type) : type
+  | TProd : type → type → type
+  | TSum : type → type → type
+  | TArrow : type → type → type
   | TRec (τ : {bind 1 of type})
-  | TVar (x : var)
-  | TUnknown : type.
+  | TVar (x : var).
 
-Instance Is_Unknown_dec (τ : type) : Decision (τ = TUnknown).
-Proof.
-  destruct τ.
-  apply right; auto.
-  apply right; auto.
-  apply right; auto.
-  apply right; auto.
-  apply right; auto.
-  apply right; auto.
-  apply left; auto.
-Qed.
+(* Notation "( τ1 → .. → τm → τn )" := (TArrow τ1 .. (TArrow τm τn) .. ) : type_scope. (* does not work?? *) *)
+(* Infix "→" := TArrow : type_scope. *)
 
 Instance Ids_type : Ids type. derive. Defined.
 Instance Rename_type : Rename type. derive. Defined.
 Instance Subst_type : Subst type. derive. Defined.
 Instance SubstLemmas_typer : SubstLemmas type. derive. Qed.
 
-Definition Is_Closed τ := forall τ', τ.[τ'/] = τ.
+Definition TClosed (τ : type) : Prop := forall σ, τ.[σ] = τ.
 
-Definition TClosed τ := forall σ, τ.[σ] = τ.
+Instance type_eqdec : EqDecision type.
+Proof.
+  unfold EqDecision.
+  intro τ.
+  induction τ; intros τ'; destruct τ'; try (by (apply right; intro abs; inversion abs)).
+  - by apply left.
+  - destruct (IHτ1 τ'1) as [-> | neq].
+    + destruct (IHτ2 τ'2) as [-> | neq].
+      * by apply left.
+      * apply right. intro abs. inversion abs. contradiction.
+    + apply right. intro abs. inversion abs. contradiction.
+  - destruct (IHτ1 τ'1) as [-> | neq].
+    + destruct (IHτ2 τ'2) as [-> | neq].
+      * by apply left.
+      * apply right. intro abs. inversion abs. contradiction.
+    + apply right. intro abs. inversion abs. contradiction.
+  - destruct (IHτ1 τ'1) as [-> | neq].
+    + destruct (IHτ2 τ'2) as [-> | neq].
+      * by apply left.
+      * apply right. intro abs. inversion abs. contradiction.
+    + apply right. intro abs. inversion abs. contradiction.
+  - destruct (IHτ τ0) as [-> | neq].
+    + by apply left.
+    + apply right. intro abs. inversion abs. contradiction.
+  - destruct (decide (x = x0)) as [-> | neq].
+    + by apply left.
+    + apply right. intro abs. inversion abs. contradiction.
+Qed.
 
-(* Instance TClosed_dec τ : Decision (TClosed τ). *)
-(* Admitted. *)
 
 (* boring properties about substitution {{{ *)
 
@@ -294,7 +310,6 @@ Proof.
     + eapply (TnClosed_mon _ n). lia. apply pτ.
     + asimpl. apply TnClosed_var.
       assert (H : x < n). by apply TnClosed_var. lia.
-  - by asimpl.
 Qed.
 
 Lemma TnClosed_ren (τ : type) :
@@ -327,7 +342,6 @@ Proof.
       * asimpl. by apply TnClosed_ren.
       * asimpl. assert (p1 : x < S (m + n)). by apply TnClosed_var.
         apply TnClosed_var. lia.
-  - by asimpl.
 Qed.
 
 Lemma TnClosed_subst n τ τ' : TnClosed (S n) τ' → TnClosed n τ → TnClosed n τ'.[τ/].
@@ -353,101 +367,8 @@ Ltac closed_solver :=
 
 (* }}} *)
 
-(* ground types, inert casts... {{{ *)
-
-Inductive Ground : type → Type :=
-  | Ground_TUnit : Ground TUnit
-  | Ground_TProd : Ground (TProd TUnknown TUnknown)
-  | Ground_TSum : Ground (TSum TUnknown TUnknown)
-  | Ground_TArrow : Ground (TArrow TUnknown TUnknown)
-  | Ground_TRec : Ground (TRec TUnknown).
-
-Definition Ground_dec (τ : type) : TDecision (Ground τ).
-  destruct τ.
-  - apply inl; constructor.
-  - destruct (Is_Unknown_dec τ1). rewrite e.
-    destruct (Is_Unknown_dec τ2). rewrite e0.
-    + apply inl. constructor.
-    + apply inr. intro aaa. inversion aaa. apply n. by symmetry.
-    + apply inr. intro aaa. inversion aaa. apply n. by symmetry.
-  - destruct (Is_Unknown_dec τ1). rewrite e.
-    destruct (Is_Unknown_dec τ2). rewrite e0.
-    + apply inl. constructor.
-    + apply inr. intro aaa. inversion aaa. apply n. by symmetry.
-    + apply inr. intro aaa. inversion aaa. apply n. by symmetry.
-  - destruct (Is_Unknown_dec τ1). rewrite e.
-    destruct (Is_Unknown_dec τ2). rewrite e0.
-    + apply inl. constructor.
-    + apply inr. intro aaa. inversion aaa. apply n. by symmetry.
-    + apply inr. intro aaa. inversion aaa. apply n. by symmetry.
-  - destruct (Is_Unknown_dec τ). rewrite e.
-    + apply inl. constructor.
-    + apply inr. intro aaa. inversion aaa. apply n. by symmetry.
-  - apply inr. intro aaa. inversion aaa.
-  - apply inr. intro aaa. inversion aaa.
-Defined.
-
-(* Checking if two GROUND TYPES are equal *)
-Definition Ground_equal {τ1 τ2 : type} (G1 : Ground τ1) (G2 : Ground τ2) : Prop := τ1 = τ2.
-
-(* Distinction between inert and active as in formalisation of Jeremy *)
-Inductive Inert_cast_pair : type → type → Prop :=
-  | Between_arrow_types τ1 τ2 τ1' τ2' : Inert_cast_pair (TArrow τ1 τ2) (TArrow τ1' τ2')
-  | From_ground_to_unknown τ (G : Ground τ) : Inert_cast_pair τ TUnknown.
-
-Lemma Unique_Ground_Proof τ (G1 : Ground τ) (G2 : Ground τ) : G1 = G2.
-Proof.
-  destruct G1; generalize_eqs G2; intros; destruct G2; try inversion H; try by rewrite H0.
-Qed.
-
-Lemma Unique_Inert_cast_pair_proof τi τf (Ip1 : Inert_cast_pair τi τf) (Ip2 : Inert_cast_pair τi τf) : Ip1 = Ip2.
-Proof.
-  destruct Ip1.
-  - generalize_eqs Ip2.
-    intros.
-    destruct Ip2.
-    simplify_eq.
-      by rewrite H1.
-      inversion H0.
-  - generalize_eqs Ip2.
-    intros.
-    destruct Ip2.
-    simplify_eq.
-    rewrite (Unique_Ground_Proof τ G G0).
-      by rewrite -H0.
-Qed.
-
-
-
-
-
-
-(* possibly with sigma type and proof of groundness *)
-Definition get_shape (τ : type) : option type :=
-  match τ with
-  | TUnit => None
-  | TProd x x0 => Some (TProd TUnknown TUnknown)
-  | TSum x x0 => Some (TSum TUnknown TUnknown)
-  | TArrow x x0 => Some (TArrow TUnknown TUnknown)
-  | TRec τ => Some (TRec TUnknown)
-  | TVar x => None
-  | TUnknown => None
-  end.
-
-Lemma get_shape_is_ground {τ τG : type} : get_shape τ = Some τG -> Ground τG.
-Proof.
-  intro.
-  destruct τ; simplify_eq; destruct τG; inversion H; constructor.
-Qed.
-
-(* }}} *)
-
-Lemma Ground_closed {τG} (G : Ground τG) : TClosed τG.
-Proof. destruct G; intro σ; by asimpl. Qed.
-
 (* notations {{{ *)
 
-Notation "⋆" := TUnknown : type_scope.
 Infix "×" := TProd (at level 150) : type_scope.
 Infix "+" := TSum : type_scope.
 

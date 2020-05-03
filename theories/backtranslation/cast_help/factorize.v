@@ -7,17 +7,18 @@ From fae_gtlc_mu.backtranslation.cast_help Require Export universe embed extract
 Definition identity : val :=
   LamV (Var 0).
 
-Lemma identity_typed (τ : type) Γ : Γ ⊢ₛ identity : (TArrow τ τ).
+Lemma identity_typed Γ pΓ τ pτ : Γ & pΓ ⊢ₛ identity : (TArrow τ τ) & (TArrow_closed pτ pτ).
 Proof.
   intros.
-  apply Lam_typed. by apply Var_typed.
+  eapply Lam_typed. by apply Var_typed.
+  Unshelve. all:auto.
 Qed.
 
 (** Factorisations *)
 
 Definition factorization_up (f : expr) (τG : cast_calculus.types.type) (G : Ground τG) : val :=
   LamV (
-      embed τG G ((rename (+1) f) (Var 0))
+      embed τG G (f.[ren (+1)] (Var 0))
     ).
 
 Lemma factorization_up_subst_rewrite (f : expr) (τG : cast_calculus.types.type) (G : Ground τG) σ : (# (factorization_up f τG G)).[σ] = factorization_up f.[σ] τG G.
@@ -26,20 +27,22 @@ Proof.
   asimpl. by rewrite embed_no_subs.
 Qed.
 
-Lemma factorization_up_typed Γ {f : expr} (τ : type(* backtranslation of something that is not a ground type, nor star *)) (τG : cast_calculus.types.type) (G : Ground τG) (d : Γ ⊢ₛ f : (TArrow τ <<τG>>)) :
-  Γ ⊢ₛ factorization_up f τG G : (TArrow τ Universe).
+Lemma factorization_up_typed Γ pΓ {f : expr} (τ : type) pτ (τG : cast_calculus.types.type) (G : Ground τG)
+      (d : Γ & pΓ ⊢ₛ f : (TArrow τ <<τG>>) & TArrow_closed pτ (back_Ground_closed G)) :
+  Γ & pΓ ⊢ₛ factorization_up f τG G : (TArrow τ Universe) & TArrow_closed pτ Universe_closed.
 Proof.
-  apply Lam_typed.
-  apply App_typed with (τ1 := << τG >>).
+  eapply Lam_typed.
+  eapply App_typed with (τ1 := << τG >>).
   apply embed_typed.
-  apply App_typed with (τ1 := τ ).
-  apply up_type_one. apply d.
+  eapply App_typed with (τ1 := τ ).
+  eapply up_type_one. apply d.
   by apply Var_typed.
+  Unshelve. all:(auto||apply Universe_closed||by apply back_Ground_closed).
 Qed.
 
 Definition factorization_down (f : expr) (τG : cast_calculus.types.type) (G : Ground τG) : val :=
   LamV (
-      (rename (+1) f) (extract τG G (Var 0))
+      (f.[ren (+1)]) (extract τG G (Var 0))
     ).
 
 Lemma factorization_down_subst_rewrite (f : expr) (τG : cast_calculus.types.type) (G : Ground τG) σ : (# (factorization_down f τG G)).[σ] = factorization_down f.[σ] τG G.
@@ -48,13 +51,15 @@ Proof.
   asimpl. by rewrite extract_no_subs.
 Qed.
 
-Lemma factorization_down_typed Γ {f : expr} (τ : type(* backtranslation of something that is not a ground type, nor star *)) (τG : cast_calculus.types.type) (G : Ground τG) (d : Γ ⊢ₛ f : (TArrow <<τG>> τ)) :
-  Γ ⊢ₛ factorization_down f τG G : (TArrow Universe τ).
+Lemma factorization_down_typed Γ pΓ {f : expr} (τ : type) pτ (τG : cast_calculus.types.type) (G : Ground τG)
+      (d : Γ & pΓ ⊢ₛ f : (TArrow <<τG>> τ) & (TArrow_closed (back_Ground_closed G) pτ)) :
+  Γ & pΓ ⊢ₛ factorization_down f τG G : (TArrow Universe τ) & (TArrow_closed Universe_closed pτ).
 Proof.
-  apply Lam_typed.
-  apply App_typed with (τ1 := << τG >>).
-  apply up_type_one. apply d.
-  apply App_typed with (τ1 := Universe).
+  eapply Lam_typed.
+  eapply App_typed with (τ1 := << τG >>).
+  eapply up_type_one. apply d.
+  eapply App_typed with (τ1 := Universe).
   apply extract_typed.
   by apply Var_typed.
+  Unshelve. all:(auto||apply Universe_closed||by apply back_Ground_closed).
 Qed.

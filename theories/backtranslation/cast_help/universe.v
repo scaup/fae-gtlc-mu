@@ -20,4 +20,6 @@ Definition Universe : type :=
 Definition Universe_unfolded : type :=
   Universe_body.[Universe/]%type.
 
+Lemma Universe_closed : TClosed Universe.
+Proof. intro σ. by asimpl. Qed.
 (* Coercion App : expr >-> Funclass. *)
