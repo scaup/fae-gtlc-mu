@@ -47,7 +47,7 @@ theories/backtranslation/cast_help/general.v
 
 theories/backtranslation/expressions.v
 # theories/backtranslation/contexts.v
-# theories/backtranslation/well_typedness.v
+theories/backtranslation/well_typedness.v
 
 
 # relation
@@ -65,13 +65,13 @@ theories/refinements/static_gradual/compat_cast/sum_sum.v
 theories/refinements/static_gradual/compat_cast/prod_prod.v
 theories/refinements/static_gradual/compat_cast/arrow_arrow.v
 theories/refinements/static_gradual/compat_cast/identity.v
-# theories/refinements/static_gradual/compat_cast/between_rec.v
+theories/refinements/static_gradual/compat_cast/between_rec.v
 # theories/refinements/static_gradual/compat_cast/extract_embed.v
-# theories/refinements/static_gradual/compat_cast/ground_star.v
+theories/refinements/static_gradual/compat_cast/ground_star.v
 # theories/refinements/static_gradual/compat_cast/star_ground.v
-# theories/refinements/static_gradual/compat_cast/tau_star.v
-# theories/refinements/static_gradual/compat_cast/star_tau.v
-# theories/refinements/static_gradual/compat_cast/all.v
+theories/refinements/static_gradual/compat_cast/tau_star.v
+theories/refinements/static_gradual/compat_cast/star_tau.v
+theories/refinements/static_gradual/compat_cast/all.v
 
 # 
 # theories/refinements/static_gradual/rel_ref_specs.v

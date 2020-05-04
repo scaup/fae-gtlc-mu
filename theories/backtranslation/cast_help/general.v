@@ -11,11 +11,9 @@ Fixpoint 𝓕 {A : list (types.type * types.type)} {τi τf : cast_calculus.type
   | consStarTGround _ τG G => extract τG G
   | consTGroundStar _ τG G => embed τG G
   | consTauStar _ τ τG pτnG pτnStar pτSτG pτConsτG pτGConsStar =>
-    factorization_up
-      (𝓕 pτConsτG) τG (get_shape_is_ground pτSτG)
+    factorization (𝓕 pτConsτG) (𝓕 pτGConsStar)
   | consStarTau _ τ τG pτnG pτnStar pτSτG pStarConsτG pτGConsτ =>
-    factorization_down
-      (𝓕 pτGConsτ) τG (get_shape_is_ground pτSτG)
+    factorization (𝓕 pStarConsτG) (𝓕 pτGConsτ)
   | consBaseBase _ => identity
   | consStarStar _ => identity
   | consTSumTSum _ τ1 τ1' τ2 τ2' pCons1 pCons2 =>
@@ -63,9 +61,11 @@ Proof.
   induction pτiConsτf; eapply PI_typed.
   - apply extract_typed.
   - apply embed_typed.
-  - apply factorization_up_typed. eapply PI_typed.
+  - eapply factorization_typed.
     apply IHpτiConsτf1.
-  - apply factorization_down_typed. eapply PI_typed.
+    apply IHpτiConsτf2.
+  - eapply factorization_typed.
+    apply IHpτiConsτf1.
     apply IHpτiConsτf2.
   - apply identity_typed.
   - apply identity_typed.
@@ -126,9 +126,9 @@ Proof.
   destruct pC.
   - rewrite /𝓕c /𝓕. by rewrite extract_no_subs to_of_val.
   - rewrite /𝓕c /𝓕. by rewrite embed_no_subs to_of_val.
-  - rewrite /𝓕c /𝓕. rewrite factorization_up_subst_rewrite. fold (𝓕 pC1).
+  - rewrite /𝓕c /𝓕. rewrite factorization_subst_rewrite. fold (𝓕 pC1). fold (𝓕 pC2).
     by rewrite to_of_val.
-  - rewrite /𝓕c /𝓕. rewrite factorization_down_subst_rewrite. fold (𝓕 pC2).
+  - rewrite /𝓕c /𝓕. rewrite factorization_subst_rewrite. fold (𝓕 pC2). fold (𝓕 pC2).
     by rewrite to_of_val.
   - rewrite /𝓕c /𝓕. by asimpl.
   - rewrite /𝓕c /𝓕. by asimpl.
@@ -156,6 +156,9 @@ Qed.
 
 From fae_gtlc_mu.stlc_mu Require Export lang.
 
+Lemma expr_double_subst (e : expr) σ1 σ2 : e.[σ1].[σ2] = e.[σ1 >> σ2].
+Proof. by asimpl. Qed.
+
 Lemma 𝓕c_closed_gen {A} {τi τf} (pC : cons_struct A τi τf) fs (Hfsc : Forall VClosed fs) :
   forall n, (length A = n + length fs) → forall σ, (𝓕 pC).[upn n (env_subst fs)].[upn n σ] = (𝓕 pC).[upn n (env_subst fs)].
 Proof.
@@ -163,37 +166,30 @@ Proof.
   induction pC; intros fs Hfsc; rewrite /𝓕c /𝓕; intros n H.
   - intro. by repeat rewrite extract_no_subs.
   - intro. by repeat rewrite embed_no_subs.
-  - fold (𝓕 pC1). rewrite factorization_up_subst_rewrite.
-    intro. simpl. rewrite embed_no_subs.
-    assert (triv : (𝓕 pC1).[upn n (env_subst fs)].[ren (+1)].[up (upn n σ)] = (𝓕 pC1).[upn n (env_subst fs)].[(upn n σ)].[ren (+1)]). by asimpl.
-    rewrite triv. rewrite IHpC1; auto.
-  - fold (𝓕 pC2). rewrite factorization_down_subst_rewrite.
-    intro. simpl. rewrite extract_no_subs.
-    assert (triv : (𝓕 pC2).[upn n (env_subst fs)].[ren (+1)].[up (upn n σ)] = (𝓕 pC2).[upn n (env_subst fs)].[(upn n σ)].[ren (+1)]). by asimpl.
-    rewrite triv. rewrite IHpC2; auto.
+  - intro. fold (𝓕 pC1). fold (𝓕 pC2).
+    rewrite expr_double_subst. do 2 rewrite factorization_subst_rewrite.
+    do 2 rewrite -expr_double_subst.
+    rewrite IHpC1; auto. rewrite IHpC2; auto.
+  - intro. fold (𝓕 pC1). fold (𝓕 pC2).
+    rewrite expr_double_subst. do 2 rewrite factorization_subst_rewrite.
+    do 2 rewrite -expr_double_subst.
+    rewrite IHpC1; auto. rewrite IHpC2; auto.
   - intro; by asimpl.
   - intro; by asimpl.
   - fold (𝓕 pC1). fold (𝓕 pC2). intro σ.
-    cut ((# between_TSum (𝓕 pC1) (𝓕 pC2)).[upn n (env_subst fs) >> upn n σ] = (# between_TSum (𝓕 pC1) (𝓕 pC2)).[upn n (env_subst fs)]).
-    by asimpl.
-    do 2 rewrite between_TSum_subst_rewrite.
-    rewrite -(IHpC1 _ _ _ _ σ); auto.
-    rewrite -(IHpC2 _ _ _ _ σ); auto. by asimpl.
+    rewrite expr_double_subst. do 2 rewrite between_TSum_subst_rewrite.
+    do 2 rewrite -expr_double_subst.
+    rewrite IHpC1; auto. rewrite IHpC2; auto.
   - fold (𝓕 pC1). fold (𝓕 pC2). intro σ.
-    cut ((# between_TProd (𝓕 pC1) (𝓕 pC2)).[upn n (env_subst fs) >> upn n σ] = (# between_TProd (𝓕 pC1) (𝓕 pC2)).[upn n (env_subst fs)]).
-    by asimpl.
-    do 2 rewrite between_TProd_subst_rewrite.
-    rewrite -(IHpC1 _ _ _ _ σ); auto.
-    rewrite -(IHpC2 _ _ _ _ σ); auto. by asimpl.
+    rewrite expr_double_subst. do 2 rewrite between_TProd_subst_rewrite.
+    do 2 rewrite -expr_double_subst.
+    rewrite IHpC1; auto. rewrite IHpC2; auto.
   - fold (𝓕 pC1). fold (𝓕 pC2). intro σ.
-    cut ((# between_TArrow (𝓕 pC1) (𝓕 pC2)).[upn n (env_subst fs) >> upn n σ] = (# between_TArrow (𝓕 pC1) (𝓕 pC2)).[upn n (env_subst fs)]).
-    by asimpl.
-    do 2 rewrite between_TArrow_subst_rewrite.
-    rewrite -(IHpC1 _ _ _ _ σ); auto.
-    rewrite -(IHpC2 _ _ _ _ σ); auto. by asimpl.
+    rewrite expr_double_subst. do 2 rewrite between_TArrow_subst_rewrite.
+    do 2 rewrite -expr_double_subst.
+    rewrite IHpC1; auto. rewrite IHpC2; auto.
   - fold (𝓕 pC). intro σ.
-    cut ((# between_TRec (𝓕 pC)).[upn n (env_subst fs) >> upn n σ] = (# between_TRec (𝓕 pC)).[upn n (env_subst fs)]). by asimpl.
-    do 2 rewrite between_TRec_subst_rewrite.
+    rewrite expr_double_subst. do 2 rewrite between_TRec_subst_rewrite.
     cut (# between_TRec (𝓕 pC).[upn (S n) (env_subst fs)].[upn (S n) σ] = # between_TRec (𝓕 pC).[upn (S n) (env_subst fs)]). by asimpl.
     rewrite IHpC; auto. simpl. lia.
   - intro σ. asimpl.

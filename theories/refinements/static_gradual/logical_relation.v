@@ -76,7 +76,8 @@ Section logrel.
                              ∨ (⌜ ww = (embedV_Ground_TProd v , castupV_TProd v') ⌝            ∧ ▷ Ψ (TProd TUnknown TUnknown) (v , v'))
                              ∨ (⌜ ww = (embedV_Ground_TSum v , castupV_TSum v') ⌝              ∧ ▷ Ψ (TSum TUnknown TUnknown) (v , v'))
                              ∨ (⌜ ww = (embedV_Ground_TArrow v , castupV_TArrow v') ⌝          ∧ ▷ Ψ (TArrow TUnknown TUnknown) (v , v'))
-                             ∨ (∃ u u', ⌜ ww = (embedV_TUnknown u, castupV_TRec (FoldV u')) ⌝ ∧ ▷ Ψ TUnknown (u , u')
+                             ∨ (⌜ ww = (embedV_TUnknown v, castupV_TRec (FoldV v')) ⌝ ∧ ▷ Ψ TUnknown (v , v')
+                             (* ∨ (∃ u u', ⌜ ww = (embedV_TUnknown u, castupV_TRec (FoldV u')) ⌝ ∧ ▷ Ψ TUnknown (u , u') *)
                                )
       )
     | TVar x => False (** exfaslo ... *)
@@ -154,11 +155,11 @@ Section logrel.
 
   Lemma interp_rw_TUnknown ww : interp TUnknown ww ≡
     (∃ v v', □ (
-                               (⌜ ww = (embedV_TUnit v , castupV_TUnit v') ⌝                   ∧ ▷ interp TUnit (v, v') )
-                             ∨ (⌜ ww = (embedV_Ground_TProd v , castupV_TProd v') ⌝            ∧ ▷ interp (TProd TUnknown TUnknown) (v , v'))
-                             ∨ (⌜ ww = (embedV_Ground_TSum v , castupV_TSum v') ⌝              ∧ ▷ interp (TSum TUnknown TUnknown) (v , v'))
-                             ∨ (⌜ ww = (embedV_Ground_TArrow v , castupV_TArrow v') ⌝          ∧ ▷ interp (TArrow TUnknown TUnknown) (v , v'))
-                             ∨ (∃ u u', ⌜ ww = (embedV_TUnknown u, castupV_TRec (FoldV u')) ⌝ ∧ ▷ interp TUnknown (u , u')
+                               (⌜ ww = (embedV_TUnit v , castupV_TUnit v') ⌝           ∧ ▷ interp TUnit (v, v') )
+                             ∨ (⌜ ww = (embedV_Ground_TProd v , castupV_TProd v') ⌝    ∧ ▷ interp (TProd TUnknown TUnknown) (v , v'))
+                             ∨ (⌜ ww = (embedV_Ground_TSum v , castupV_TSum v') ⌝      ∧ ▷ interp (TSum TUnknown TUnknown) (v , v'))
+                             ∨ (⌜ ww = (embedV_Ground_TArrow v , castupV_TArrow v') ⌝  ∧ ▷ interp (TArrow TUnknown TUnknown) (v , v'))
+                             ∨ (⌜ ww = (embedV_TUnknown v, castupV_TRec (FoldV v')) ⌝  ∧ ▷ interp TUnknown (v , v')
                                )))%I.
   Proof. rewrite (unfold_interp_type_pair). by simpl. Qed.
 

@@ -195,3 +195,5 @@ Definition Halts (e : expr) :=
   ∃ v, rtc erased_step ([e], tt) ([of_val v], tt).
 
 Definition hack K : @LanguageCtx ectx_lang (fill K) := (ectx_lang_ctx K).
+
+Definition hacki Ki : @LanguageCtx ectxi_lang (fill_item Ki) := ectxi_lang_ctx_item Ki.

@@ -224,4 +224,13 @@ Proof.
   by eapply up_type.
 Qed.
 
+Lemma EClosed_typed e τ pτ :
+  EClosed e → ([] & (Forall_nil TClosed) ⊢ₛ e : τ & pτ) → forall Γ pΓ, Γ & pΓ ⊢ₛ e : τ & pτ.
+Proof.
+  intros pe H Γ pΓ.
+  cut (forall α, Γ ++ [] & α ⊢ₛ e.[(ren (+ (length Γ)))]: τ & pτ).
+  by rewrite app_nil_r pe. intro. eapply context_weakening.
+  apply H.
+Qed.
+
 (* }}} *)

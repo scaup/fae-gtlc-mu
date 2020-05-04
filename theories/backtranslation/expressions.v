@@ -20,7 +20,7 @@ Fixpoint backtranslate_expr (e : cast_calculus.lang.expr) : expr :=
   | cast_calculus.lang.Unfold e => Unfold <<e>>
   | Cast e τi τf =>
     match (decide (cons_stand_open τi τf), decide (TClosed τi) , decide (TClosed τf)) with
-    | (left pC , left pi, left pf) => (𝓕 (cons_co τi pi τf pf pC)) <<e>>
+    | (left pC , left pi, left pf) => (𝓕c (cons_co τi pi τf pf pC) []) <<e>>
     | _ => Unit
     end
   | Blame => Ω
