@@ -3,9 +3,9 @@ From iris.proofmode Require Import tactics.
 From iris.program_logic Require Import adequacy.
 From iris.algebra Require Import agree.
 
-From fae_gtlc_mu.refinements.static_gradual Require Export rel_ref_specs.
-From fae_gtlc_mu.embedding Require Import types expressions.
-From fae_gtlc_mu.backtranslation Require Import contexts.
+From fae_gtlc_mu Require Import stlc_mu.lang cast_calculus.lang.
+From fae_gtlc_mu Require Import refinements.static_gradual.logical_relation.
+From fae_gtlc_mu Require Import refinements.static_gradual.compat_easy. (* just for notation *)
 
 Definition Halts_grad := cast_calculus.lang.Halts.
 
@@ -34,7 +34,7 @@ Section soundness.
     { iNext. iExists e'. iSplit; eauto. }
     iExists (λ _ _, True%I), (λ _, True%I); iSplitR; first done.
     iApply wp_fupd. iApply (wp_wand with "[-]").
-    - iPoseProof (Hlog ImplΣ SpecΣ [] [] e' with "[]") as "Hrel".
+    - iPoseProof (Hlog ImplΣ SpecΣ [] e' with "[]") as "Hrel".
       { iSplit; auto. iApply interp_env_nil. }
       replace e with (e.[stlc_mu.typing.env_subst [] ]) at 2 by by asimpl.
       iApply ("Hrel" $! []). asimpl; iFrame.

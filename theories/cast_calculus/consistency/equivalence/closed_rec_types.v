@@ -1,14 +1,14 @@
 From iris Require Export base.
 From stdpp Require Export base list sets mapset.
-(* From stdpp Require Import base binders boolset coGset coPset countable decidable finite fin_map_dom fin_maps fin_sets fin functions gmap gmultiset hashset hlist infinite lexico listset_nodup listset list mapset namespaces nat_cancel natmap nmap numbers option orders pmap pretty proof_irrel propset relations sets sorting streams stringmap strings tactics telescopes vector. *)
-(* fhin_sets fin_maps. *)
 From Autosubst Require Export Autosubst.
 Require Export Utf8_core.
-From fae_gtlc_mu.equivalence Require Import types listset_ext.
+From fae_gtlc_mu.cast_calculus Require Import types consistency.equivalence.listset_ext.
 
 Fixpoint closed_rec_types (τ : type) : listset type :=
   match τ with
   | TUnit => ∅
+  | TProd τ1 τ2 => closed_rec_types τ1 ∪ closed_rec_types τ2
+  | TSum τ1 τ2 => closed_rec_types τ1 ∪ closed_rec_types τ2
   | TArrow τ1 τ2 => closed_rec_types τ1 ∪ closed_rec_types τ2
   | TRec τb => {[ TRec τb ]} ∪ fmap (subst (TRec τb .: ids)) (closed_rec_types τb)
   | TVar x => ∅
@@ -18,6 +18,10 @@ Fixpoint closed_rec_types (τ : type) : listset type :=
 From Coq Require Import Relation_Operators Operators_Properties.
 
 Inductive p_le_pre : type → type → Prop :=
+  | prod_l_p_le_pre τ τ' : p_le_pre τ (TProd τ τ')
+  | prod_r_p_le_pre τ τ' : p_le_pre τ' (TProd τ τ')
+  | sum_l_p_le_pre τ τ' : p_le_pre τ (TSum τ τ')
+  | sum_r_p_le_pre τ τ' : p_le_pre τ' (TSum τ τ')
   | arrow_l_p_le_pre τ τ' : p_le_pre τ (TArrow τ τ')
   | arrow_r_p_le_pre τ τ' : p_le_pre τ' (TArrow τ τ').
 
@@ -75,17 +79,19 @@ Proof.
     apply IHpk; auto.
 Qed.
 
+Lemma subst_over_rec τ σ : TRec τ.[up σ] = (TRec τ).[σ]. Proof. by asimpl. Qed.
+
 Lemma subst_chain_subst_chains_fmap (pk pn : list type) :
       upn (length pk) (subst_chain pn) >> subst_chains_fmap pk pn = subst_chain (pk ++ pn).
 Proof.
   induction pk as [|α1 pk].
   - by asimpl.
-  - simpl; rewrite -subst_through_rec -scomp_assoc subst_commut.
+  - simpl; rewrite subst_over_rec -scomp_assoc subst_commut.
     fold (iterate up).
     by rewrite scomp_assoc IHpk.
 Qed.
 
-Lemma var_subst_chain j pn : ((j < length pn) * { p : type | pn !! j = Some p ∧ (TRec p).[subst_chain (drop (S j) pn)] = (TVar j).[subst_chain pn] }) +
+Lemma var_subst_chain j pn : sumor ((j < length pn) * { p : type | pn !! j = Some p ∧ (TRec p).[subst_chain (drop (S j) pn)] = (TVar j).[subst_chain pn] })%type 
                              (length pn ≤ j ∧ (TVar j).[subst_chain pn] = (TVar (j - length pn))).
 Proof.
   destruct (decide (j < length pn)).
@@ -97,7 +103,7 @@ Proof.
       * intros. exfalso. simpl in l. lia.
       * intros. destruct j. simpl in *. inversion eq.
         simplify_eq. by simpl.
-        simpl. rewrite -subst_through_rec.
+        simpl. rewrite subst_over_rec.
         simpl in l.
         apply IHpn. lia. simpl in eq.  auto.
     + exfalso. assert (H : length pn ≤ j). by apply lookup_ge_None.
@@ -179,6 +185,34 @@ Proof.
   intros. inversion H0; rewrite H2 in H4; inversion H4.
 Qed.
 
+Lemma le_TProd τ τ1 τ2 : p_le τ (TProd τ1 τ2) → τ = TProd τ1 τ2 ∨ p_le τ τ1 ∨ p_le τ τ2.
+Proof.
+  intro.
+  apply (@rtc_ind_l _ p_le_pre (fun τ' : type => (τ' = TProd τ1 τ2 ∨ p_le τ' τ1 ∨ p_le τ' τ2)) (TProd τ1 τ2)).
+  - by left.
+  - intros. destruct H2 as [-> | [p1 | p2] ].
+    + inversion H0; simplify_eq.
+      * right. left. by constructor.
+      * right. right. by constructor.
+    + right. left. by econstructor.
+    + right. right. by econstructor.
+  - auto.
+Qed.
+
+Lemma le_TSum τ τ1 τ2 : p_le τ (TSum τ1 τ2) → τ = TSum τ1 τ2 ∨ p_le τ τ1 ∨ p_le τ τ2.
+Proof.
+  intro.
+  apply (@rtc_ind_l _ p_le_pre (fun τ' : type => (τ' = TSum τ1 τ2 ∨ p_le τ' τ1 ∨ p_le τ' τ2)) (TSum τ1 τ2)).
+  - by left.
+  - intros. destruct H2 as [-> | [p1 | p2] ].
+    + inversion H0; simplify_eq.
+      * right. left. by constructor.
+      * right. right. by constructor.
+    + right. left. by econstructor.
+    + right. right. by econstructor.
+  - auto.
+Qed.
+
 Lemma le_TArrow τ τ1 τ2 : p_le τ (TArrow τ1 τ2) → τ = TArrow τ1 τ2 ∨ p_le τ τ1 ∨ p_le τ τ2.
 Proof.
   intro.
@@ -225,6 +259,14 @@ Proof.
   - intros. destruct ls; try by inversion Hls. clear Hls. rewrite subst_id. inversion_clear pch.
     induction τ.
     + assert (abs : TRec αb = TUnit). by apply le_TUnit. inversion abs.
+    + destruct (le_TProd _ _ _ p) as [abs | [p1 | p2]].
+      * inversion abs.
+      * set_solver.
+      * set_solver.
+    + destruct (le_TSum _ _ _ p) as [abs | [p1 | p2]].
+      * inversion abs.
+      * set_solver.
+      * set_solver.
     + destruct (le_TArrow _ _ _ p) as [abs | [p1 | p2]].
       * inversion abs.
       * set_solver.
@@ -236,6 +278,18 @@ Proof.
   - induction τ; intros.
     + destruct (chain_off_last ls _ _ n Hls pch) as [ks [δ [eq [pchn pμδτ]]]].
       assert (abs : TRec δ = TUnit). by apply le_TUnit. inversion abs.
+    + clear IHn.
+      destruct (chain_off_last ls _ _ n Hls pch) as [ks [δ [-> [pchn pμδτ]]]].
+      destruct (le_TProd _ _ _ pμδτ) as [abs | [p1 | p2]].
+      * inversion abs.
+      * specialize (IHτ1 αb (ks ++ [δ]) Hls (chain_cons_right _ _ _ _ pchn p1)). set_solver.
+      * specialize (IHτ2 αb (ks ++ [δ]) Hls (chain_cons_right _ _ _ _ pchn p2)). set_solver.
+    + clear IHn.
+      destruct (chain_off_last ls _ _ n Hls pch) as [ks [δ [-> [pchn pμδτ]]]].
+      destruct (le_TSum _ _ _ pμδτ) as [abs | [p1 | p2]].
+      * inversion abs.
+      * specialize (IHτ1 αb (ks ++ [δ]) Hls (chain_cons_right _ _ _ _ pchn p1)). set_solver.
+      * specialize (IHτ2 αb (ks ++ [δ]) Hls (chain_cons_right _ _ _ _ pchn p2)). set_solver.
     + clear IHn.
       destruct (chain_off_last ls _ _ n Hls pch) as [ks [δ [-> [pchn pμδτ]]]].
       destruct (le_TArrow _ _ _ pμδτ) as [abs | [p1 | p2]].
@@ -265,6 +319,12 @@ Lemma crt_closed_gen τ : forall n, TnClosed n τ → set_Forall (TnClosed n) (c
 Proof.
   induction τ; intros; simpl.
   - apply set_Forall_empty.
+  - apply set_Forall_union.
+    + apply IHτ1. by eapply TProd_nclosed1.
+    + apply IHτ2. by eapply TProd_nclosed2.
+  - apply set_Forall_union.
+    + apply IHτ1. by eapply TSum_nclosed1.
+    + apply IHτ2. by eapply TSum_nclosed2.
   - apply set_Forall_union.
     + apply IHτ1. by eapply TArrow_nclosed1.
     + apply IHτ2. by eapply TArrow_nclosed2.
@@ -297,8 +357,14 @@ Proof.
   apply (nat_total_induction (fun n => forall (α : type) (k : nat) (pk : list type) (Hpk : length pk = k) (αk : type) (pchk : Chain α αk pk)
                                       (pn : list type) (Hpn : length pn = n) (pchn : Chain αk τ pn),
                                   fmap (subst (subst_chains_fmap pk pn)) (closed_rec_types α.[upn k (subst_chain pn)]) ⊆ closed_rec_types τ)).
-  - intro α. induction α as [_ | β1 IHβ1 β2 IHβ2 | αb IHαb | x | _];
+  - intro α. induction α as [_ | β1 IHβ1 β2 IHβ2 | β1 IHβ1 β2 IHβ2 | β1 IHβ1 β2 IHβ2 | αb IHαb | x | _];
       intros k pk Hpk αk pchk nil p0 pchnil; try by set_solver.
+    + specialize (IHβ1 k pk Hpk αk (chain_diff_prefix _ _ _ _ pchk (rtc_once _ _ (prod_l_p_le_pre β1 β2))) nil p0 pchnil).
+      specialize (IHβ2 k pk Hpk αk (chain_diff_prefix _ _ _ _ pchk (rtc_once _ _ (prod_r_p_le_pre β1 β2))) nil p0 pchnil).
+      set_solver.
+    + specialize (IHβ1 k pk Hpk αk (chain_diff_prefix _ _ _ _ pchk (rtc_once _ _ (sum_l_p_le_pre β1 β2))) nil p0 pchnil).
+      specialize (IHβ2 k pk Hpk αk (chain_diff_prefix _ _ _ _ pchk (rtc_once _ _ (sum_r_p_le_pre β1 β2))) nil p0 pchnil).
+      set_solver.
     + specialize (IHβ1 k pk Hpk αk (chain_diff_prefix _ _ _ _ pchk (rtc_once _ _ (arrow_l_p_le_pre β1 β2))) nil p0 pchnil).
       specialize (IHβ2 k pk Hpk αk (chain_diff_prefix _ _ _ _ pchk (rtc_once _ _ (arrow_r_p_le_pre β1 β2))) nil p0 pchnil).
       set_solver.
@@ -309,14 +375,22 @@ Proof.
         eapply elem_of_closed_rec_types. auto. eapply chain_diff_suffix. apply pchk. by inversion_clear pchnil.
       * rewrite -set_fmap_compose.
         erewrite set_Forall_fmap_ext_1. apply IHαb.
-        rewrite -subst_through_rec.
+        rewrite subst_over_rec.
         intro.
         rewrite scomp_comp. rewrite -Hpk. simpl. reflexivity.
     + destruct nil; simpl in p0; try by (exfalso; lia). simpl (subst_chain []). rewrite up_id_n. asimpl. set_solver.
   - intros n Hni α.
-    induction α as [_ | β1 IHβ1 β2 IHβ2 | αb IHαb | x | _];
+    induction α as [_ | β1 IHβ1 β2 IHβ2 | β1 IHβ1 β2 IHβ2 | β1 IHβ1 β2 IHβ2 | αb IHαb | x | _];
       intros k pk Hpk αk pchk pSn HpSn pchSn.
     + clear Hni. simpl. set_solver.
+    + clear Hni. simpl.
+      specialize (IHβ1 k pk Hpk αk (chain_diff_prefix _ _ _ _ pchk (rtc_once _ _ (prod_l_p_le_pre β1 β2))) pSn HpSn pchSn).
+      specialize (IHβ2 k pk Hpk αk (chain_diff_prefix _ _ _ _ pchk (rtc_once _ _ (prod_r_p_le_pre β1 β2))) pSn HpSn pchSn).
+      set_solver.
+    + clear Hni. simpl.
+      specialize (IHβ1 k pk Hpk αk (chain_diff_prefix _ _ _ _ pchk (rtc_once _ _ (sum_l_p_le_pre β1 β2))) pSn HpSn pchSn).
+      specialize (IHβ2 k pk Hpk αk (chain_diff_prefix _ _ _ _ pchk (rtc_once _ _ (sum_r_p_le_pre β1 β2))) pSn HpSn pchSn).
+      set_solver.
     + clear Hni. simpl.
       specialize (IHβ1 k pk Hpk αk (chain_diff_prefix _ _ _ _ pchk (rtc_once _ _ (arrow_l_p_le_pre β1 β2))) pSn HpSn pchSn).
       specialize (IHβ2 k pk Hpk αk (chain_diff_prefix _ _ _ _ pchk (rtc_once _ _ (arrow_r_p_le_pre β1 β2))) pSn HpSn pchSn).
@@ -324,7 +398,7 @@ Proof.
     + clear Hni.
       specialize (IHαb (S k) (αb :: pk) ltac:(simpl;auto) αk (cons_Chain αb αb (rtc_refl _ _) (TRec αb) (rtc_refl _ _) _ _ pchk) pSn HpSn pchSn).
       simpl. rewrite map_union. apply union_least.
-      * clear IHαb. rewrite -subst_through_rec.
+      * clear IHαb. rewrite subst_over_rec.
         rewrite map_singleton.
         assert (triv : (TRec αb).[upn k (subst_chain pSn)].[subst_chains_fmap pk pSn] = ((TRec αb).[upn k (subst_chain pSn) >> subst_chains_fmap pk pSn])). by asimpl. rewrite triv. clear triv.
         rewrite -Hpk.
@@ -333,7 +407,7 @@ Proof.
       * rewrite -set_fmap_compose.
         erewrite set_Forall_fmap_ext_1.
         apply IHαb.
-        rewrite -subst_through_rec.
+        rewrite subst_over_rec.
         intro.
         rewrite scomp_comp. rewrite -Hpk. simpl. reflexivity.
     + destruct pSn as [_ | τ0' pn]; first by (simpl in HpSn; exfalso; lia).

@@ -1,11 +1,10 @@
 From iris Require Export base.
 From stdpp Require Export base list sets mapset.
 From stdpp Require Export base.
-(* From stdpp Require Import base binders boolset coGset coPset countable decidable finite fin_map_dom fin_maps fin_sets fin functions gmap gmultiset hashset hlist infinite lexico listset_nodup listset list mapset namespaces nat_cancel natmap nmap numbers option orders pmap pretty proof_irrel propset relations sets sorting streams stringmap strings tactics telescopes vector. *)
 (* fhin_sets fin_maps. *)
 From Autosubst Require Export Autosubst.
 Require Export Utf8_core.
-From fae_gtlc_mu.equivalence Require Import types.
+From fae_gtlc_mu.cast_calculus Require Import types.
 
 Lemma map_union {A B} (l k : listset A) (f : A → B) : f <$> (l ∪ k) ≡ (f <$> l) ∪ (f <$> k).
 Proof. set_solver. Qed.

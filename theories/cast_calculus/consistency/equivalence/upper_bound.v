@@ -1,4 +1,4 @@
-From fae_gtlc_mu.equivalence Require Import types closed_rec_types listset_ext.
+From fae_gtlc_mu.cast_calculus Require Import types consistency.equivalence.closed_rec_types consistency.equivalence.listset_ext.
 From stdpp Require Import base listset.
 From iris Require Import base.
 
@@ -70,6 +70,116 @@ Proof.
   apply difference_mono_r.
   rewrite /combinations.
   apply subseteq_comp_contravariant; apply listset_prod_subseteq; set_solver.
+Qed.
+
+Lemma upper_bound_le_sum1 A τ1 τ2 τ1' τ2' :
+  # A τ2 τ2' ≤ # A (TSum τ1 τ2) (TSum τ1' τ2').
+Proof.
+  rewrite /upper_bound.
+  apply subseteq_size.
+  apply difference_mono_r.
+  apply subseteq_comp_normal; apply listset_prod_subseteq; set_solver.
+Qed.
+
+Lemma upper_bound_le_sum2 A τ1 τ2 τ1' τ2' :
+  # A τ1 τ1' ≤ # A (TSum τ1 τ2) (TSum τ1' τ2').
+Proof.
+  rewrite /upper_bound.
+  apply subseteq_size.
+  apply difference_mono_r.
+  rewrite /combinations.
+  apply subseteq_comp_normal; apply listset_prod_subseteq; set_solver.
+Qed.
+
+Lemma upper_bound_le_prod1 A τ1 τ2 τ1' τ2' :
+  # A τ2 τ2' ≤ # A (TProd τ1 τ2) (TProd τ1' τ2').
+Proof.
+  rewrite /upper_bound.
+  apply subseteq_size.
+  apply difference_mono_r.
+  apply subseteq_comp_normal; apply listset_prod_subseteq; set_solver.
+Qed.
+
+Lemma upper_bound_le_prod2 A τ1 τ2 τ1' τ2' :
+  # A τ1 τ1' ≤ # A (TProd τ1 τ2) (TProd τ1' τ2').
+Proof.
+  rewrite /upper_bound.
+  apply subseteq_size.
+  apply difference_mono_r.
+  rewrite /combinations.
+  apply subseteq_comp_normal; apply listset_prod_subseteq; set_solver.
+Qed.
+
+Lemma upper_bound_le_sum_unknown1 A τ1 τ2 :
+  # A τ1 TUnknown ≤ # A (TSum τ1 τ2) TUnknown.
+Proof.
+  rewrite /upper_bound.
+  apply subseteq_size.
+  apply difference_mono_r.
+  apply subseteq_comp_normal; apply listset_prod_subseteq; set_solver.
+Qed.
+
+Lemma upper_bound_le_sum_unknown2 A τ1 τ2 :
+  # A τ2 TUnknown ≤ # A (TSum τ1 τ2) TUnknown.
+Proof.
+  rewrite /upper_bound.
+  apply subseteq_size.
+  apply difference_mono_r.
+  apply subseteq_comp_normal; apply listset_prod_subseteq; set_solver.
+Qed.
+
+Lemma upper_bound_le_prod_unknown1 A τ1 τ2 :
+  # A τ1 TUnknown ≤ # A (TProd τ1 τ2) TUnknown.
+Proof.
+  rewrite /upper_bound.
+  apply subseteq_size.
+  apply difference_mono_r.
+  apply subseteq_comp_normal; apply listset_prod_subseteq; set_solver.
+Qed.
+
+Lemma upper_bound_le_prod_unknown2 A τ1 τ2 :
+  # A τ2 TUnknown ≤ # A (TProd τ1 τ2) TUnknown.
+Proof.
+  rewrite /upper_bound.
+  apply subseteq_size.
+  apply difference_mono_r.
+  apply subseteq_comp_normal; apply listset_prod_subseteq; set_solver.
+Qed.
+
+Lemma upper_bound_le_unknown_prod1 A τ1 τ2 :
+  # A TUnknown τ1 ≤ # A TUnknown (TProd τ1 τ2).
+Proof.
+  rewrite /upper_bound.
+  apply subseteq_size.
+  apply difference_mono_r.
+  apply subseteq_comp_normal; apply listset_prod_subseteq; set_solver.
+Qed.
+
+Lemma upper_bound_le_unknown_prod2 A τ1 τ2 :
+  # A TUnknown τ2 ≤ # A TUnknown (TProd τ1 τ2).
+Proof.
+  rewrite /upper_bound.
+  apply subseteq_size.
+  apply difference_mono_r.
+  apply subseteq_comp_normal; apply listset_prod_subseteq; set_solver.
+Qed.
+
+Lemma upper_bound_le_unknown_sum1 A τ1 τ2 :
+  # A TUnknown τ1 ≤ # A TUnknown (TSum τ1 τ2).
+Proof.
+  rewrite /upper_bound.
+  apply subseteq_size.
+  apply difference_mono_r.
+  apply subseteq_comp_normal; apply listset_prod_subseteq; set_solver.
+Qed.
+
+Lemma upper_bound_le_unknown_sum2 A τ1 τ2 :
+  # A TUnknown τ2 ≤ # A TUnknown (TSum τ1 τ2).
+Proof.
+  rewrite /upper_bound.
+  apply subseteq_size.
+  apply difference_mono_r.
+  apply subseteq_comp_normal; apply listset_prod_subseteq; set_solver.
 Qed.
 
 Lemma upper_bound_le_arrow_unknown_cov A τ1 τ2 :
