@@ -55,58 +55,36 @@ Proof. induction X. apply Forall_nil. inversion HP. apply Forall_cons. auto. by 
 
 Lemma 𝓕_typed (A : list (cast_calculus.types.type * cast_calculus.types.type)) (pA : Forall (fun p => cast_calculus.types.TClosed p.1 ∧ cast_calculus.types.TClosed p.2) A)
       (τi τf : cast_calculus.types.type) (pτi : cast_calculus.types.TClosed τi) (pτf : cast_calculus.types.TClosed τf) (pτiConsτf : cons_struct A τi τf) :
-  (map back_pair A) & Forall_fmap_impl _ _ _ _ back_pair_closed pA ⊢ₛ (𝓕 pτiConsτf) : (TArrow <<τi>> <<τf>>) &
-                                                                                       TArrow_closed (back_closed pτi) (back_closed pτf).
+  (map back_pair A) ⊢ₛ (𝓕 pτiConsτf) : (TArrow <<τi>> <<τf>>).
 Proof.
-  induction pτiConsτf; eapply PI_typed.
+  induction pτiConsτf; simpl.
   - apply extract_typed.
   - apply embed_typed.
   - eapply factorization_typed.
-    apply IHpτiConsτf1.
-    apply IHpτiConsτf2.
+    apply IHpτiConsτf1; auto. by apply Ground_closed; eapply get_shape_is_ground.
+    apply IHpτiConsτf2; auto. by apply Ground_closed; eapply get_shape_is_ground.
   - eapply factorization_typed.
-    apply IHpτiConsτf1.
-    apply IHpτiConsτf2.
-  - apply identity_typed.
-  - apply identity_typed.
+    apply IHpτiConsτf1; auto. by apply Ground_closed; eapply get_shape_is_ground.
+    apply IHpτiConsτf2; auto. by apply Ground_closed; eapply get_shape_is_ground.
+  - apply identity_typed. apply TUnit_TClosed.
+  - apply identity_typed. apply Universe_closed.
   - apply between_TSum_typed.
-    (* fold (backtranslate_type τ1). fold (backtranslate_type τ1'). fold (𝓕 pτiConsτf1). *)
-    apply IHpτiConsτf1. apply IHpτiConsτf2.
+    apply IHpτiConsτf1; auto; by eapply (cast_calculus.types.TSum_closed1).
+    apply IHpτiConsτf2; auto; by eapply (cast_calculus.types.TSum_closed2).
   - apply between_TProd_typed.
-    apply IHpτiConsτf1.
-    apply IHpτiConsτf2.
+    apply IHpτiConsτf1; auto; by eapply (cast_calculus.types.TProd_closed1).
+    apply IHpτiConsτf2; auto; by eapply (cast_calculus.types.TProd_closed2).
   - apply between_TArrow_typed.
-    apply IHpτiConsτf1.
-    apply IHpτiConsτf2.
-  - apply between_TRec_typed with (pμτi := back_closed pτi) (pμτf := back_closed pτf).
-    fold (backtranslate_type τl). fold (backtranslate_type τr). fold (𝓕 pτiConsτf).
-    assert (eq : TArrow (TRec << τl >>) (TRec << τr >>) :: map back_pair A = map back_pair ((types.TRec τl, types.TRec τr) :: A)). { by simpl. }
-    assert (eq' : TArrow (<< τl >>).[TRec << τl >>/] (<< τr >>).[TRec << τr >>/] = TArrow << τl.[types.TRec τl/] >> << τr.[types.TRec τr/] >>). { by repeat rewrite back_unfold_comm. }
-    cut (forall pΓ pτ, TArrow (TRec << τl >>) (TRec << τr >>) :: map back_pair A & pΓ ⊢ₛ 𝓕 pτiConsτf : TArrow (<< τl >>).[TRec << τl >>/] (<< τr >>).[TRec << τr >>/] & pτ). auto.
-    rewrite eq eq'.
-    intros.
-    eapply PI_typed. eapply PI_Γ_typed.
-    apply IHpτiConsτf.
+    apply IHpτiConsτf1; auto; by eapply (cast_calculus.types.TArrow_closed1).
+    apply IHpτiConsτf2; auto; by eapply (cast_calculus.types.TArrow_closed2).
+  - apply between_TRec_typed.
+    rewrite map_cons in IHpτiConsτf.
+    repeat rewrite back_unfold_comm in IHpτiConsτf.
+    apply IHpτiConsτf; auto; by apply cast_calculus.types.TRec_closed_unfold.
   - apply Var_typed.
-    rewrite list_lookup_fmap.
-    by rewrite pμτlμtrinA.
-    Unshelve. all:try done; try cast_calculus.types.closed_solver; try by repeat apply back_closed.
-    + apply TArrow_closed; by apply back_closed.
-    + apply Ground_closed. by eapply get_shape_is_ground.
-    + apply Ground_closed. by eapply get_shape_is_ground.
-    + by eapply cast_calculus.types.TSum_closed1.
-    + by eapply cast_calculus.types.TSum_closed1.
-    + by eapply cast_calculus.types.TSum_closed2.
-    + by eapply cast_calculus.types.TSum_closed2.
-    + by eapply cast_calculus.types.TProd_closed1.
-    + by eapply cast_calculus.types.TProd_closed1.
-    + by eapply cast_calculus.types.TProd_closed2.
-    + by eapply cast_calculus.types.TProd_closed2.
-    + by eapply cast_calculus.types.TArrow_closed2.
-    + by eapply cast_calculus.types.TArrow_closed2.
-    + constructor. simpl. split; auto. auto.
-    + by apply cast_calculus.types.TRec_closed_unfold.
-    + by apply cast_calculus.types.TRec_closed_unfold.
+    cut (TClosed <<(cast_calculus.types.TArrow (cast_calculus.types.TRec τl) (cast_calculus.types.TRec τr))>>). by simpl.
+    by apply back_closed, cast_calculus.types.TArrow_closed.
+    rewrite list_lookup_fmap. by rewrite pμτlμtrinA.
 Qed.
 
 Definition 𝓕c {A} {τi τf} (pC : cons_struct A τi τf) fs : stlc_mu.lang.expr :=

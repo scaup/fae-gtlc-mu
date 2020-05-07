@@ -5,34 +5,39 @@ Definition Fix (f : expr) : expr :=
   (Unfold (Fold (Lam ((rename (+1) f) (Lam ((Unfold (Var 1)) (Var 1) (Var 0)))))))
     (Fold (Lam (rename (+1) f (Lam ((Unfold (Var 1)) (Var 1) (Var 0)))))).
 
-(* Program Definition tau1 τa: ctype := [(TRec (TArrow (TVar 0) (TArrow τa τr))) % _]. *)
-
-Lemma Fix_typed Γ pΓ τa pτa τr pτr f :
-  (Γ & pΓ ⊢ₛ f : (TArrow (TArrow τa τr) (TArrow τa τr)) & (TArrow_closed (TArrow_closed pτa pτr) (TArrow_closed pτa pτr)))
-  -> (Γ & pΓ ⊢ₛ Fix f : (TArrow τa τr) & (TArrow_closed pτa pτr)).
+Lemma Fix_typed Γ τa τr f :
+  (Γ ⊢ₛ f : TArrow (TArrow τa τr) (TArrow τa τr))
+  -> (Γ ⊢ₛ Fix f : TArrow τa τr).
 Proof.
   intros H.
-  eapply App_typed with (τ1 := (TRec (TArrow (TVar 0) (TArrow τa τr)))).
+  assert (pτa : TClosed τa). { intro σ.
+    assert (x : TClosed (TArrow (TArrow τa τr) (TArrow τa τr))). by eapply typed_closed.
+    specialize (x σ). inversion x. by repeat rewrite H1. }
+  assert (pτr : TClosed τr). { intro σ.
+    assert (x : TClosed (TArrow (TArrow τa τr) (TArrow τa τr))). by eapply typed_closed.
+    specialize (x σ). inversion x. by repeat rewrite H2. }
+  apply App_typed with (τ1 := (TRec (TArrow (TVar 0) (TArrow τa τr)))).
   - apply Unfold_Fold_typed.
-    eapply Lam_typed.
-    eapply App_typed with (τ1 := TArrow τa τr). asimpl. by eapply up_type_one.
-    eapply Lam_typed.
-    eapply App_typed with (τ1 := τa).
-    + eapply App_typed with (τ1 := TRec (TArrow (TVar 0) (TArrow τa τr))).
-      asimpl. eapply Unfold_typed_help with (τb := TArrow (TVar 0) (TArrow τa τr)).
-      asimpl. by rewrite pτa pτr. by apply Var_typed. by apply Var_typed.
-    + by apply Var_typed.
-  - eapply Fold_typed. asimpl.
-    eapply Lam_typed.
-    eapply App_typed with (τ1 := (TArrow τa τr)). eapply up_type_one. eapply (rewrite_typed H). by rewrite pτa pτr.
-    eapply Lam_typed.
-    eapply App_typed with (τ1 := τa).
-    eapply App_typed with (τ1 := TRec (TArrow (TVar 0) (TArrow τa τr))).
-    + eapply Unfold_typed_help with (τb := (TArrow (TVar 0) (TArrow τa τr))).
-      asimpl. by rewrite pτa pτr. by apply Var_typed.
-    + by apply Var_typed.
-    + by apply Var_typed.
-      Unshelve. 1-24:intro σ; asimpl; by repeat rewrite pτa pτr.
+    eapply (Lam_typed _ _ _ _).
+    apply App_typed with (τ1 := TArrow τa τr). asimpl. by apply up_type_one.
+    eapply (Lam_typed _ _ _ _).
+    apply App_typed with (τ1 := τa).
+    + apply App_typed with (τ1 := TRec (TArrow (TVar 0) (TArrow τa τr))).
+      eapply (Unfold_typed_eq _ _ (TArrow (TVar 0) (TArrow τa τr)) _ _).
+      by eapply (Var_typed _ _ _ _).
+      by eapply (Var_typed _ _ _ _).
+    + by eapply (Var_typed _ _ _ _).
+  - apply Fold_typed. asimpl.
+    eapply (Lam_typed _ _ _ _).
+    apply App_typed with (τ1 := (TArrow τa τr)). apply up_type_one. eapply (rewrite_typed H _).
+    eapply (Lam_typed _ _ _ _).
+    apply App_typed with (τ1 := τa).
+    apply App_typed with (τ1 := TRec (TArrow (TVar 0) (TArrow τa τr))).
+    + eapply (Unfold_typed_eq _ _ (TArrow (TVar 0) (TArrow τa τr)) _ _).
+      by eapply (Var_typed _ _ _ _).
+    + by eapply (Var_typed _ _ _ _).
+    + by eapply (Var_typed _ _ _ _).
+  Unshelve. all: ((try intro σ); asimpl; by repeat rewrite pτa pτr).
 Qed.
 
 

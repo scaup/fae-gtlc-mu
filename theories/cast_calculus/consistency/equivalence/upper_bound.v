@@ -72,7 +72,7 @@ Proof.
   apply subseteq_comp_contravariant; apply listset_prod_subseteq; set_solver.
 Qed.
 
-Lemma upper_bound_le_sum1 A τ1 τ2 τ1' τ2' :
+Lemma upper_bound_le_sum2 A τ1 τ2 τ1' τ2' :
   # A τ2 τ2' ≤ # A (TSum τ1 τ2) (TSum τ1' τ2').
 Proof.
   rewrite /upper_bound.
@@ -81,7 +81,7 @@ Proof.
   apply subseteq_comp_normal; apply listset_prod_subseteq; set_solver.
 Qed.
 
-Lemma upper_bound_le_sum2 A τ1 τ2 τ1' τ2' :
+Lemma upper_bound_le_sum1 A τ1 τ2 τ1' τ2' :
   # A τ1 τ1' ≤ # A (TSum τ1 τ2) (TSum τ1' τ2').
 Proof.
   rewrite /upper_bound.
@@ -91,7 +91,7 @@ Proof.
   apply subseteq_comp_normal; apply listset_prod_subseteq; set_solver.
 Qed.
 
-Lemma upper_bound_le_prod1 A τ1 τ2 τ1' τ2' :
+Lemma upper_bound_le_prod2 A τ1 τ2 τ1' τ2' :
   # A τ2 τ2' ≤ # A (TProd τ1 τ2) (TProd τ1' τ2').
 Proof.
   rewrite /upper_bound.
@@ -100,7 +100,7 @@ Proof.
   apply subseteq_comp_normal; apply listset_prod_subseteq; set_solver.
 Qed.
 
-Lemma upper_bound_le_prod2 A τ1 τ2 τ1' τ2' :
+Lemma upper_bound_le_prod1 A τ1 τ2 τ1' τ2' :
   # A τ1 τ1' ≤ # A (TProd τ1 τ2) (TProd τ1' τ2').
 Proof.
   rewrite /upper_bound.

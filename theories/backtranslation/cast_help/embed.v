@@ -10,13 +10,13 @@ Definition embedV_TUnit (v : val) : val :=
 Definition embed_TUnit : val :=
   LamV (Fold (InjL (InjL (InjL (InjL (Var 0)))))).
 
-Lemma embed_TUnit_typed Γ pΓ :
-  Γ & pΓ ⊢ₛ embed_TUnit : (TArrow TUnit Universe) & (TArrow_closed TUnit_TClosed Universe_closed).
+Lemma embed_TUnit_typed Γ :
+  Γ ⊢ₛ embed_TUnit : (TArrow TUnit Universe).
 Proof.
-  eapply Lam_typed, Fold_typed.
-  repeat eapply InjL_typed.
-  by eapply Var_typed.
-  Unshelve. all:intro σ; by asimpl.
+  apply Lam_typed, Fold_typed. apply TUnit_TClosed.
+  repeat apply InjL_typed.
+  all:try (intro σ; by asimpl).
+  by apply Var_typed.
 Qed.
 
 Definition embedV_Ground_TSum (s : val) : val :=
@@ -25,15 +25,15 @@ Definition embedV_Ground_TSum (s : val) : val :=
 Definition embed_Ground_TSum : val :=
   LamV (Fold ((InjL (InjL (InjL (InjR (Var 0))))))).
 
-Definition embed_Ground_TSum_typed Γ pΓ :
-  Γ & pΓ ⊢ₛ embed_Ground_TSum : (TArrow (Universe + Universe) Universe)%type &
-                                (TArrow_closed (TSum_closed Universe_closed Universe_closed) Universe_closed).
+Definition embed_Ground_TSum_typed Γ :
+  Γ ⊢ₛ embed_Ground_TSum : (TArrow (Universe + Universe) Universe)%type.
 Proof.
-  eapply Lam_typed.
-  eapply Fold_typed.
-  repeat eapply InjL_typed. eapply InjR_typed.
+  eapply (Lam_typed _ _ _ _).
+  apply Fold_typed.
+  repeat eapply (InjL_typed _ _ _ _ _).
+  eapply (InjR_typed _ _ _ _).
   by apply Var_typed.
-  Unshelve. all:intro σ; by asimpl.
+  Unshelve. all:try (intro σ; by asimpl).
 Qed.
 
 Definition embedV_Ground_TProd (p : val) : val :=
@@ -42,14 +42,13 @@ Definition embedV_Ground_TProd (p : val) : val :=
 Definition embed_Ground_TProd : val :=
   LamV (Fold (InjL (InjL (InjR (Var 0))))).
 
-Definition embed_Ground_TProd_typed Γ pΓ :
-  Γ & pΓ ⊢ₛ embed_Ground_TProd : (TArrow (Universe × Universe) Universe) &
-                                 ltac:(apply (TArrow_closed (TProd_closed Universe_closed Universe_closed) Universe_closed)).
+Definition embed_Ground_TProd_typed Γ :
+  Γ ⊢ₛ embed_Ground_TProd : (TArrow (Universe × Universe) Universe).
 Proof.
-  eapply Lam_typed, Fold_typed.
-  repeat eapply InjL_typed. asimpl. repeat eapply InjR_typed.
-  by apply Var_typed.
-  Unshelve. all:intro σ; by asimpl.
+  apply Lam_typed, Fold_typed; try closed_solver.
+  repeat apply InjL_typed; try closed_solver.
+  apply InjR_typed; try closed_solver.
+  by eapply Var_typed; try closed_solver.
 Qed.
 
 Definition embedV_Ground_TArrow (v : val) : val :=
@@ -58,14 +57,12 @@ Definition embedV_Ground_TArrow (v : val) : val :=
 Definition embed_Ground_TArrow : val :=
   LamV (Fold (InjL (InjR (Var 0)))).
 
-Definition embed_Ground_TArrow_typed Γ pΓ :
-  Γ & pΓ ⊢ₛ embed_Ground_TArrow : (TArrow (TArrow Universe Universe) Universe) &
-                                  (TArrow_closed (TArrow_closed Universe_closed Universe_closed) Universe_closed).
+Definition embed_Ground_TArrow_typed Γ :
+  Γ ⊢ₛ embed_Ground_TArrow : (TArrow (TArrow Universe Universe) Universe).
 Proof.
-  eapply Lam_typed, Fold_typed.
-  repeat eapply InjL_typed. asimpl. repeat eapply InjR_typed.
+  eapply Lam_typed, Fold_typed; try closed_solver.
+  repeat eapply InjL_typed; try closed_solver. eapply InjR_typed; try closed_solver.
   by apply Var_typed.
-  Unshelve. all:intro σ; by asimpl.
 Qed.
 
 (* Takes something of μ.Universe, unfolds it so it is in Universe, and then puts in the last branch of the universe *)
@@ -73,16 +70,13 @@ Qed.
 Definition embed_Ground_TRec : val :=
   LamV (Fold (InjR (Unfold (Var 0)))).
 
-Definition embed_Ground_TRec_typed Γ pΓ :
-  Γ & pΓ ⊢ₛ embed_Ground_TRec : (TArrow (TRec Universe) Universe) &
-                                (TArrow_closed (TRec_closed Universe_closed) Universe_closed).
+Definition embed_Ground_TRec_typed Γ :
+  Γ ⊢ₛ embed_Ground_TRec : (TArrow (TRec Universe) Universe).
 Proof.
-  eapply Lam_typed. eapply Fold_typed.
-  eapply InjR_typed.
-  asimpl.
-  eapply Unfold_typed_help with (τb := Universe). by rewrite Universe_closed.
+  apply Lam_typed; try closed_solver. apply Fold_typed; try closed_solver.
+  apply InjR_typed; try closed_solver.
+  apply Unfold_typed_help; first by trivial.
   by apply Var_typed.
-  Unshelve. all:intro σ; by asimpl.
 Qed.
 
 Definition embedV_TUnknown (u : val) : val := (** a bit different from the other ones... u : Universe instead of u : μX.Universe *)
@@ -97,11 +91,10 @@ Definition embed (τ : cast_calculus.types.type) (G : Ground τ) : val :=
   | Ground_TRec => embed_Ground_TRec
   end.
 
-Lemma embed_typed {τG : cast_calculus.types.type} {G : Ground τG} Γ pΓ :
-  Γ & pΓ ⊢ₛ (embed τG G) : (TArrow <<τG>> Universe) &
-                           (TArrow_closed (back_Ground_closed G) Universe_closed).
+Lemma embed_typed {τG : cast_calculus.types.type} {G : Ground τG} Γ :
+  Γ ⊢ₛ (embed τG G) : (TArrow <<τG>> Universe).
 Proof.
-  destruct G; eapply PI_typed.
+  destruct G.
     + apply embed_TUnit_typed.
     + apply embed_Ground_TProd_typed.
     + apply embed_Ground_TSum_typed.

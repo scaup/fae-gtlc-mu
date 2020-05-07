@@ -11,10 +11,10 @@ Definition Halts_grad := cast_calculus.lang.Halts.
 
 Definition Halts_stat := stlc_mu.lang.Halts.
 
-Section soundness.
+Section adequacy.
   Context `{!inG Σ specR, !invPreG Σ}.
 
-  Lemma soundness
+  Lemma adequacy
     (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : cast_calculus.types.type) :
     (∀ `{!implG Σ, !specG Σ}, [] ⊨ e ≤log≤ e' : τ) →
     (Halts_stat e) →
@@ -50,7 +50,7 @@ Section soundness.
       + iIntros "!> !%". eauto.
   Qed.
 
-End soundness.
+End adequacy.
 
 Definition actualΣ : gFunctors := #[ invΣ ; GFunctor specR ].
 

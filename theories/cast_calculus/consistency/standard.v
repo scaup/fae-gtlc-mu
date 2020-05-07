@@ -6,7 +6,7 @@ From stdpp Require Import base list.
 From Autosubst Require Export Autosubst.
 Require Export Utf8_core.
 
-Inductive cons_stand_open : type -> type -> Prop :=
+Inductive cons_stand_open : type -> type -> Type :=
 | GenSymUnit :
     cons_stand_open TUnit TUnit
 | GenSymUnknownL τ :
@@ -81,29 +81,29 @@ Qed.
 
 Definition cons_stand τ (pτ : TClosed τ) τ' (pτ' : TClosed τ') : Type := cons_stand_open τ τ'.
 
-Instance cons_stand_open_dec τ τ' : Decision (cons_stand_open τ τ').
+Definition cons_stand_open_dec τ τ' : sumor (cons_stand_open τ τ') (notT (cons_stand_open τ τ')).
 Proof.
   generalize dependent τ'.
-  induction τ; intro τ'; destruct τ'; ((by (apply left; by constructor)) || (try by apply right; intro abs; inversion abs)); try specialize (IHτ1 τ'1); try specialize (IHτ2 τ'2); try specialize (IHτ τ0).
+  induction τ; intro τ'; destruct τ'; ((by (apply inleft; by constructor)) || (try by apply inright; intro abs; inversion abs)); try specialize (IHτ1 τ'1); try specialize (IHτ2 τ'2); try specialize (IHτ τ0).
   - destruct IHτ1.
     destruct IHτ2.
-    apply left; by constructor.
-    apply right. intro abs. inversion abs. contradiction.
-    apply right. intro abs. inversion abs. contradiction.
+    apply inleft; by constructor.
+    apply inright. intro abs. inversion abs. contradiction.
+    apply inright. intro abs. inversion abs. contradiction.
   - destruct IHτ1.
     destruct IHτ2.
-    apply left; by constructor.
-    apply right. intro abs. inversion abs. contradiction.
-    apply right. intro abs. inversion abs. contradiction.
+    apply inleft; by constructor.
+    apply inright. intro abs. inversion abs. contradiction.
+    apply inright. intro abs. inversion abs. contradiction.
   - destruct IHτ1.
     destruct IHτ2.
-    apply left; by constructor.
-    apply right. intro abs. inversion abs. contradiction.
-    apply right. intro abs. inversion abs. contradiction.
+    apply inleft; by constructor.
+    apply inright. intro abs. inversion abs. contradiction.
+    apply inright. intro abs. inversion abs. contradiction.
   - destruct IHτ.
-    apply left; by constructor.
-    apply right. intro abs. inversion abs. contradiction.
+    apply inleft; by constructor.
+    apply inright. intro abs. inversion abs. contradiction.
   - destruct (decide (x = x0)).
-    apply left. rewrite e. eapply GenSymVar.
-    apply right. intro abs. inversion abs. contradiction.
+    apply inleft. rewrite e. eapply GenSymVar.
+    apply inright. intro abs. inversion abs. contradiction.
 Qed.

@@ -352,18 +352,59 @@ Proof. intro. cut (TnClosed 0 τ.[TRec τ/]). by simpl. apply TnClosed_subst.
        apply TRec_nclosed. by simpl. by simpl.
 Qed.
 
-Ltac closed_solver :=
-  ( by eapply TUnit_TClosed
-  || by eapply TArrow_closed
-  || by eapply TArrow_closed1
-  || by eapply TArrow_closed2
-  || by eapply TProd_closed
-  || by eapply TProd_closed1
-  || by eapply TProd_closed2
-  || by eapply TSum_closed
-  || by eapply TSum_closed1
-  || by eapply TSum_closed2
-  ).
+Lemma TRec_TnClosed τ n : TnClosed n (TRec τ) → TnClosed (S n) τ.
+Proof. intros p σ. specialize (p σ). asimpl in p. inversion p. by do 2 rewrite H0. Qed.
+
+Lemma closed_Fold_typed_help_gen τ : forall n τ', TnClosed n τ.[upn n (τ' .: ids)] → TnClosed (S n) τ.
+Proof.
+  induction τ; intros n τ'.
+  - by asimpl.
+  - asimpl. intro p.
+    specialize (IHτ1 n τ' (TProd_nclosed1 p)).
+    specialize (IHτ2 n τ' (TProd_nclosed2 p)).
+    intro σ. simpl. by rewrite IHτ1 IHτ2.
+  - asimpl. intro p.
+    specialize (IHτ1 n τ' (TSum_nclosed1 p)).
+    specialize (IHτ2 n τ' (TSum_nclosed2 p)).
+    intro σ. simpl. by rewrite IHτ1 IHτ2.
+  - asimpl. intro p. apply (iffLR TArrow_nclosed); split.
+    apply (IHτ1 n τ' (TArrow_nclosed1 p)).
+    apply (IHτ2 n τ' (TArrow_nclosed2 p)).
+  - asimpl. intro p.
+    assert (q : TnClosed (S n) τ.[upn (S n) (τ' .: ids)]).
+    by apply TRec_TnClosed. specialize (IHτ (S n) τ' q).
+    by apply TRec_nclosed.
+  - intros. asimpl in H.
+    destruct (iter_up_cases x n (τ' .: ids)) as [[eq plt] | [j [eq eq2]]].
+    + apply TnClosed_var. lia.
+    + rewrite eq2 in H. rewrite eq. clear eq eq2 x.
+      destruct j.
+      * apply TnClosed_var. lia.
+      * exfalso. asimpl in H.
+        assert (abs : n + j < n). by apply TnClosed_var. lia.
+Qed.
+
+Lemma closed_Fold_typed_help τ : TClosed τ.[TRec τ/] → TClosed (TRec τ).
+Proof.
+  intro.
+  cut (TnClosed 1 τ). intro. cut (TnClosed 0 (TRec τ)). by simpl. by apply (iffRL TRec_nclosed).
+  by eapply closed_Fold_typed_help_gen.
+Qed.
+
+Ltac closed_solver := intro σ; by asimpl.
+
+(* Ltac closed_solver := *)
+(*   ( by eapply TUnit_TClosed *)
+(*   || by eapply TArrow_closed *)
+(*   || by eapply TArrow_closed1 *)
+(*   || by eapply TArrow_closed2 *)
+(*   || by eapply TProd_closed *)
+(*   || by eapply TProd_closed1 *)
+(*   || by eapply TProd_closed2 *)
+(*   || by eapply TSum_closed *)
+(*   || by eapply TSum_closed1 *)
+(*   || by eapply TSum_closed2 *)
+(*   ). *)
 
 (* }}} *)
 

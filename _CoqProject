@@ -7,8 +7,7 @@ theories/stlc_mu/lang.v
 theories/stlc_mu/types.v
 theories/stlc_mu/typing.v
 theories/stlc_mu/lib/fix.v
-# expand to contexts!!
-# theories/stlc_mu/contexts.v
+theories/stlc_mu/contexts.v
 
 ### GRADUAL TYPES ###
 theories/cast_calculus/types.v
@@ -18,35 +17,34 @@ theories/cast_calculus/consistency/equivalence/listset_ext.v
 theories/cast_calculus/consistency/equivalence/closed_rec_types.v
 theories/cast_calculus/consistency/equivalence/upper_bound.v
 theories/cast_calculus/consistency/equivalence/intermediate.v
+theories/cast_calculus/consistency/equivalence/first_half.v
 theories/cast_calculus/consistency/equivalence/second_half.v
-# todo; cons_stand to Type; alternative for Decision...
-# theories/cast_calculus/consistency/equivalence/fist_half.v
-# todo; compose proof of first and second half
 theories/cast_calculus/consistency/equivalence/proof.v
 
 ### CAST CALCULUS ###
 theories/cast_calculus/lang.v
 theories/cast_calculus/typing.v
-# theories/cast_calculus/contexts.v
+theories/cast_calculus/contexts.v
 
 ### EMBEDDING ###
-# theories/embedding/expressions.v
+theories/embedding/expressions.v
 # theories/embedding/contexts.v
-# theories/embedding/types.v
+theories/embedding/types.v
+theories/embedding/well_typedness.v
+
 
 ### BACKTRANSLATION ###
 theories/backtranslation/cast_help/universe.v
 theories/backtranslation/types.v
 theories/backtranslation/cast_help/embed.v
 theories/backtranslation/cast_help/extract.v
+theories/backtranslation/cast_help/props/extract_embed.v
 theories/backtranslation/cast_help/factorize.v
 theories/backtranslation/cast_help/between.v
 theories/backtranslation/cast_help/general.v
 
 theories/backtranslation/expressions.v
-# expand to contexts!!
-# theories/backtranslation/contexts.v
-# expand to contexts!!
+theories/backtranslation/contexts.v
 theories/backtranslation/well_typedness.v
 
 
@@ -67,16 +65,15 @@ theories/refinements/static_gradual/compat_cast/arrow_arrow.v
 theories/refinements/static_gradual/compat_cast/identity.v
 theories/refinements/static_gradual/compat_cast/between_rec.v
 theories/refinements/static_gradual/compat_cast/ground_star.v
-# theories/refinements/static_gradual/compat_cast/extract_embed.v
-# theories/refinements/static_gradual/compat_cast/star_ground.v
+theories/refinements/static_gradual/compat_cast/star_ground.v
 theories/refinements/static_gradual/compat_cast/tau_star.v
 theories/refinements/static_gradual/compat_cast/star_tau.v
 theories/refinements/static_gradual/compat_cast/all.v
 
 # generalize to contexts..
 theories/refinements/static_gradual/rel_ref_specs.v
-theories/refinements/static_gradual/soundness.v
+theories/refinements/static_gradual/adequacy.v
 
 # after generalized to contexts..
-# theories/fae.v
+theories/fae.v
 

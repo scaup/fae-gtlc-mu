@@ -45,9 +45,8 @@ Definition ctx := list ctx_item.
 Definition fill_ctx (K : ctx) (e : expr) : expr := foldr fill_ctx_item e K.
 
 (** typed ctx *)
-Inductive typed_ctx_item :
-    ctx_item → list type → type → list type → type → Prop :=
-  | TP_CTX_Lam Γ τ τ' :
+Inductive typed_ctx_item : ctx_item → list type → type → list type → type → Prop :=
+  | TP_CTX_Lam Γ τ (pτ : TClosed τ) τ' :
      typed_ctx_item CTX_Lam (τ :: Γ) τ' Γ (TArrow τ τ')
   | TP_CTX_AppL Γ e2 τ τ' :
      typed Γ e2 τ →
@@ -65,9 +64,9 @@ Inductive typed_ctx_item :
      typed_ctx_item CTX_Fst Γ (TProd τ τ') Γ τ
   | TP_CTX_Snd Γ τ τ' :
      typed_ctx_item CTX_Snd Γ (TProd τ τ') Γ τ'
-  | TP_CTX_InjL Γ τ τ' :
+  | TP_CTX_InjL Γ τ τ' (pτ' : TClosed τ') :
      typed_ctx_item CTX_InjL Γ τ Γ (TSum τ τ')
-  | TP_CTX_InjR Γ τ τ' :
+  | TP_CTX_InjR Γ τ (pτ : TClosed τ) τ' :
      typed_ctx_item CTX_InjR Γ τ' Γ (TSum τ τ')
   | TP_CTX_CaseL Γ e1 e2 τ1 τ2 τ' :
      typed (τ1 :: Γ) e1 τ' → typed (τ2 :: Γ) e2 τ' →
@@ -82,11 +81,33 @@ Inductive typed_ctx_item :
      typed_ctx_item CTX_Fold Γ τ.[(TRec τ)/] Γ (TRec τ)
   | TP_CTX_Unfold Γ τ :
      typed_ctx_item CTX_Unfold Γ (TRec τ) Γ τ.[(TRec τ)/]
-  | TP_CTX_Cast Γ e τi τf :
-      typed Γ e τi ->
-      TClosed τi -> TClosed τf ->
-      cons_stand τi τf ->
+  | TP_CTX_Cast Γ τi τf (pτf : TClosed τf):
+      cons_stand_open τi τf ->
       typed_ctx_item (CTX_Cast τi τf) Γ τi Γ τf.
+
+(* We don't enforce the hole-type or output-type to be closed *)
+(* But we do have that closeness of the hole-type implies closeness of the output type *)
+(* We use contexts for well-typed terms, so this is sufficient *)
+
+Lemma typed_ctx_item_closedness k Γ τ Γ' τ' :
+  TClosed τ → typed_ctx_item k Γ τ Γ' τ' → TClosed τ'.
+Proof.
+  intro pτ. destruct 1; try done.
+  by apply TArrow_closed.
+  by eapply TArrow_closed2.
+  eapply TArrow_closed2. by eapply typed_closed.
+  apply TProd_closed; auto. by eapply typed_closed.
+  apply TProd_closed; auto.
+    by eapply typed_closed.
+  by eapply TProd_closed1.
+  by eapply TProd_closed2.
+  by eapply TSum_closed.
+  by eapply TSum_closed.
+    by eapply typed_closed.
+  by apply closed_Fold_typed_help.
+  by apply TRec_closed_unfold.
+Qed.
+
 
 Lemma typed_ctx_item_typed k Γ τ Γ' τ' e :
   typed Γ e τ → typed_ctx_item k Γ τ Γ' τ' →
@@ -100,6 +121,14 @@ Inductive typed_ctx: ctx → list type → type → list type → type → Prop 
      typed_ctx_item k Γ2 τ2 Γ3 τ3 →
      typed_ctx K Γ1 τ1 Γ2 τ2 →
      typed_ctx (k :: K) Γ1 τ1 Γ3 τ3.
+
+(* Again, we don't enforce the hole-type or output-type to be closed *)
+(* But we do have that closeness of the hole-type implies closeness of the output type *)
+(* We use contexts for well-typed terms, so this is sufficient *)
+
+Lemma typed_ctx_closedness K Γ τ Γ' τ' :
+  TClosed τ → typed_ctx K Γ τ Γ' τ' → TClosed τ'.
+Proof. induction 2. auto. eauto using typed_ctx_item_closedness. Qed.
 
 Lemma typed_ctx_typed K Γ τ Γ' τ' e :
   typed Γ e τ → typed_ctx K Γ τ Γ' τ' → typed Γ' (fill_ctx K e) τ'.

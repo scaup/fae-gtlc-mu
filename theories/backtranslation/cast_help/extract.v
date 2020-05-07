@@ -10,21 +10,24 @@ Definition Ω : expr :=
       (Fold (Lam ((Unfold (Var 0)) (Var 0))))
   ).
 
-Definition Ω_typed Γ pΓ τ pτ : Γ & pΓ ⊢ₛ Ω : τ & pτ.
+Lemma Ω_closed : EClosed Ω.
+Proof. by asimpl. Qed.
+
+Definition Ω_typed Γ τ (pτ : TClosed τ) : Γ ⊢ₛ Ω : τ.
 Proof.
-  eapply App_typed with (τ1 := (TRec (TArrow (TVar 0) τ))).
-  - eapply Lam_typed.
-    eapply App_typed with (τ1 := TRec (TArrow (TVar 0) τ)).
-    + eapply Unfold_typed_help with (τb := (TArrow (TVar 0) τ)).
-      asimpl. by rewrite pτ. by apply Var_typed.
-    + by apply Var_typed.
-  - eapply Fold_typed. asimpl.
-    eapply Lam_typed.
-    eapply App_typed with (τ1 := TRec (TArrow (TVar 0) τ)).
-    + eapply Unfold_typed_help with (τb := (TArrow (TVar 0) τ)).
-      by asimpl. by apply Var_typed.
-    + by apply Var_typed.
-    Unshelve. 1-13:intro σ; asimpl; by repeat rewrite pτ.
+  apply App_typed with (τ1 := (TRec (TArrow (TVar 0) τ))).
+  - eapply (Lam_typed _ _ _ _).
+    apply App_typed with (τ1 := TRec (TArrow (TVar 0) τ)).
+    + apply Unfold_typed_eq with (τb := (TArrow (TVar 0) τ)).
+      asimpl. by rewrite pτ. by eapply (Var_typed _ _ _ _).
+    + by eapply (Var_typed _ _ _ _).
+  - apply Fold_typed. asimpl.
+    eapply (Lam_typed _ _ _ _).
+    apply App_typed with (τ1 := TRec (TArrow (TVar 0) τ)).
+    + apply Unfold_typed_eq with (τb := (TArrow (TVar 0) τ)).
+      by asimpl. by eapply (Var_typed _ _ _ _).
+    + by eapply (Var_typed _ _ _ _).
+    Unshelve. all:intro σ; asimpl; by repeat rewrite pτ.
 Qed.
 
 Definition extract_TUnit : val :=
@@ -42,27 +45,26 @@ Definition extract_TUnit : val :=
             (Ω)
       ).
 
-Definition extract_TUnit_typed Γ pΓ: Γ & pΓ ⊢ₛ extract_TUnit : (TArrow Universe TUnit) &
-                                                                (TArrow_closed Universe_closed TUnit_TClosed).
+Definition extract_TUnit_typed Γ : Γ ⊢ₛ extract_TUnit : (TArrow Universe TUnit).
 Proof.
-  eapply Lam_typed.
-  eapply Case_typed with (τ1 := (TUnit + (TVar 0 + TVar 0) + (TVar 0 × TVar 0) + (TArrow (TVar 0) (TVar 0))).[Universe/]%type)
+  eapply (Lam_typed _ _ _ _).
+  apply Case_typed with (τ1 := (TUnit + (TVar 0 + TVar 0) + (TVar 0 × TVar 0) + (TArrow (TVar 0) (TVar 0))).[Universe/]%type)
                          (τ2 := Universe).
-  - eapply Unfold_typed_help with (τb := Universe_body). by asimpl.
+  - eapply Unfold_typed_help_2 with (τ := Universe_body). by asimpl.
     by apply Var_typed.
-  - eapply Case_typed with (τ1 := (TUnit + (TVar 0 + TVar 0) + (TVar 0 × TVar 0)).[Universe/]%type)
+  - apply Case_typed with (τ1 := (TUnit + (TVar 0 + TVar 0) + (TVar 0 × TVar 0)).[Universe/]%type)
                           (τ2 := (TArrow (TVar 0) (TVar 0)).[Universe/]%type).
     + by apply Var_typed.
     + eapply Case_typed.
-      * by apply Var_typed.
+      * by eapply (Var_typed _ _ _ _).
       * eapply Case_typed.
-        -- by apply Var_typed.
-        -- by apply Var_typed.
+        -- by eapply (Var_typed _ _ _ _).
+        -- by eapply (Var_typed _ _ _ _).
         -- by apply Ω_typed.
       * by apply Ω_typed.
     + by apply Ω_typed.
   - by apply Ω_typed.
-  Unshelve. all:intro σ; by asimpl.
+    Unshelve. all: intro σ; by asimpl.
 Qed.
 
 Definition extract_Ground_TSum : val :=
@@ -80,26 +82,24 @@ Definition extract_Ground_TSum : val :=
             (Ω)
       ).
 
-Definition extract_Ground_TSum_typed Γ pΓ: Γ & pΓ ⊢ₛ extract_Ground_TSum : (TArrow Universe (Universe + Universe))%type &
-                                                                           (TArrow_closed Universe_closed (TSum_closed Universe_closed Universe_closed)).
+Definition extract_Ground_TSum_typed Γ : Γ ⊢ₛ extract_Ground_TSum : (TArrow Universe (Universe + Universe))%type.
 Proof.
-  eapply Lam_typed.
-  eapply Case_typed with (τ1 := (TUnit + (TVar 0 + TVar 0) + (TVar 0 × TVar 0) + (TArrow (TVar 0) (TVar 0))).[Universe/]%type)
+  eapply (Lam_typed _ _ _ _).
+  apply Case_typed with (τ1 := (TUnit + (TVar 0 + TVar 0) + (TVar 0 × TVar 0) + (TArrow (TVar 0) (TVar 0))).[Universe/]%type)
                          (τ2 := Universe).
-  - eapply Unfold_typed_help with (τb := Universe_body). by asimpl. by apply Var_typed.
-  - eapply Case_typed. by apply Var_typed.
+  - eapply Unfold_typed_help_2 with (τ := Universe_body). by asimpl. by apply Var_typed.
+  - eapply Case_typed. by eapply (Var_typed _ _ _ _).
     + eapply Case_typed.
-      * by apply Var_typed.
+      * by eapply (Var_typed _ _ _ _).
       * eapply Case_typed.
-        -- by apply Var_typed.
+        -- by eapply (Var_typed _ _ _ _).
         -- by apply Ω_typed.
-        -- by apply Var_typed.
+        -- by eapply (Var_typed _ _ _ _).
       * by apply Ω_typed.
     + by apply Ω_typed.
   - by apply Ω_typed.
-  Unshelve. all:intro σ; by asimpl.
+    Unshelve. all: intro σ; by asimpl.
 Qed.
-
 
 Definition extract_Ground_TProd : val :=
   LamV (Case (Unfold (Var 0))
@@ -113,23 +113,21 @@ Definition extract_Ground_TProd : val :=
             (Ω)
       ).
 
-Definition extract_Ground_TProd_typed Γ pΓ: Γ & pΓ ⊢ₛ extract_Ground_TProd : (TArrow Universe (Universe × Universe)) &
- (TArrow_closed Universe_closed (TProd_closed Universe_closed Universe_closed)).
+Definition extract_Ground_TProd_typed Γ : Γ ⊢ₛ extract_Ground_TProd : (TArrow Universe (Universe × Universe)).
 Proof.
-  eapply Lam_typed.
-  eapply Case_typed with (τ1 := (TUnit + (TVar 0 + TVar 0) + (TVar 0 × TVar 0) + (TArrow (TVar 0) (TVar 0))).[Universe/]%type)
+  eapply (Lam_typed _ _ _ _).
+  apply Case_typed with (τ1 := (TUnit + (TVar 0 + TVar 0) + (TVar 0 × TVar 0) + (TArrow (TVar 0) (TVar 0))).[Universe/]%type)
                          (τ2 := Universe).
-  - eapply Unfold_typed_help with (τb := Universe_body). by asimpl. by apply Var_typed.
-  - eapply Case_typed. by apply Var_typed.
+  - eapply Unfold_typed_help_2 with (τ := Universe_body). by asimpl. by apply Var_typed.
+  - eapply Case_typed. by eapply (Var_typed _ _ _ _).
     + eapply Case_typed.
-      * by apply Var_typed.
+      * by eapply (Var_typed _ _ _ _).
       * by apply Ω_typed.
-      * by apply Var_typed.
+      * by eapply (Var_typed _ _ _ _).
     + by apply Ω_typed.
   - by apply Ω_typed.
-  Unshelve. all:intro σ; by asimpl.
+    Unshelve. all: intro σ; by asimpl.
 Qed.
-
 
 Definition extract_Ground_TArrow : val :=
   LamV (Case (Unfold (Var 0))
@@ -140,20 +138,18 @@ Definition extract_Ground_TArrow : val :=
             (Ω)
       ).
 
-Definition extract_Ground_TArrow_typed Γ pΓ: Γ & pΓ ⊢ₛ extract_Ground_TArrow : (TArrow Universe (TArrow Universe Universe)) &
-TArrow_closed Universe_closed (TArrow_closed Universe_closed Universe_closed).
+Definition extract_Ground_TArrow_typed Γ : Γ ⊢ₛ extract_Ground_TArrow : (TArrow Universe (TArrow Universe Universe)).
 Proof.
-  eapply Lam_typed.
-  eapply Case_typed with (τ1 := (TUnit + (TVar 0 + TVar 0) + (TVar 0 × TVar 0) + (TArrow (TVar 0) (TVar 0))).[Universe/]%type)
+  eapply (Lam_typed _ _ _ _).
+  apply Case_typed with (τ1 := (TUnit + (TVar 0 + TVar 0) + (TVar 0 × TVar 0) + (TArrow (TVar 0) (TVar 0))).[Universe/]%type)
                          (τ2 := Universe).
-  - eapply Unfold_typed_help with (τb := Universe_body). by asimpl. by apply Var_typed.
-  - eapply Case_typed. by apply Var_typed.
+  - eapply Unfold_typed_help_2 with (τ := Universe_body). by asimpl. by apply Var_typed.
+  - eapply Case_typed. by eapply (Var_typed _ _ _ _).
     + by apply Ω_typed.
     + by apply Var_typed.
   - by apply Ω_typed.
-  Unshelve. all:intro σ; by asimpl.
+    Unshelve. all: intro σ; by asimpl.
 Qed.
-
 
 Definition extract_Ground_TRec : val :=
   LamV (Case (Unfold (Var 0))
@@ -161,18 +157,15 @@ Definition extract_Ground_TRec : val :=
             (Fold (Var 0))
       ).
 
-Definition extract_Ground_TRec_typed Γ pΓ: Γ & pΓ ⊢ₛ extract_Ground_TRec : (TArrow Universe (TRec Universe)) &
-TArrow_closed Universe_closed (TRec_closed Universe_closed).
+Definition extract_Ground_TRec_typed Γ : Γ ⊢ₛ extract_Ground_TRec : (TArrow Universe (TRec Universe)).
 Proof.
-  eapply Lam_typed.
-  eapply Case_typed with (τ1 := (TUnit + (TVar 0 + TVar 0) + (TVar 0 × TVar 0) + (TArrow (TVar 0) (TVar 0))).[Universe/]%type)
-
-
+  eapply (Lam_typed _ _ _ _).
+  apply Case_typed with (τ1 := (TUnit + (TVar 0 + TVar 0) + (TVar 0 × TVar 0) + (TArrow (TVar 0) (TVar 0))).[Universe/]%type)
                         (τ2 := Universe).
-  - eapply Unfold_typed_help with (τb := Universe_body). by asimpl. by apply Var_typed.
+  - eapply Unfold_typed_help_2 with (τ := Universe_body). by asimpl. by apply Var_typed.
   - by apply Ω_typed.
-  - eapply Fold_typed. by apply Var_typed.
-    Unshelve. 1-7:intro σ; by asimpl.
+  - apply Fold_typed. by apply Var_typed.
+  Unshelve. apply Universe_closed.
 Qed.
 
 Definition extract (τ : cast_calculus.types.type) (G : Ground τ) : val :=
@@ -184,11 +177,10 @@ Definition extract (τ : cast_calculus.types.type) (G : Ground τ) : val :=
   | Ground_TRec => extract_Ground_TRec
   end.
 
-Lemma extract_typed {τG : cast_calculus.types.type} {G : Ground τG} Γ pΓ:
-  Γ & pΓ ⊢ₛ (extract τG G) : (TArrow Universe <<τG>>) &
-TArrow_closed Universe_closed (back_Ground_closed G).
+Lemma extract_typed {τG : cast_calculus.types.type} {G : Ground τG} Γ:
+  Γ ⊢ₛ (extract τG G) : (TArrow Universe <<τG>>).
 Proof.
-  destruct G; eapply PI_typed.
+  destruct G.
     + apply extract_TUnit_typed.
     + apply extract_Ground_TProd_typed.
     + apply extract_Ground_TSum_typed.

@@ -25,20 +25,25 @@ Proof.
   by asimpl.
 Qed.
 
-Lemma between_TSum_typed Γ pΓ τ1 pτ1 τ2 pτ2 τ1' pτ1' τ2' pτ2' (f1 f2 : expr)
-      (d1 : Γ & pΓ ⊢ₛ f1 : (TArrow τ1 τ1') & (TArrow_closed pτ1 pτ1'))
-      (d2 : Γ & pΓ ⊢ₛ f2 : (TArrow τ2 τ2') & (TArrow_closed pτ2 pτ2')) :
-  Γ & pΓ ⊢ₛ between_TSum f1 f2 : (TArrow (τ1 + τ2) (τ1' + τ2'))%type & (TArrow_closed (TSum_closed pτ1 pτ2) (TSum_closed pτ1' pτ2')).
+Lemma between_TSum_typed Γ (τ1 τ2 τ1' τ2' : type) (f1 f2 : expr)
+      (d1 : Γ ⊢ₛ f1 : (TArrow τ1 τ1'))
+      (d2 : Γ ⊢ₛ f2 : (TArrow τ2 τ2')) :
+  Γ ⊢ₛ between_TSum f1 f2 : (TArrow (τ1 + τ2) (τ1' + τ2'))%type.
 Proof.
-  eapply Lam_typed.
+  assert (pτ1 : TClosed τ1). by apply (TArrow_closed1 (typed_closed d1)).
+  assert (pτ2 : TClosed τ2). by apply (TArrow_closed1 (typed_closed d2)).
+  assert (pτ1' : TClosed τ1'). by apply (TArrow_closed2 (typed_closed d1)).
+  assert (pτ2' : TClosed τ2'). by apply (TArrow_closed2 (typed_closed d2)).
+  apply Lam_typed. by apply TSum_closed.
   eapply Case_typed.
-  by apply Var_typed.
-  eapply InjL_typed. eapply App_typed.
-  eapply up_type_two. apply d1.
-  by apply Var_typed.
-  eapply InjR_typed. eapply App_typed.
-  eapply up_type_two. apply d2. by apply Var_typed.
-  Unshelve. all:intro σ; asimpl; repeat rewrite pτ1; repeat rewrite pτ1'; repeat rewrite pτ2; repeat rewrite pτ2'; done.
+  apply Var_typed; auto. by apply TSum_closed.
+  apply InjL_typed; auto. eapply App_typed.
+  apply up_type_two. apply d1.
+  by eapply (Var_typed _ _ _ _).
+  eapply (InjR_typed _ _ _ _ _).
+  eapply App_typed. apply up_type_two. apply d2.
+  by eapply (Var_typed _ _ _ _).
+  Unshelve. all: done.
 Qed.
 
 Definition between_TProd (f1 f2 : expr) : val :=
@@ -52,18 +57,20 @@ Proof.
   by asimpl.
 Qed.
 
-Lemma between_TProd_typed Γ pΓ τ1 pτ1 τ2 pτ2 τ1' pτ1' τ2' pτ2' (f1 f2 : expr)
-      (d1 : Γ & pΓ ⊢ₛ f1 : (TArrow τ1 τ1') & (TArrow_closed pτ1 pτ1'))
-      (d2 : Γ & pΓ ⊢ₛ f2 : (TArrow τ2 τ2') & (TArrow_closed pτ2 pτ2')) :
-  Γ & pΓ ⊢ₛ between_TProd f1 f2 : (TArrow (τ1 × τ2) (τ1' × τ2'))%type & (TArrow_closed (TProd_closed pτ1 pτ2) (TProd_closed pτ1' pτ2')).
+Lemma between_TProd_typed Γ (τ1 τ2 τ1' τ2' : type) (f1 f2 : expr) (d1 : Γ ⊢ₛ f1 : (TArrow τ1 τ1')) (d2 : Γ ⊢ₛ f2 : (TArrow τ2 τ2')) :
+  Γ ⊢ₛ between_TProd f1 f2 : (TArrow (τ1 × τ2) (τ1' × τ2'))%type.
 Proof.
-  eapply Lam_typed.
-  eapply Pair_typed.
+  assert (pτ1 : TClosed τ1). by apply (TArrow_closed1 (typed_closed d1)).
+  assert (pτ2 : TClosed τ2). by apply (TArrow_closed1 (typed_closed d2)).
+  assert (pτ1' : TClosed τ1'). by apply (TArrow_closed2 (typed_closed d1)).
+  assert (pτ2' : TClosed τ2'). by apply (TArrow_closed2 (typed_closed d2)).
+  apply Lam_typed. by apply TProd_closed.
+  apply Pair_typed.
   eapply App_typed.
-  eapply up_type_one. apply d1. econstructor. by apply Var_typed.
-  eapply App_typed.
-  apply up_type_one. apply d2. econstructor. by apply Var_typed.
-  Unshelve. all:intro σ; asimpl; repeat rewrite pτ1; repeat rewrite pτ1'; repeat rewrite pτ2; repeat rewrite pτ2'; done.
+  apply up_type_one. apply d1. econstructor. apply Var_typed; auto. by apply TProd_closed.
+  eapply (App_typed _ _ _ _).
+  apply up_type_one. apply d2. econstructor. apply Var_typed; auto.
+  Unshelve. by apply TProd_closed.
 Qed.
 
 Definition between_TArrow (ca cr : expr) : val :=
@@ -81,19 +88,20 @@ Proof.
   by asimpl.
 Qed.
 
-Lemma between_TArrow_typed Γ pΓ τ1 pτ1 τ2 pτ2 τ3 pτ3 τ4 pτ4 (ca cr : expr)
-      (da : Γ & pΓ ⊢ₛ ca : (TArrow τ3 τ1) & (TArrow_closed pτ3 pτ1))
-      (dr : Γ & pΓ ⊢ₛ cr : (TArrow τ2 τ4) & (TArrow_closed pτ2 pτ4)) :
-  Γ & pΓ ⊢ₛ between_TArrow ca cr : (TArrow (TArrow τ1 τ2) (TArrow τ3 τ4))%type &
-                                   (TArrow_closed (TArrow_closed pτ1 pτ2) (TArrow_closed pτ3 pτ4)).
+Lemma between_TArrow_typed Γ (τ1 τ2 τ3 τ4 : type) (ca cr : expr)
+      (da : Γ ⊢ₛ ca : (TArrow τ3 τ1))
+      (dr : Γ ⊢ₛ cr : (TArrow τ2 τ4)) :
+  Γ ⊢ₛ between_TArrow ca cr : (TArrow (TArrow τ1 τ2) (TArrow τ3 τ4))%type.
 Proof.
-  repeat eapply Lam_typed.
-  eapply App_typed with (τ1 := τ2).
-  eapply up_type_two. apply dr. eapply App_typed with (τ1 := τ1).
-    by auto; apply Var_typed.
-    eapply App_typed. by eapply up_type_two.
+  assert (pτ1 : TClosed τ1). by apply (TArrow_closed2 (typed_closed da)).
+  assert (pτ2 : TClosed τ2). by apply (TArrow_closed1 (typed_closed dr)).
+  assert (pτ3 : TClosed τ3). by apply (TArrow_closed1 (typed_closed da)).
+  repeat apply Lam_typed; try done; try by apply TArrow_closed.
+  apply App_typed with (τ1 := τ2).
+  auto. apply up_type_two. apply dr. apply App_typed with (τ1 := τ1).
+    apply Var_typed; auto. by apply TArrow_closed.
+    eapply App_typed. by apply up_type_two.
     by apply Var_typed.
-  Unshelve. all:intro σ; asimpl; repeat rewrite pτ1; repeat rewrite pτ2; repeat rewrite pτ3; repeat rewrite pτ4; done.
 Qed.
 
 Definition between_TRec (f : expr) : val :=
@@ -125,33 +133,27 @@ Proof.
   by simpl.
 Qed.
 
-Lemma between_TRec_typed Γ pΓ τi pμτi τf pμτf (f : expr)
-      (d : ((TArrow (TRec τi) (TRec τf)):: Γ) & (Forall_cons _ _ _ (TArrow_closed pμτi pμτf) pΓ) ⊢ₛ f : (TArrow (τi.[TRec τi/]) τf.[TRec τf/]) &
-      TArrow_closed (TRec_closed_unfold pμτi) (TRec_closed_unfold pμτf)) :
-  Γ & pΓ ⊢ₛ between_TRec f : (TArrow (TRec τi) (TRec τf))%type &
-      TArrow_closed pμτi pμτf.
+Lemma between_TRec_typed Γ (τi τf : type) (f : expr)
+      (d : (TArrow (TRec τi) (TRec τf):: Γ) ⊢ₛ f : TArrow τi.[TRec τi/] τf.[TRec τf/]) :
+  Γ ⊢ₛ between_TRec f : TArrow (TRec τi) (TRec τf)%type.
 Proof.
-  eapply Lam_typed.
-  eapply App_typed with (τ1 := TRec τi).
+  assert (Hi : TClosed (TRec τi)). apply (closed_Fold_typed_help _ (TArrow_closed1 (typed_closed d))).
+  assert (Hf : TClosed (TRec τf)). apply (closed_Fold_typed_help _ (TArrow_closed2 (typed_closed d))).
+  apply Lam_typed; auto.
+  apply App_typed with (τ1 := TRec τi).
   apply Fix_typed; auto.
-  eapply Lam_typed.
-  eapply Lam_typed.
-  eapply Fold_typed.
-  eapply App_typed with (τ1 := τi.[(TRec τi)/]).
-  eapply up_type_one.
-  revert d.
-  generalize (Forall_cons TClosed (TArrow (TRec τi) (TRec τf)) Γ (TArrow_closed pμτi pμτf) pΓ).
-  rewrite rewrite_for_context_weakening. intros pp d.
-  Unshelve. 4-15: auto. 4-5: by apply TArrow_closed.
-  generalize (Forall_cons TClosed (TArrow (TRec τi) (TRec τf)) (TRec τi :: Γ) (TArrow_closed pμτi pμτf)
-    (Forall_cons TClosed (TRec τi) Γ pμτi pΓ)).
+  apply Lam_typed. by apply TArrow_closed.
+  apply Lam_typed; auto.
+  apply Fold_typed.
+  apply App_typed with (τ1 := τi.[(TRec τi)/]).
+  apply up_type_one.
+  rewrite rewrite_for_context_weakening in d.
   rewrite (rewrite_for_context_weakening Γ).
   rewrite rewrite_for_context_weakening.
-  intro ppp.
-  eapply context_gen_weakening.
+  apply context_gen_weakening.
   apply d.
-  eapply Unfold_typed.
-  by apply Var_typed.
-  by apply Var_typed.
-  Unshelve. all: try done; by apply TRec_closed_unfold.
+  apply Unfold_typed.
+  apply Var_typed; auto.
+  apply Var_typed; auto.
 Qed.
+

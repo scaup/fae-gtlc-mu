@@ -3,8 +3,6 @@ From fae_gtlc_mu.cast_calculus Require Export types.
 From fae_gtlc_mu Require Import prelude.
 Require Coq.Logic.JMeq.
 
-(* Inductive cons_struct (A : list (type * type)) pA : Forall (fun p => TClosed p.1 ∧ TClosed p.2) *)
-                                                (* : forall τ, TClosed τ -> forall τ', TClosed τ' -> Type. *)
 Inductive cons_struct (A : list (type * type)) : type → type -> Type :=
   (** ground and star *)
   (* downcasting from star to ground *)

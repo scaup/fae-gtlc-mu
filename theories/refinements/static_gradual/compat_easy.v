@@ -119,10 +119,6 @@ Section fundamental.
   Qed.
 
   Lemma bin_log_related_case Γ (e0 e1 e2 : stlc_mu.lang.expr) (e0' e1' e2' : cast_calculus.lang.expr) τ1 τ2 τ3
-      (Hclosed2 : ∀ f, e1.[upn (S (length Γ)) f] = e1)
-      (Hclosed3 : ∀ f, e2.[upn (S (length Γ)) f] = e2)
-      (Hclosed2' : ∀ f, e1'.[upn (S (length Γ)) f] = e1')
-      (Hclosed3' : ∀ f, e2'.[upn (S (length Γ)) f] = e2')
       (IHHtyped1 : Γ ⊨ e0 ≤log≤ e0' : TSum τ1 τ2)
       (IHHtyped2 : τ1 :: Γ ⊨ e1 ≤log≤ e1' : τ3)
       (IHHtyped3 : τ2 :: Γ ⊨ e2 ≤log≤ e2' : τ3) :
@@ -149,8 +145,6 @@ Section fundamental.
   Qed.
 
   Lemma bin_log_related_lam Γ (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) τ1 τ2
-      (Hclosed : ∀ f, e.[upn (S (length Γ)) f] = e)
-      (Hclosed' : ∀ f, e'.[upn (S (length Γ)) f] = e')
       (IHHtyped : τ1 :: Γ ⊨ e ≤log≤ e' : τ2) :
     Γ ⊨ stlc_mu.lang.Lam e ≤log≤ Lam e' : TArrow τ1 τ2.
   Proof.
