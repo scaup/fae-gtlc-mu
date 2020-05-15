@@ -23,5 +23,5 @@ Fixpoint backtranslate_expr (e : cast_calculus.lang.expr) : expr :=
     | (inleft pC , left pi, left pf) => (𝓕c (cons_co τi pi τf pf pC) []) <<e>>
     | _ => Unit
     end
-  | Blame => Ω
+  | CastError => Ω
   end where "<< e >>" := (backtranslate_expr e).

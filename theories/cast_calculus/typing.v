@@ -26,7 +26,7 @@ Inductive typed (Γ : list type) : expr → type → Prop :=
       Γ ⊢ₜ e : τi →
       Γ ⊢ₜ Cast e τi τf : τf
   (* typing for BLAME *)
-  | Blame_typed τ : TClosed τ → Γ ⊢ₜ Blame : τ
+  | CastError_typed τ : TClosed τ → Γ ⊢ₜ CastError : τ
 where "Γ ⊢ₜ e : τ" := (typed Γ e τ).
 
 Lemma typed_closed {Γ} {e} {τ} : Γ ⊢ₜ e : τ → TClosed τ.

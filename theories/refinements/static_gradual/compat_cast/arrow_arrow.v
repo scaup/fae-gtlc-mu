@@ -22,12 +22,6 @@ Section compat_cast_arrow_arrow.
 
   (** Proving it *)
 
-  (* Lemma rewrite_subs_app (e1 e2 : expr) σ : *)
-  (*   (App e1 e2).[σ] = App e1.[σ] e2.[σ]. *)
-  (* Proof. *)
-  (*     by simpl. *)
-  (* Qed. *)
-
   Lemma back_cast_ar_arrow_arrow:
     ∀ (A : list (type * type)) (τ1 τ1' τ2 τ2' : type) (pC1 : cons_struct A τ1' τ1) (pC2 : cons_struct A τ2 τ2')
       (IHpC1 : back_cast_ar pC1) (IHpC2 : back_cast_ar pC2),
@@ -66,7 +60,7 @@ Section compat_cast_arrow_arrow.
                     (Cast (App (# f') (Cast (# a') τ1' τ1)) τ2 τ2') with "[Hf']") as "Hf'".
     intros. eapply AppCast; try by rewrite -to_of_val. auto. by iFrame.
     (** first IH for the arguments *)
-    iApply (wp_bind (fill $ [stlc_mu.lang.AppRCtx _ ; stlc_mu.lang.AppRCtx _])).
+    iApply (wp_bind (ectx_language.fill $ [stlc_mu.lang.AppRCtx _ ; stlc_mu.lang.AppRCtx _])).
     iApply (wp_wand with "[-]").
     rewrite -𝓕c_rewrite.
     iApply (IHpC1 ei' (AppRCtx f' :: CastCtx τ2 τ2' :: K') with "[Hf']").
@@ -80,7 +74,7 @@ Section compat_cast_arrow_arrow.
     simpl.
     iClear "Haa'". clear a a'.
     (** using the relatedness of functions *)
-    iApply (wp_bind (fill $ [stlc_mu.lang.AppRCtx _ ])).
+    iApply (wp_bind (ectx_language.fill $ [stlc_mu.lang.AppRCtx _ ])).
     iApply (wp_wand with "[-]").
     iDestruct ("Hff'" with "Hbb'") as "Hfbf'b' /=".
     iApply ("Hfbf'b'" $! (CastCtx τ2 τ2' :: K')).

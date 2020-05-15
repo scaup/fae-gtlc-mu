@@ -48,7 +48,7 @@ Section compat_cast_sum_sum.
     + iDestruct "H1" as ((v1 , v1')) "[% Hv1v1']". inversion H0. clear H0 H2 H3 v v'.
       wp_head. asimpl.
       iMod ((step_case_inl _ _ _ (# v1'))  with "[Hv']") as "Hv'". auto. iSplitR. try done. done.
-      iApply (wp_bind (fill $ [stlc_mu.lang.InjLCtx])).
+      iApply (wp_bind (stlc_mu.lang.fill_item stlc_mu.lang.InjLCtx)).
       iApply (wp_wand with "[-]").
       iApply (IHpC1 ei' (InjLCtx :: K') with "[Hv']").
       iSplitR; try done.
@@ -63,7 +63,7 @@ Section compat_cast_sum_sum.
     + iDestruct "H2" as ((v1 , v1')) "[% Hv1v1']". inversion H0. clear H0 H2 H3 v v'.
       wp_head. asimpl.
       iMod ((step_case_inr _ _ K' (# v1'))  with "[Hv']") as "Hv'". auto. iSplitR. try done. simpl. done.
-      iApply (wp_bind (fill $ [stlc_mu.lang.InjRCtx])).
+      iApply (wp_bind (stlc_mu.lang.fill_item stlc_mu.lang.InjRCtx)).
       iApply (wp_wand with "[-]").
       iApply (IHpC2 ei' (InjRCtx :: K') with "[Hv']").
       iSplitR; try done.

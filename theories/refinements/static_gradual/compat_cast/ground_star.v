@@ -53,14 +53,13 @@ Section ground_star.
         (** rewriting value relation for v and v' *)
         rewrite interp_rw_TRec.
         iDestruct "Hvv'" as (u u') "#[% Huu']". inversion H. clear v v' H H1 H2.
-        iApply (wp_bind (fill $ [stlc_mu.lang.InjRCtx ; stlc_mu.lang.FoldCtx])).
+        iApply (wp_bind (ectx_language.fill $ [stlc_mu.lang.InjRCtx ; stlc_mu.lang.FoldCtx])).
         wp_head. wp_value. simpl. wp_value.
         iExists (CastV (FoldV u') _ _ (TGround_TUnknown_icp Ground_TRec)).
         iSplitL. done.
         rewrite (interp_rw_TUnknown (stlc_mu.lang.FoldV _ , _)).
         iExists _ , _.
         iModIntro. iRight. iRight. iRight. iRight. iSplit; done.
-        Unshelve. apply hack.
   Qed.
 
 

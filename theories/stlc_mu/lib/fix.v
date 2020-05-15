@@ -2,8 +2,8 @@ From fae_gtlc_mu Require Export stlc_mu.lang.
 From fae_gtlc_mu Require Export stlc_mu.typing.
 
 Definition Fix (f : expr) : expr :=
-  (Unfold (Fold (Lam ((rename (+1) f) (Lam ((Unfold (Var 1)) (Var 1) (Var 0)))))))
-    (Fold (Lam (rename (+1) f (Lam ((Unfold (Var 1)) (Var 1) (Var 0)))))).
+  (Unfold (Fold (Lam ((f.[ren (+1)]) (Lam ((Unfold (Var 1)) (Var 1) (Var 0)))))))
+    (Fold (Lam (f.[ren (+1)] (Lam ((Unfold (Var 1)) (Var 1) (Var 0)))))).
 
 Lemma Fix_typed Γ τa τr f :
   (Γ ⊢ₛ f : TArrow (TArrow τa τr) (TArrow τa τr))
@@ -46,3 +46,4 @@ Proof.
   rewrite /Fix.
   by asimpl.
 Qed.
+

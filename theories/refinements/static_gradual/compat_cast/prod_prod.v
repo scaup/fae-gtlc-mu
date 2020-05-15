@@ -46,9 +46,9 @@ Section compat_cast_prod_prod.
     wp_head. asimpl.
     rewrite 𝓕c_rewrite.
     (** boring steps implementation side *)
-    iApply (wp_bind (fill $ [stlc_mu.lang.AppRCtx _ ; stlc_mu.lang.PairLCtx _])).
+    iApply (wp_bind (ectx_language.fill $ [stlc_mu.lang.AppRCtx _ ; stlc_mu.lang.PairLCtx _])).
     wp_head. wp_value. simpl.
-    iApply (wp_bind (fill $ [stlc_mu.lang.PairLCtx _])).
+    iApply (wp_bind (ectx_language.fill $ [stlc_mu.lang.PairLCtx _])).
     (** boring steps specification side *)
     iMod (step_pure _ ei' K'
                     (Cast (Pair (# v1') (# v2')) (τ1 × τ2) (τ1' × τ2'))
@@ -68,7 +68,7 @@ Section compat_cast_prod_prod.
     iIntros (v1f) "HHH". iDestruct "HHH" as (v1f') "[Hv2' #Hv1fv1f']".
     (** boring steps implementation side *)
     rewrite 𝓕c_rewrite.
-    iApply (wp_bind (fill $ [stlc_mu.lang.AppRCtx _ ; stlc_mu.lang.PairRCtx _])).
+    iApply (wp_bind (ectx_language.fill  $ [stlc_mu.lang.AppRCtx _ ; stlc_mu.lang.PairRCtx _])).
     wp_head. wp_value. simpl.
     (** boring steps specification side *)
     iMod (step_pure _ ei' (CastCtx τ2 τ2' :: PairRCtx _ :: K')
@@ -76,7 +76,7 @@ Section compat_cast_prod_prod.
                     (# v2') with "[Hv2']") as "Hv2'".
     intros. eapply SndS. by rewrite to_of_val. by rewrite to_of_val. auto. iSplitR; try done. simpl.
     (** second IH *)
-    iApply (wp_bind (fill $ [stlc_mu.lang.PairRCtx _])).
+    iApply (wp_bind (ectx_language.fill $ [stlc_mu.lang.PairRCtx _])).
     iApply (wp_wand with "[-]").
     rewrite -𝓕c_rewrite.
     iApply (IHpC2 ei' (PairRCtx _ :: K') with "[Hv2']").

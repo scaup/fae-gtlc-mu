@@ -23,12 +23,69 @@ Inductive expr :=
 (* Casts! *)
 | Cast (e : expr) (τi τf : type)
 (* We are not going to ask for a proof of τi ~ τf... only in type-checking *)
-| Blame.
+| CastError.
 
 Instance Ids_expr : Ids expr. derive. Defined.
 Instance Rename_expr : Rename expr. derive. Defined.
 Instance Subst_expr : Subst expr. derive. Defined.
 Instance SubstLemmas_expr : SubstLemmas expr. derive. Qed.
+
+Instance expr_eqdec : EqDecision expr.
+Proof.
+  unfold EqDecision.
+  intro e.
+  induction e; intros e'; destruct e'; try (by (apply right; intro abs; inversion abs)).
+  - destruct (decide (x = x0)) as [-> | neq].
+    + by apply left.
+    + apply right. intro abs. inversion abs. contradiction.
+  - destruct (IHe e0) as [-> | neq].
+    + by apply left.
+    + apply right. intro abs. inversion abs. contradiction.
+  - destruct (IHe1 e'1) as [-> | neq].
+    + destruct (IHe2 e'2) as [-> | neq].
+      * by apply left.
+      * apply right. intro abs. inversion abs. contradiction.
+    + apply right. intro abs. inversion abs. contradiction.
+  - by apply left.
+  - destruct (IHe1 e'1) as [-> | neq].
+    + destruct (IHe2 e'2) as [-> | neq].
+      * by apply left.
+      * apply right. intro abs. inversion abs. contradiction.
+    + apply right. intro abs. inversion abs. contradiction.
+  - destruct (IHe e') as [-> | neq].
+    + by apply left.
+    + apply right. intro abs. inversion abs. contradiction.
+  - destruct (IHe e') as [-> | neq].
+    + by apply left.
+    + apply right. intro abs. inversion abs. contradiction.
+  - destruct (IHe e') as [-> | neq].
+    + by apply left.
+    + apply right. intro abs. inversion abs. contradiction.
+  - destruct (IHe e') as [-> | neq].
+    + by apply left.
+    + apply right. intro abs. inversion abs. contradiction.
+  - destruct (IHe e') as [-> | neq].
+    + destruct (IHe0 e0) as [-> | neq].
+      * destruct (IHe1 e3) as [-> | neq].
+        ++ by apply left.
+        ++ apply right. intro abs. inversion abs. contradiction.
+      * apply right. intro abs. inversion abs. contradiction.
+    + apply right. intro abs. inversion abs. contradiction.
+  - destruct (IHe e') as [-> | neq].
+    + by apply left.
+    + apply right. intro abs. inversion abs. contradiction.
+  - destruct (IHe e') as [-> | neq].
+    + by apply left.
+    + apply right. intro abs. inversion abs. contradiction.
+  - destruct (IHe e') as [-> | neq].
+    + destruct (decide (τi = τi0)) as [-> | neq].
+      * destruct (decide (τf = τf0)) as [-> | neq].
+        ++ by apply left.
+        ++ apply right. intro abs. inversion abs. contradiction.
+      * apply right. intro abs. inversion abs. contradiction.
+    + apply right. intro abs. inversion abs. contradiction.
+  - by apply left.
+Qed.
 
 Inductive val :=
 | LamV (e : {bind 1 of expr})
@@ -91,7 +148,7 @@ Fixpoint to_val (e : expr) : option val :=
   | Snd _ => None
   | Case _ _ _ => None
   | Unfold _ => None
-  | Blame => None
+  | CastError => None
   end.
 
 (** Evaluation contexts *)
@@ -127,92 +184,88 @@ Definition fill_item (Ki : ectx_item) (e : expr) : expr :=
 
 Definition state : Type := ().
 
-Inductive head_step : expr → state → list Empty_set → expr → state → list expr → Prop :=
+Inductive head_step : expr → expr → Prop :=
 (* β *)
-| BetaS e1 e2 v2 σ :
+| BetaS e1 e2 v2:
     to_val e2 = Some v2 →
-    head_step (App (Lam e1) e2) σ [] e1.[e2/] σ []
+    head_step (App (Lam e1) e2) e1.[e2/]
 (* Products *)
-| FstS e1 v1 e2 v2 σ :
+| FstS e1 v1 e2 v2:
     to_val e1 = Some v1 → to_val e2 = Some v2 →
-    head_step (Fst (Pair e1 e2)) σ [] e1 σ []
-| SndS e1 v1 e2 v2 σ :
+    head_step (Fst (Pair e1 e2)) e1
+| SndS e1 v1 e2 v2:
     to_val e1 = Some v1 → to_val e2 = Some v2 →
-    head_step (Snd (Pair e1 e2)) σ [] e2 σ []
+    head_step (Snd (Pair e1 e2)) e2
 (* Sums *)
-| CaseLS e0 v0 e1 e2 σ :
+| CaseLS e0 v0 e1 e2:
     to_val e0 = Some v0 →
-    head_step (Case (InjL e0) e1 e2) σ [] e1.[e0/] σ []
-| CaseRS e0 v0 e1 e2 σ :
+    head_step (Case (InjL e0) e1 e2) e1.[e0/]
+| CaseRS e0 v0 e1 e2:
     to_val e0 = Some v0 →
-    head_step (Case (InjR e0) e1 e2) σ [] e2.[e0/] σ []
+    head_step (Case (InjR e0) e1 e2) e2.[e0/]
 (* Recursive Types *)
-| Unfold_Fold e v σ :
+| Unfold_Fold e v:
     to_val e = Some v →
-    head_step (Unfold (Fold e)) σ [] e σ []
+    head_step (Unfold (Fold e)) e
 (** Casts *)
 (* Between same base type *)
-| IdBase e v σ :
+| IdBase e v:
     to_val e = Some v →
-    head_step (Cast e TUnit TUnit) σ [] e σ []
+    head_step (Cast e TUnit TUnit) e
 (* Between two times star *)
-| IdStar e v σ :
+| IdStar e v:
     to_val e = Some v →
-    head_step (Cast e ⋆ ⋆) σ [] e σ []
+    head_step (Cast e ⋆ ⋆) e
 (* Between two ground types *)
-| Same_Ground e v σ τ :
+| Same_Ground e v τ :
     to_val e = Some v →
     Ground τ →
-    head_step (Cast (Cast e τ ⋆) ⋆ τ) σ [] e σ []
-| Different_Ground e v σ τ1 τ2 (G1 : Ground τ1) (G2 : Ground τ2):
+    head_step (Cast (Cast e τ ⋆) ⋆ τ) e
+| Different_Ground e v τ1 τ2 (G1 : Ground τ1) (G2 : Ground τ2):
     to_val e = Some v →
-    not (Ground_equal G1 G2) →
-    head_step (Cast (Cast e τ1 ⋆) ⋆ τ2) σ [] Blame σ []
+    not (τ1 = τ2) →
+    (* not (Ground_equal G1 G2) → *)
+    head_step (Cast (Cast e τ1 ⋆) ⋆ τ2) CastError
 (* Application of function that is casted between arrow types *)
-| AppCast e1 v1 e2 v2 τ1 τ2 τ3 τ4 σ:
+| AppCast e1 v1 e2 v2 τ1 τ2 τ3 τ4:
     to_val e1 = Some v1 →
     to_val e2 = Some v2 →
     head_step
-      (App (Cast e1 (TArrow τ1 τ2) (TArrow τ3 τ4)) e2) σ []
-      (Cast (App e1 (Cast e2 τ3 τ1)) τ2 τ4) σ []
+      (App (Cast e1 (TArrow τ1 τ2) (TArrow τ3 τ4)) e2)
+      (Cast (App e1 (Cast e2 τ3 τ1)) τ2 τ4)
 (* Cast between two product casts *)
-| ProdCast e v τ1 τ2 τ1' τ2' σ:
+| ProdCast e v τ1 τ2 τ1' τ2':
     to_val e = Some v →
     head_step
-      (Cast e (TProd τ1 τ2) (TProd τ1' τ2')) σ []
-      (Pair (Cast (Fst e) τ1 τ1') (Cast (Snd e) τ2 τ2')) σ []
+      (Cast e (TProd τ1 τ2) (TProd τ1' τ2'))
+      (Pair (Cast (Fst e) τ1 τ1') (Cast (Snd e) τ2 τ2'))
 (* Cast between two sum casts *)
-| SumCast e v τ1 τ2 τ1' τ2' σ:
+| SumCast e v τ1 τ2 τ1' τ2':
     to_val e = Some v →
     head_step
-      (Cast e (TSum τ1 τ2) (TSum τ1' τ2')) σ []
-      (Case e (InjL (Cast (Var 0) τ1 τ1')) (InjR (Cast (Var 0) τ2 τ2'))) σ []
+      (Cast e (TSum τ1 τ2) (TSum τ1' τ2'))
+      (Case e (InjL (Cast (Var 0) τ1 τ1')) (InjR (Cast (Var 0) τ2 τ2')))
 (* Cast between two recursive casts *)
-| RecursiveCast e v τb τb' σ:
+| RecursiveCast e v τb τb':
     to_val e = Some v →
     head_step
-      (Cast e (TRec τb) (TRec τb')) σ []
-      (Fold (Cast (Unfold e) (τb.[TRec τb/]) (τb'.[TRec τb'/]))) σ []
+      (Cast e (TRec τb) (TRec τb'))
+      (Fold (Cast (Unfold e) (τb.[TRec τb/]) (τb'.[TRec τb'/])))
 (* Factorisations *)
-| UpFactorization e v τ τG (G : Ground τG) σ :
+| UpFactorization e v τ τG (G : get_shape τ = Some τG):
     to_val e = Some v →
     ((Ground τ) -> False) →
     (¬ (τ = ⋆)) →
     head_step
-      (Cast e τ ⋆) σ []
-      (Cast (Cast e τ τG) τG ⋆) σ []
-| DownFactorization e v τ τG (G : Ground τG) σ :
+      (Cast e τ ⋆)
+      (Cast (Cast e τ τG) τG ⋆)
+| DownFactorization e v τ τG (G : get_shape τ = Some τG):
     to_val e = Some v →
     (notT (Ground τ)) →
     (¬ (τ = ⋆)) →
     head_step
-      (Cast e ⋆ τ) σ []
-      (Cast (Cast e ⋆ τG) τG τ) σ []
-(* Let Blame diverge *)
-| BlameDiverge σ :
-    head_step
-      Blame σ []
-      Blame σ [].
+      (Cast e ⋆ τ)
+      (Cast (Cast e ⋆ τG) τG τ).
 
 (** Basic properties about the language *)
 Lemma to_of_val v : to_val (of_val v) = Some v.
@@ -232,6 +285,28 @@ Proof.
   - inversion H.
 Qed.
 
+Lemma val_head_stuck e1 e2 :
+  head_step e1 e2 → to_val e1 = None.
+Proof.
+  destruct 1; try naive_solver.
+  - simpl.
+    destruct (ICP_dec ⋆ τ).
+    destruct (Ground_dec τ); simplify_option_eq.
+    inversion i. inversion G. done. done.
+  - simpl.
+    destruct (ICP_dec ⋆ τ2).
+    destruct (Ground_dec τ1); simplify_option_eq.
+    inversion i. inversion G. auto.
+  - simpl.
+    by destruct (Ground_dec τ); simplify_option_eq.
+  - simpl.
+    destruct (ICP_dec τ ⋆).
+    inversion i; by exfalso.
+    destruct (ICP_dec ⋆ τ).
+    inversion i. by exfalso.
+    done.
+Qed.
+
 Instance of_val_inj : Inj (=) (=) of_val.
 Proof. by intros ?? Hv; apply (inj Some); rewrite -!to_of_val Hv. Qed.
 
@@ -245,38 +320,16 @@ Qed.
 Instance fill_item_inj Ki : Inj (=) (=) (fill_item Ki).
 Proof. destruct Ki; intros ???; simplify_eq; auto with f_equal. Qed.
 
-Lemma val_stuck e1 σ1 κ e2 σ2 ef :
-  head_step e1 σ1 κ e2 σ2 ef → to_val e1 = None.
+Lemma head_ctx_step_val Ki e e2 :
+  head_step (fill_item Ki e) e2 → is_Some (to_val e).
 Proof.
-  destruct 1; try naive_solver.
-  - simpl.
-    destruct (ICP_dec ⋆ τ).
-    destruct (Ground_dec τ); simplify_option_eq.
-    inversion i. inversion G. done. done.
-  - simpl.
-    destruct (ICP_dec ⋆ τ2).
-    destruct (Ground_dec τ1); simplify_option_eq.
-    inversion i. inversion G. auto. auto.
-  - simpl.
-    by destruct (Ground_dec τ); simplify_option_eq.
-  - simpl.
-    destruct (ICP_dec τ ⋆).
-    inversion i; by exfalso.
-    destruct (ICP_dec ⋆ τ).
-    inversion i. by exfalso.
-    done.
-Qed.
-
-Lemma head_ctx_step_val Ki e σ1 κ e2 σ2 ef :
-  head_step (fill_item Ki e) σ1 κ e2 σ2 ef → is_Some (to_val e).
-Proof. destruct Ki; inversion_clear 1; simplify_option_eq; eauto.
+  destruct Ki; inversion_clear 1; simplify_option_eq; eauto.
   - simpl.
     destruct (Ground_dec τf); simplify_option_eq.
     by eexists.
     by exfalso.
   - destruct (Ground_dec τ1); simplify_option_eq.
     by eexists.
-    by exfalso.
 Qed.
 
 Lemma fill_item_no_val_inj Ki1 Ki2 e1 e2 :
@@ -289,41 +342,55 @@ Proof.
           end; auto.
 Qed.
 
-Lemma val_head_stuck e1 σ1 κ e2 σ2 efs : head_step e1 σ1 κ e2 σ2 efs → to_val e1 = None.
-Proof. destruct 1; try naive_solver.
-  - simpl.
-    destruct (ICP_dec ⋆ τ).
-    destruct (Ground_dec τ); simplify_option_eq.
-    inversion i. inversion G. done. done.
-  - simpl.
-    destruct (ICP_dec ⋆ τ2).
-    destruct (Ground_dec τ1); simplify_option_eq.
-    inversion i. inversion G. auto. auto.
-  - destruct (ICP_dec τ ⋆).
-    by inversion i.
-    simpl.
-    by destruct (Ground_dec τ); simplify_option_eq.
-  - destruct (ICP_dec ⋆ τ).
-    by inversion i.
-    simpl.
-    destruct (ICP_dec ⋆ τ).
-    by exfalso; done. done.
+Notation ectx := (list ectx_item).
+
+Definition fill (K : ectx) (e : expr) : expr := foldl (flip fill_item) e K.
+
+Instance fill_inj K : Inj (=) (=) (fill K).
+Proof.
+  induction K as [| Ki K IH]; rewrite /Inj; naive_solver.
 Qed.
 
-Lemma lang_mixin : EctxiLanguageMixin of_val to_val fill_item head_step.
+Notation observation := Empty_set.
+
+Inductive prim_step : expr → list observation → expr → list expr → Prop :=
+  | Ectx_step K e1 e1' e2 e2' :
+    e1 = fill K e1' → e2 = fill K e2' →
+    head_step e1' e2' → prim_step e1 [] e2 []
+  | CastError_step K (ne : K ≠ []) :
+    prim_step (fill K CastError) [] CastError [].
+
+Lemma fill_item_not_val Ki e : to_val e = None → to_val (fill_item Ki e) = None.
 Proof.
-  split; apply _ || eauto using to_of_val, of_to_val, val_head_stuck,
-          fill_item_val, fill_item_no_val_inj, head_ctx_step_val.
+  destruct Ki; intro; simplify_option_eq; try done.
+  rewrite to_of_val /= H; by simpl.
+  by destruct ICP_dec; try done; rewrite H /=.
+Qed.
+
+Lemma fill_not_val K e : to_val e = None → to_val (fill K e) = None.
+Proof.
+  generalize dependent e.
+  induction K. by simpl. intros. simpl. rewrite IHK; auto. by rewrite fill_item_not_val.
+Qed.
+
+Lemma val_prim_stuck e1 ks e2 ls : prim_step e1 ks e2 ls → to_val e1 = None.
+Proof.
+  destruct 1.
+  - simplify_eq. apply fill_not_val.
+    by eapply val_head_stuck.
+  - apply fill_not_val. by simpl.
+Qed.
+
+Lemma lang_mixin : @LanguageMixin _ _ () Empty_set of_val to_val (fun e1 _ ls e2 _ ks => prim_step e1 ls e2 ks).
+Proof.
+  split; apply _ || intros; eauto using to_of_val, of_to_val, val_prim_stuck.
 Qed.
 
 Canonical Structure stateO := leibnizO state.
 Canonical Structure valO := leibnizO val.
 Canonical Structure exprO := leibnizO expr.
 
-(** Language *)
-Canonical Structure ectxi_lang := EctxiLanguage lang_mixin.
-Canonical Structure ectx_lang := EctxLanguageOfEctxi ectxi_lang.
-Canonical Structure lang := LanguageOfEctx ectx_lang.
+Canonical Structure lang : language := Language lang_mixin.
 
 Hint Extern 20 (PureExec _ _ _) => progress simpl : typeclass_instances.
 
