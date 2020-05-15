@@ -95,4 +95,56 @@ Section relation_for_specification_lemma.
       apply back_ctx_item_relates with (Γ := Γ2) (τ := τ2). by eapply typed_ctx_closedness. auto. by eapply IHC.
   Qed.
 
+  From fae_gtlc_mu Require Export embedding.contexts.
+
+  Lemma embed_ctx_item_relates (Γ : list stlc_mu.types.type) (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : stlc_mu.types.type) (pτ : stlc_mu.types.TClosed τ)
+        (Γ' : list stlc_mu.types.type) (τ' : stlc_mu.types.type) (C : stlc_mu.contexts.ctx_item) :
+      stlc_mu.contexts.typed_ctx_item C Γ τ Γ' τ' →
+      (map embed_type Γ) ⊨ e ≤log≤ e' : (embed_type τ) →
+      (map embed_type Γ') ⊨ stlc_mu.contexts.fill_ctx_item C e ≤log≤ cast_calculus.contexts.fill_ctx_item (embed_ctx_item C) e' : (embed_type τ').
+  Proof.
+    destruct C; intros; inversion H; simplify_eq; simpl.
+    - by apply bin_log_related_lam.
+    - eapply bin_log_related_app; eauto using embedding_relates.
+    - eapply bin_log_related_app; eauto.
+      assert (TArrow [|τ|] [|τ'|] = embed_type (stlc_mu.types.TArrow τ τ')) as ->; try done.
+      eauto using embedding_relates.
+    - eapply bin_log_related_pair; eauto using embedding_relates.
+    - eapply bin_log_related_pair; eauto using embedding_relates.
+    - by eapply bin_log_related_fst.
+    - by eapply bin_log_related_snd.
+    - by apply bin_log_related_injl.
+    - by apply bin_log_related_injr.
+    - eapply bin_log_related_case; try apply embedding_relates; try done.
+      fold (embed_type τ1). assert ([|τ1|] :: map embed_type Γ' = map embed_type (τ1 :: Γ')) as ->; try done.
+      eauto using embedding_relates.
+      fold (embed_type τ2). assert ([|τ2|] :: map embed_type Γ' = map embed_type (τ2 :: Γ')) as ->; try done.
+      eauto using embedding_relates.
+    - eapply (bin_log_related_case _ _ _ _ _ _ _ _ (embed_type τ2)); try apply embedding_relates; try done.
+      assert (TSum [|τ1|] [|τ2|] = embed_type (stlc_mu.types.TSum τ1 τ2)) as ->; try done.
+      eauto using embedding_relates.
+      assert ([|τ2|] :: map embed_type Γ' = map embed_type (τ2 :: Γ')) as ->; try done.
+      eauto using embedding_relates.
+    - eapply (bin_log_related_case _ _ _ _ _ _ _ (embed_type τ1)); try apply embedding_relates; try done.
+      assert (TSum [|τ1|] [|τ2|] = embed_type (stlc_mu.types.TSum τ1 τ2)) as ->; try done.
+      eauto using embedding_relates.
+      assert ([|τ1|] :: map embed_type Γ' = map embed_type (τ1 :: Γ')) as ->; try done.
+      eauto using embedding_relates.
+    - apply bin_log_related_fold. by rewrite -embd_unfold_comm.
+    - rewrite embd_unfold_comm. by apply bin_log_related_unfold.
+  Qed.
+
+  Lemma embed_ctx_relates (Γ : list stlc_mu.types.type) (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : stlc_mu.types.type) (pτ : stlc_mu.types.TClosed τ)
+        (Γ' : list stlc_mu.types.type) (τ' : stlc_mu.types.type) (C : stlc_mu.contexts.ctx) :
+      stlc_mu.contexts.typed_ctx C Γ τ Γ' τ' →
+      (map embed_type Γ) ⊨ e ≤log≤ e' : (embed_type τ) →
+      (map embed_type Γ') ⊨ stlc_mu.contexts.fill_ctx C e ≤log≤ cast_calculus.contexts.fill_ctx (embed_ctx C) e' : (embed_type τ').
+  Proof.
+    revert Γ τ pτ Γ' τ' e e'.
+    induction C; intros Γ τ pτ Γ' τ' e e' H.
+    - by inversion H.
+    - inversion_clear H. intro Hee'. simpl.
+      apply embed_ctx_item_relates with (Γ := Γ2) (τ := τ2). by eapply stlc_mu.contexts.typed_ctx_closedness. auto. by eapply IHC.
+  Qed.
+
 End relation_for_specification_lemma.

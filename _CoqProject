@@ -29,7 +29,7 @@ theories/cast_calculus/contexts.v
 
 ### EMBEDDING ###
 theories/embedding/expressions.v
-# theories/embedding/contexts.v
+theories/embedding/contexts.v
 theories/embedding/types.v
 theories/embedding/well_typedness.v
 
