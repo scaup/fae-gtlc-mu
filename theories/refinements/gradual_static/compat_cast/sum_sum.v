@@ -49,7 +49,6 @@ Section compat_cast_sum_sum.
     + iDestruct "H1" as ((v1 , v1')) "[% Hv1v1']". inversion H0. clear H0 H2 H3 v v'.
       iMod ((step_case_inl _ ei' K') with "[Hv']") as "Hv'"; auto. asimpl.
       wp_head.
-      wp_head. simpl.
       iApply (wp_bind [cast_calculus.lang.InjLCtx]).
       iApply (wp_wand with "[-]").
       iApply (IHpC1 ei' (InjLCtx :: K') with "[Hv']"); iFrame; auto.
@@ -61,7 +60,7 @@ Section compat_cast_sum_sum.
       iLeft. iExists (v1f , v1f'). by iFrame.
     + iDestruct "H2" as ((v1 , v1')) "[% Hv1v1']". inversion H0. clear H0 H2 H3 v v'.
       iMod ((step_case_inr _ ei' K') with "[Hv']") as "Hv'"; auto. asimpl.
-      wp_head. wp_head. simpl.
+      wp_head.
       iApply (wp_bind [cast_calculus.lang.InjRCtx]).
       iApply (wp_wand with "[-]").
       iApply (IHpC2 ei' (InjRCtx :: K') with "[Hv']"); iFrame; auto.

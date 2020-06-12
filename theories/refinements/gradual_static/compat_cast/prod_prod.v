@@ -39,8 +39,8 @@ Section compat_cast_prod_prod.
     rewrite interp_rw_TProd.
     iDestruct "Hvv'" as ((v1, v1') (v2, v2')) "(% & #H1 & #H2)". simpl in H0. inversion H0. clear H0 H2 H3 v v'.
     (** impl side *)
-    wp_head.
-    iApply (wp_bind [CastCtx _ _ ; cast_calculus.lang.PairLCtx _]). wp_head. wp_value. simpl.
+    wp_head. fold (cast_calculus.lang.of_val v1). fold (cast_calculus.lang.of_val v2).
+    iApply (wp_bind [CastCtx _ _ ; cast_calculus.lang.PairLCtx _]). wp_value. simpl.
     (** spec side *)
     rewrite /between_TProd.
     assert (Pair (of_val v1') (of_val v2') = of_val (PairV v1' v2')) as ->. by simpl.
@@ -54,7 +54,7 @@ Section compat_cast_prod_prod.
     (** .... *)
     iIntros (v1f) "HHH". iDestruct "HHH" as (v1f') "[Hv2' #Hv1fv1f']". simpl.
     (** impl side *)
-    iApply (wp_bind [CastCtx _ _ ; cast_calculus.lang.PairRCtx _]). wp_head. wp_value. simpl.
+    iApply (wp_bind [CastCtx _ _ ; cast_calculus.lang.PairRCtx _]). wp_value. simpl.
     (** spec side *)
     rewrite 𝓕c_rewrite.
     iMod ((step_snd _ ei' (AppRCtx _ :: PairRCtx _ :: K')) with "[Hv2']") as "Hv2'"; auto. simpl.

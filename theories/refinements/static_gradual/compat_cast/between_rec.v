@@ -68,12 +68,8 @@ Section between_rec.
     (** eval specification side *)
     iMod (step_pure _ ei' K'
                     (Cast (Fold w') (TRec τl) (TRec τr))
-                    (Fold (Cast (Unfold (Fold w')) (τl.[TRec τl/]) (τr.[TRec τr/]))) with "[Hv']") as "Hv'".
-    intros. apply (RecursiveCast _ (FoldV w')). by rewrite -to_of_val. auto. by iFrame.
-    iMod (step_pure _ ei' (CastCtx τl.[TRec τl/] τr.[TRec τr/] :: FoldCtx :: K')
-                    (Unfold (Fold (# w')))
-                    w' with "[Hv']") as "Hv'".
-    intros. apply (Unfold_Fold _ w'). by rewrite to_of_val. auto. by iFrame.
+                    (Fold (Cast w' (τl.[TRec τl/]) (τr.[TRec τr/]))) with "[Hv']") as "Hv'".
+    intros. apply (RecursiveCast _ w'). rewrite -to_of_val. auto. auto. by iFrame.
     (** apply IH *)
 
     iApply (wp_wand with "[-]").

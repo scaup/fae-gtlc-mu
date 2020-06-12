@@ -39,43 +39,34 @@ Section compat_cast_sum_sum.
     rewrite /𝓕c /𝓕. fold (𝓕 pC1) (𝓕 pC2). rewrite between_TSum_subst_rewrite.
     wp_head.
     asimpl.
-    iMod (step_pure _ ei' K'
-                    (Cast (# v') (τ1 + τ2)%type (τ1' + τ2')%type)
-                    (Case (# v') (InjL (Cast (Var 0) τ1 τ1')) (InjR (Cast (Var 0) τ2 τ2'))) with "[Hv']") as "Hv'".
-    intros. eapply SumCast. by simplify_option_eq. auto. iSplitR; try done.
     rewrite interp_rw_TSum.
     iDestruct "Hvv'" as "[H1 | H2]".
     + iDestruct "H1" as ((v1 , v1')) "[% Hv1v1']". inversion H0. clear H0 H2 H3 v v'.
-      wp_head. asimpl.
-      iMod ((step_case_inl _ _ _ (# v1'))  with "[Hv']") as "Hv'". auto. iSplitR. try done. done.
+      iMod (step_pure _ ei' K' _ (InjL (Cast v1' τ1 τ1')) with "[Hv']") as "Hv'". by eapply SumCast1; eauto. eauto. eauto.
+      wp_head. asimpl. fold (stlc_mu.lang.of_val v1).
       iApply (wp_bind (stlc_mu.lang.fill_item stlc_mu.lang.InjLCtx)).
       iApply (wp_wand with "[-]").
       iApply (IHpC1 ei' (InjLCtx :: K') with "[Hv']").
-      iSplitR; try done.
-      iSplitR; try done.
-      iSplitR; try done.
+      eauto.
       iIntros (v1f) "HHH". iDestruct "HHH" as (v1f') "[Hv1f' Hv1fv1f']".
       iApply wp_value.
       iExists (InjLV v1f').
       iSplitL "Hv1f'". done.
       rewrite interp_rw_TSum.
       iLeft. iExists (v1f , v1f'). by iFrame.
-    + iDestruct "H2" as ((v1 , v1')) "[% Hv1v1']". inversion H0. clear H0 H2 H3 v v'.
-      wp_head. asimpl.
-      iMod ((step_case_inr _ _ K' (# v1'))  with "[Hv']") as "Hv'". auto. iSplitR. try done. simpl. done.
+    + iDestruct "H2" as ((v2 , v2')) "[% Hv2v2']". inversion H0. clear H0 H2 H3 v v'.
+      iMod (step_pure _ ei' K' _ (InjR (Cast v2' τ2 τ2')) with "[Hv']") as "Hv'". by eapply SumCast2; eauto. eauto. eauto.
+      wp_head. asimpl. fold (stlc_mu.lang.of_val v2).
       iApply (wp_bind (stlc_mu.lang.fill_item stlc_mu.lang.InjRCtx)).
       iApply (wp_wand with "[-]").
       iApply (IHpC2 ei' (InjRCtx :: K') with "[Hv']").
-      iSplitR; try done.
-      iSplitR; try done.
-      iSplitR; try done.
+      eauto.
       iIntros (v1f) "HHH". iDestruct "HHH" as (v1f') "[Hv1f' Hv1fv1f']".
       iApply wp_value.
       iExists (InjRV v1f').
       iSplitL "Hv1f'". done.
       rewrite interp_rw_TSum.
-      iRight. iExists (v1f , v1f'). by iFrame.
-      Unshelve. all: apply hack.
+      iRight. iExists (v1f , v1f'). eauto.
   Qed.
 
 

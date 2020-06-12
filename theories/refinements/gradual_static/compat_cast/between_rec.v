@@ -61,9 +61,8 @@ Section between_rec.
     iDestruct "Hvv'" as (w w') "#[% Hww']".
     inversion H; clear v v' H H1 H2.
     (** implementation side *)
-    wp_head.
-    iApply (wp_bind [CastCtx _ _; cast_calculus.lang.FoldCtx]).
-    wp_head. fold (cast_calculus.lang.of_val w). wp_value. simpl (lang.fill _ _).
+    wp_head. fold (cast_calculus.lang.of_val w).
+    iApply (wp_bind [CastCtx _ _; cast_calculus.lang.FoldCtx]). wp_value. simpl (lang.fill _ _).
     (** specification side *)
     iMod (steps_pure _ ei' K' _ _ _ (between_TRec_steps pC fs Hl pμτlμτrnotA w') with "[Hv']") as "Hv'"; auto.
     (** IH *)

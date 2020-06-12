@@ -167,17 +167,33 @@ Section lang_rules.
     eapply (Ectx_step []); eauto.
   Qed.
 
-  Global Instance pure_cast_between_sum e τ1 τ2 τ1' τ2' `{!AsVal e}:
-    PureExec True 1 (Cast e (TSum τ1 τ2) (TSum τ1' τ2')) (Case e (InjL (Cast (Var 0) τ1 τ1')) (InjR (Cast (Var 0) τ2 τ2'))).
+  Global Instance pure_cast_between_sum1 e1 τ1 τ2 τ1' τ2' `{!AsVal e1}:
+    PureExec True 1 (Cast (InjL e1) (TSum τ1 τ2) (TSum τ1' τ2')) (InjL (Cast e1 τ1 τ1')).
   Proof.
     intros _. apply nsteps_once. apply prim_step_pure.
     destruct AsVal0 as [??];subst.
     eapply (Ectx_step []); eauto.
   Qed.
 
+  Global Instance pure_cast_between_sum2 e2 τ1 τ2 τ1' τ2' `{!AsVal e2}:
+    PureExec True 1 (Cast (InjR e2) (TSum τ1 τ2) (TSum τ1' τ2')) (InjR (Cast e2 τ2 τ2')).
+  Proof.
+    intros _. apply nsteps_once. apply prim_step_pure.
+    destruct AsVal0 as [??];subst.
+    eapply (Ectx_step []); eauto.
+  Qed.
+
+  (* Global Instance pure_cast_between_sum e τ1 τ2 τ1' τ2' `{!AsVal e}: *)
+  (*   PureExec True 1 (Cast e (TSum τ1 τ2) (TSum τ1' τ2')) (Case e (InjL (Cast (Var 0) τ1 τ1')) (InjR (Cast (Var 0) τ2 τ2'))). *)
+  (* Proof. *)
+  (*   intros _. apply nsteps_once. apply prim_step_pure. *)
+  (*   destruct AsVal0 as [??];subst. *)
+  (*   eapply (Ectx_step []); eauto. *)
+  (* Qed. *)
+
   Global Instance pure_cast_between_rec e τl τr `{!AsVal e}:
-    PureExec True 1 (Cast e (TRec τl) (TRec τr))
-             (Fold (Cast (Unfold e) τl.[TRec τl/] τr.[TRec τr/])).
+    PureExec True 1 (Cast (Fold e) (TRec τl) (TRec τr))
+             (Fold (Cast e τl.[TRec τl/] τr.[TRec τr/])).
   Proof.
     intros _. apply nsteps_once. apply prim_step_pure.
     destruct AsVal0 as [??];subst.
@@ -225,11 +241,12 @@ Section lang_rules.
     eapply (Ectx_step []); eauto.
   Qed.
 
-  Global Instance pure_cast_pair e τ1 τ2 τ1' τ2' `{!AsVal e} :
-    PureExec True 1 (Cast e (TProd τ1 τ2) (TProd τ1' τ2')) (Pair (Cast (Fst e) τ1 τ1') (Cast (Snd e) τ2 τ2')).
+  Global Instance pure_cast_pair e1 e2 τ1 τ2 τ1' τ2' `{!AsVal e1, !AsVal e2} :
+    PureExec True 1 (Cast (Pair e1 e2) (TProd τ1 τ2) (TProd τ1' τ2')) (Pair (Cast e1 τ1 τ1') (Cast e2 τ2 τ2')).
   Proof.
     intros _. apply nsteps_once. apply prim_step_pure.
     destruct AsVal0 as [??];subst.
+    destruct AsVal1 as [??];subst.
     eapply (Ectx_step []); eauto.
   Qed.
 

@@ -234,23 +234,44 @@ Inductive head_step : expr → expr → Prop :=
       (App (Cast e1 (TArrow τ1 τ2) (TArrow τ3 τ4)) e2)
       (Cast (App e1 (Cast e2 τ3 τ1)) τ2 τ4)
 (* Cast between two product casts *)
-| ProdCast e v τ1 τ2 τ1' τ2':
-    to_val e = Some v →
+| ProdCast e1 v1 e2 v2 τ1 τ2 τ1' τ2':
+    to_val e1 = Some v1 →
+    to_val e2 = Some v2 →
     head_step
-      (Cast e (TProd τ1 τ2) (TProd τ1' τ2'))
-      (Pair (Cast (Fst e) τ1 τ1') (Cast (Snd e) τ2 τ2'))
+      (Cast (Pair e1 e2) (TProd τ1 τ2) (TProd τ1' τ2'))
+      (Pair (Cast e1 τ1 τ1') (Cast e2 τ2 τ2'))
+(* | ProdCast e v τ1 τ2 τ1' τ2': *)
+    (* to_val e = Some v → *)
+    (* head_step *)
+      (* (Cast e (TProd τ1 τ2) (TProd τ1' τ2')) *)
+      (* (Pair (Cast (Fst e) τ1 τ1') (Cast (Snd e) τ2 τ2')) *)
 (* Cast between two sum casts *)
-| SumCast e v τ1 τ2 τ1' τ2':
-    to_val e = Some v →
+| SumCast1 e1 v1 τ1 τ2 τ1' τ2':
+    to_val e1 = Some v1 →
     head_step
-      (Cast e (TSum τ1 τ2) (TSum τ1' τ2'))
-      (Case e (InjL (Cast (Var 0) τ1 τ1')) (InjR (Cast (Var 0) τ2 τ2')))
+      (Cast (InjL e1) (TSum τ1 τ2) (TSum τ1' τ2'))
+      (InjL (Cast e1 τ1 τ1'))
+| SumCast2 e2 v2 τ1 τ2 τ1' τ2':
+    to_val e2 = Some v2 →
+    head_step
+      (Cast (InjR e2) (TSum τ1 τ2) (TSum τ1' τ2'))
+      (InjR (Cast e2 τ2 τ2'))
+(* | SumCast e v τ1 τ2 τ1' τ2': *)
+    (* to_val e = Some v → *)
+    (* head_step *)
+      (* (Cast e (TSum τ1 τ2) (TSum τ1' τ2')) *)
+      (* (Case e (InjL (Cast (Var 0) τ1 τ1')) (InjR (Cast (Var 0) τ2 τ2'))) *)
 (* Cast between two recursive casts *)
 | RecursiveCast e v τb τb':
     to_val e = Some v →
     head_step
-      (Cast e (TRec τb) (TRec τb'))
-      (Fold (Cast (Unfold e) (τb.[TRec τb/]) (τb'.[TRec τb'/])))
+      (Cast (Fold e) (TRec τb) (TRec τb'))
+      (Fold (Cast e (τb.[TRec τb/]) (τb'.[TRec τb'/])))
+(* | RecursiveCast e v τb τb': *)
+    (* to_val e = Some v → *)
+    (* head_step *)
+      (* (Cast e (TRec τb) (TRec τb')) *)
+      (* (Fold (Cast (Unfold e) (τb.[TRec τb/]) (τb'.[TRec τb'/]))) *)
 (* Factorisations *)
 | UpFactorization e v τ τG (G : get_shape τ = Some τG):
     to_val e = Some v →
