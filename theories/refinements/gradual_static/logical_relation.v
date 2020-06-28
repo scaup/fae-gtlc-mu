@@ -55,7 +55,7 @@ Section logrel.
   Definition interp_expr (interp_cor_val : P → iPropO Σ)
       (ee : cast_calculus.lang.expr * stlc_mu.lang.expr) : iProp Σ := (∀ K',
     currently_half (fill K' (ee.2)) →
-    WP ee.1 ?{{ v, ∃ v', currently_half (fill K' (of_val v')) ∗ interp_cor_val (v, v') }})%I.
+    WP ee.1 ?{{ v, ∃ v', currently_half (fill K' (of_val v')) ∧ interp_cor_val (v, v') }})%I.
 
   Definition TClosed (τ : type) : Prop := forall σ, τ.[σ] = τ.
 
@@ -180,7 +180,7 @@ Section logrel.
 
   Definition interp_env (Γ : list type)
       (vvs : list (cast_calculus.lang.val * stlc_mu.lang.val)) : iProp Σ :=
-    (⌜length Γ = length vvs⌝ ∗ [∗] zip_with (λ τ, ⟦ τ ⟧) Γ vvs)%I.
+    (⌜length Γ = length vvs⌝ ∧ [∧] zip_with (λ τ, ⟦ τ ⟧) Γ vvs)%I.
   Notation "⟦ Γ ⟧*" := (interp_env Γ).
 
   Global Instance interp_env_base_persistent Γ vs :
@@ -189,8 +189,22 @@ Section logrel.
     revert vs.
     induction Γ => vs; simpl; destruct vs; constructor; apply _.
   Qed.
-  Global Instance interp_env_persistent Γ vvs :
-    Persistent (⟦ Γ ⟧* vvs) := _.
+
+  Global Instance interp_env_persistent_help Γ vvs :
+    Persistent ([∧] zip_with (λ τ : typeO, ⟦ τ ⟧) Γ vvs).
+  Proof.
+    rewrite /interp_env.
+    revert vvs.
+    induction Γ => vs. apply _.
+    destruct vs. simpl; apply _.
+    simpl; apply _.
+  Qed.
+
+   Global Instance interp_env_persistent Γ vvs :
+    Persistent (⟦ Γ ⟧* vvs).
+  Proof.
+    rewrite /interp_env. apply _.
+  Qed.
 
   Lemma interp_env_length Γ vvs : ⟦ Γ ⟧* vvs ⊢ ⌜length Γ = length vvs⌝.
   Proof. by iIntros "[% ?]". Qed.
@@ -201,7 +215,7 @@ Section logrel.
     iIntros (?) "[Hlen HΓ]"; iDestruct "Hlen" as %Hlen.
     destruct (lookup_lt_is_Some_2 vvs x) as [v Hv].
     { by rewrite -Hlen; apply lookup_lt_Some with τ. }
-    iExists v; iSplit. done. iApply (big_sepL_elem_of with "HΓ").
+    iExists v; iSplit. done. iApply (big_andL_elem_of with "HΓ").
     apply elem_of_list_lookup_2 with x.
     rewrite lookup_zip_with; by simplify_option_eq.
   Qed.
@@ -209,10 +223,10 @@ Section logrel.
   Lemma interp_env_nil : ⊢ ⟦ [] ⟧* [].
   Proof. iSplit; simpl; auto. Qed.
   Lemma interp_env_cons Γ vvs τ vv :
-    ⟦ τ :: Γ ⟧* (vv :: vvs) ⊣⊢ ⟦ τ ⟧ vv ∗ ⟦ Γ ⟧* vvs.
+    ⟦ τ :: Γ ⟧* (vv :: vvs) ⊣⊢ ⟦ τ ⟧ vv ∧ ⟦ Γ ⟧* vvs.
   Proof.
     rewrite /interp_env /= (assoc _ (⟦ _ ⟧ _)) -(comm _ ⌜_ = _⌝%I) -assoc.
-    by apply sep_proper; [apply pure_proper; lia|].
+    by apply and_proper; [apply pure_proper; lia|].
   Qed.
 
 End logrel.
@@ -232,6 +246,6 @@ Section bin_log_def.
   Definition bin_log_related
   (Γ : list cast_calculus.types.type) (e : cast_calculus.lang.expr) (e' : stlc_mu.lang.expr) (τ : cast_calculus.types.type) :=
     ∀ vvs (ei' : stlc_mu.lang.expr),
-    initially_inv ei' ∗ ⟦ Γ ⟧* vvs ⊢
+    initially_inv ei' ∧ ⟦ Γ ⟧* vvs ⊢
     ⟦ τ ⟧ₑ (e.[cast_calculus.typing.env_subst (vvs.*1)], e'.[stlc_mu.typing.env_subst (vvs.*2)]).
 End bin_log_def.

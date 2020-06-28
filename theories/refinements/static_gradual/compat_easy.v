@@ -25,9 +25,9 @@ Section fundamental.
 
   (* Put all quantifiers at the outer level *)
   Lemma bin_log_related_alt {Γ e e' τ} : Γ ⊨ e ≤log≤ e' : τ → ∀ vvs ei' K',
-    initially_inv ei' ∗ ⟦ Γ ⟧* vvs ∗ currently_half (fill K' (e'.[cast_calculus.typing.env_subst (vvs.*2)]))
-    ⊢ WP e.[stlc_mu.typing.env_subst (vvs.*1)] {{ v, ∃ v',
-        currently_half (fill K' (cast_calculus.lang.of_val v')) ∗ interp τ (v, v') }}.
+    ⊢ initially_inv ei' ∧ ⟦ Γ ⟧* vvs ∧ currently_half (fill K' (e'.[cast_calculus.typing.env_subst (vvs.*2)]))
+    → WP e.[stlc_mu.typing.env_subst (vvs.*1)] {{ v, ∃ v',
+        currently_half (fill K' (cast_calculus.lang.of_val v')) ∧ interp τ (v, v') }}.
   Proof.
     iIntros (Hlog vvs K ρ) "[#Hρ [HΓ Hj]]". asimpl.
     iApply (Hlog with "[HΓ]"); iFrame. eauto.

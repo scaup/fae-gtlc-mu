@@ -50,6 +50,6 @@ Section defs.
   (* TODO!! 𝓕cV instead of 𝓕c *)
 
   Definition back_cast_ar {A} {τi τf} (pC : cons_struct A τi τf) :=
-  ∀ ei' K' v v' fs, (rel_cast_functions A fs ∗ ⟦ τi ⟧ (v, v') ∗ initially_inv ei' ∗ currently_half (fill K' (Cast (cast_calculus.lang.of_val v') τi τf)))
-                     ⊢ (WP (𝓕c pC fs (stlc_mu.lang.of_val v)) {{ w, ∃ w', currently_half (fill K' (cast_calculus.lang.of_val w')) ∗ ⟦ τf ⟧ (w, w') }})%I.
+  ∀ ei' K' v v' fs, (rel_cast_functions A fs ∧ ⟦ τi ⟧ (v, v') ∧ initially_inv ei' ∧ currently_half (fill K' (Cast (cast_calculus.lang.of_val v') τi τf)))
+                     ⊢ (WP (𝓕c pC fs (stlc_mu.lang.of_val v)) {{ w, ∃ w', currently_half (fill K' (cast_calculus.lang.of_val w')) ∧ ⟦ τf ⟧ (w, w') }})%I.
 End defs.
