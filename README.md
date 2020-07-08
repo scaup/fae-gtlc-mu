@@ -53,19 +53,18 @@ $ ls ~/.opam/fae/lib/coq/user-contrib # should return the Autosubst, iris, Ltac2
 Compile by running `make` in the root of this project.
 ```
 $ make
-
 ```
 ## Verifying the main result only
 Go through the following files if you only want to verify the fully abstract embedding claim.
 
-Files related to the definition of stlc_mu.
+Files related to the definition of stlc_mu:
 ```
 theories/stlc_mu/lang.v # dynamics
 theories/stlc_mu/types.v # types
 theories/stlc_mu/typing.v # typing derivations
 theories/stlc_mu/contexts.v # (general) contexts + definition contextual equivalence
 ```
-Files related to the definition of the cast calculus.
+Files related to the definition of the cast calculus:
 ```
 theories/cast_calculus/types.v # types
 theories/cast_calculus/consistency/standard.v # the (conventional) consistency relation
@@ -73,7 +72,7 @@ theories/cast_calculus/lang.v # dynamics
 theories/cast_calculus/typing.v # typing derivations
 theories/cast_calculus/contexts.v # contexts  + definition contextual equivalence
 ```
-Files related to the embedding from stlc_mu to the cast_calculus
+Files related to the embedding from stlc_mu to the cast_calculus:
 ```
 theories/embedding/expressions.v
 theories/embedding/contexts.v
