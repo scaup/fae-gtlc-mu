@@ -2,6 +2,7 @@ From iris Require Export base.
 From stdpp Require Export base list sets mapset.
 From Autosubst Require Export Autosubst.
 Require Export Utf8_core.
+Require Import Coq.Arith.Minus.
 From fae_gtlc_mu.cast_calculus Require Import types consistency.equivalence.listset_ext.
 
 Fixpoint closed_rec_types (τ : type) : listset type :=
@@ -110,7 +111,7 @@ Proof.
       lia.
   - right. split. lia.
     generalize dependent j.
-    induction pn. intros. simpl. f_equal. lia.
+    induction pn. intros. simpl. f_equal. by rewrite Nat.sub_0_r.
     destruct j. intros. exfalso. simpl in n. lia.
     intros. assert (triv : (TVar (S j)).[subst_chain (a :: pn)] = (TVar j).[subst_chain pn]).
     by asimpl. rewrite triv. rewrite (IHpn j). by simpl. simpl in n. lia.

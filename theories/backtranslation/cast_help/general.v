@@ -38,15 +38,15 @@ Fixpoint 𝓕 {A : list (types.type * types.type)} {τi τf : cast_calculus.type
 (* From fae_gtlc_mu.stlc_mu Require Export typing lang lib.fix. *)
 
 Definition back_pair (p : cast_calculus.types.type * cast_calculus.types.type) : stlc_mu.types.type :=
-  TArrow <<p.1>> <<p.2>>.
+  stlc_mu.types.TArrow <<p.1>> <<p.2>>.
 
 Definition PTClosed (p : cast_calculus.types.type * cast_calculus.types.type) : Prop :=
   cast_calculus.types.TClosed p.1 ∧ cast_calculus.types.TClosed p.2.
 
-Lemma back_pair_closed p : PTClosed p → TClosed (back_pair p).
+Lemma back_pair_closed p : PTClosed p → stlc_mu.types.TClosed (back_pair p).
 Proof.
   destruct p as [τ1 τ2]. intro H. destruct H as [a b].
-  apply TArrow_closed; by apply back_closed.
+  apply stlc_mu.types.TArrow_closed; by apply back_closed.
 Qed.
 
 Lemma Forall_fmap_impl {A B : Type} (f : A → B) (X : list A) (P : A → Prop) (Q : B → Prop)
@@ -55,7 +55,7 @@ Proof. induction X. apply Forall_nil. inversion HP. apply Forall_cons. auto. by 
 
 Lemma 𝓕_typed (A : list (cast_calculus.types.type * cast_calculus.types.type)) (pA : Forall (fun p => cast_calculus.types.TClosed p.1 ∧ cast_calculus.types.TClosed p.2) A)
       (τi τf : cast_calculus.types.type) (pτi : cast_calculus.types.TClosed τi) (pτf : cast_calculus.types.TClosed τf) (pτiConsτf : cons_struct A τi τf) :
-  (map back_pair A) ⊢ₛ (𝓕 pτiConsτf) : (TArrow <<τi>> <<τf>>).
+  (map back_pair A) ⊢ₛ (𝓕 pτiConsτf) : (stlc_mu.types.TArrow <<τi>> <<τf>>).
 Proof.
   induction pτiConsτf; simpl.
   - apply extract_typed.
@@ -66,7 +66,7 @@ Proof.
   - eapply factorization_typed.
     apply IHpτiConsτf1; auto. by apply Ground_closed; eapply get_shape_is_ground.
     apply IHpτiConsτf2; auto. by apply Ground_closed; eapply get_shape_is_ground.
-  - apply identity_typed. apply TUnit_TClosed.
+  - apply identity_typed. apply stlc_mu.types.TUnit_TClosed.
   - apply identity_typed. apply Universe_closed.
   - apply between_TSum_typed.
     apply IHpτiConsτf1; auto; by eapply (cast_calculus.types.TSum_closed1).
@@ -82,7 +82,7 @@ Proof.
     repeat rewrite back_unfold_comm in IHpτiConsτf.
     apply IHpτiConsτf; auto; by apply cast_calculus.types.TRec_closed_unfold.
   - apply Var_typed.
-    cut (TClosed <<(cast_calculus.types.TArrow (cast_calculus.types.TRec τl) (cast_calculus.types.TRec τr))>>). by simpl.
+    cut (stlc_mu.types.TClosed <<(cast_calculus.types.TArrow (cast_calculus.types.TRec τl) (cast_calculus.types.TRec τr))>>). by simpl.
     by apply back_closed, cast_calculus.types.TArrow_closed.
     rewrite list_lookup_fmap. by rewrite pμτlμtrinA.
 Qed.
