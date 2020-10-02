@@ -111,7 +111,7 @@ theories/refinements/gradual_static/rel_ref_specs.v
 
 
 # after generalized to contexts..
-theories/fae.v
-theories/unary_reversed_fae.v
-theories/fa_d.v
+theories/two_fa_a.v
 
+theories/one_fa_d.v
+theories/two_fa_d.v

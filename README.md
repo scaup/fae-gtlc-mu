@@ -1,7 +1,6 @@
-# the embedding of STLCmu into GTLCmu is fully abstract (Coq/Iris proof)
+# full abstraction results for the embedding of STLCmu into GTLCmu (Coq/Iris proof)
 
-This repo contains a Coq/Iris proof of the fact that the embedding of STLCmu (the simply typed lambda calculus with equirecursive types) into GTLCmu (its gradualization) is fully abstract.
-It accompanies the paper  "Fully abstract from Static to Gradual".
+This repo contains Coq/Iris proofs for full abstraction results of the embedding of STLCmu (the simply typed lambda calculus with equirecursive types) into GTLCmu (its gradualization).
 
 ## Requirements for compiling
 
@@ -54,8 +53,7 @@ Compile by running `make` in the root of this project.
 ```
 $ make
 ```
-## Verifying the main result only
-Go through the following files if you only want to verify the fully abstract embedding claim.
+## Verifying the main results only
 
 Files related to the definition of stlc_mu:
 ```
@@ -79,9 +77,9 @@ theories/embedding/contexts.v
 theories/embedding/types.v
 theories/embedding/well_typedness.v # well-typedness of embedding
 ```
-The file `theories/fae.v` contains the FAE-result.
-Theorem `ctx_eq_preservation` proofs preservation of equivalences.
-Theorem `ctx_eq_reflection` proofs reflection of equivalences.
+The file `theories/two_fa_a.v` proves 2FA-A for the embedding.
+The file `theories/one_fa_d.v` proves 1FA-D for the embedding.
+The file `theories/tow_fa_d.v` proves 2FA-D for the embedding.
 
 ## Proof structure (where's what?)
 Cool, so you're actually interested in the proof itself!
@@ -119,7 +117,6 @@ theories/refinements/static_gradual/compat_cast/all.v # proof of generalized com
 theories/refinements/gradual_static/rel_ref_specs.v # collects compat lemmas for lemma 4.4 in paper
 theories/refinements/gradual_static/adequacy.v # lemma 4.5 in paper
 ```
-The file `theories/fae.v` brings everything together.
 
 ## Credits
 Lots of code has its origin in the following;
