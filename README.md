@@ -154,10 +154,11 @@ for a complete listing of all files, one can refer to the commented [_CoqProject
 - [theories/refinements/gradual_static/rel_ref_specs.v][theories/refinements/gradual_static/rel_ref_specs.v] proves that static contexts are related to their backtranslation and that gradual terms are related to their embeddings (lemma 4.4 in paper)
 - [theories/refinements/gradual_static/adequacy.v](theories/refinements/static_static/adequacy.v) proves adequacy of logical relations (lemma 4.5)
 
-### Full abstraction prove
+### Bringing stuff together in [theories/fae.v](theories/fae.v)
 
-The file `theories/fae.v` brings everything together; both directions of theorem 4.1 are proven there.
+Both directions of theorem 4.1 from the paper are proven there.
 
 ## Credits
+
 Lots of code has its origin in the following;
 https://gitlab.mpi-sws.org/iris/examples/-/tree/master/theories/logrel/F_mu_ref_conc
