@@ -20,7 +20,7 @@ It contains the compiled Coq code of this repository, some tools to interact wit
 
 An easy way to get the correct version of Coq and the required libraries is by using opam.
 
-Get opam (http://opam.ocaml.org/doc/Install.html), by fetching and running the install script.
+Get [http://opam.ocaml.org/doc/Install.html](opam), by fetching and running the install script.
 You need curl for this (e.g. `apt install curl`).
 ```
 sh <(curl -sL https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh)
@@ -69,40 +69,38 @@ This section describes the files necessary to go through in order to verify that
 
 ### Verifying definition of the simply typed lambda calculus with iso-recursive types
 
-The links in this section are relative to `theories/stlc_mu/`.
-- [theories/stlc_mu/lang.v](lang.v) starts by defining the expressions and values;
+- [theories/stlc_mu/lang.v](theories/stlc_mu/lang.v) starts by defining the expressions and values;
 for this we use De Bruijn indices, utilizing [https://www.ps.uni-saarland.de/autosubst/doc/manual.pdf](Autosubst) to do so (detailed knowledge is not required).
 Afterwards, it defines evaluation contexts (of depth 1) and head step reductions.
 The final language is defined using the `EctxiLanguage` construct from the Iris library; essentially, it naturally defines the general evaluation contexts and the total reduction relation.
 Lastly, we define the `Halts` predicative for expressions.
-- [theories/stlc_mu/types.v](types.v) defines the static types (again using Autosubst).
-- [theories/stlc_mu/typing.v] defines the typing rules for expressions.
+- [theories/stlc_mu/types.v](theories/stlc_mu/types.v) defines the static types (again using Autosubst).
+- [theories/stlc_mu/typing.v](theories/stlc_mu/typing.v) defines the typing rules for expressions.
 We restrict our typing derivations so that they only treat meaningful types; the closed types (types with no free variables) (see [theories/prelude.v] for the formal definition of closedness).
-- [theories/stlc_mu/contexts.v](contexts.v) defines general contexts (not evaluation contexts) together with their typing rules.
-- [theories/stlc_mu/ctx_equiv.v](ctx_equiv.v) defines contextual equivalence.
+- [theories/stlc_mu/contexts.v](theories/stlc_mu/contexts.v) defines general contexts (not evaluation contexts) together with their typing rules.
+- [theories/stlc_mu/ctx_equiv.v](theories/stlc_mu/ctx_equiv.v) defines contextual equivalence.
 
 ### Verifying definition of the cast calculus of GTLCmu
 
-The links in this section are relative to `theories/cast_calculus/`.
-- [theories/cast_calculus/types.v](types.v) defines the gradual types, ground types, the shape operator (S in figure 2 of paper) and type `ICP` to encode inert pairs (two function types or a ground and unknown type) which is used in [theories/cast_calculus/lang.v](lang.v) to define which expressions are values.
+- [theories/cast_calculus/types.v](theories/cast_calculus/types.v) defines the gradual types, ground types, the shape operator (S in figure 2 of paper) and type `ICP` to encode inert pairs (two function types or a ground and unknown type) which is used in [theories/cast_calculus/lang.v](lang.v) to define which expressions are values.
 - [theories/cast_calculus/types_notations.v] defines some handy notations for types.
-- [theories/cast_calculus/lang.v](lang.v) defines expressions, values, evaluation contexts, head reductions, total reduction, and a `Halts` predicate on expressions.
-- [theories/cast_calculus/consistency.v](consistency.v) defines the conventional consistency relation (figure 1 in paper)
-- [theories/cast_calculus/typing.v](typing.v) defines the typing rules for expressions.
+- [theories/cast_calculus/lang.v](theories/cast_calculus/lang.v) defines expressions, values, evaluation contexts, head reductions, total reduction, and a `Halts` predicate on expressions.
+- [theories/cast_calculus/consistency.v](theories/cast_calculus/consistency.v) defines the conventional consistency relation (figure 1 in paper)
+- [theories/cast_calculus/typing.v](theories/cast_calculus/typing.v) defines the typing rules for expressions.
 We restrict our typing derivations so that they only treat meaningful types; the closed types (types with no free variables) (see [theories/prelude.v] for the formal definition of closedness).
-- [theories/cast_calculus/contexts.v](contexts.v) defines general contexts (not evaluation contexts) together with their typing rules.
-- [theories/cast_calculus/ctx_equiv.v](ctx_equiv.v) Defines contextual equivalence.
+- [theories/cast_calculus/contexts.v](theories/cast_calculus/contexts.v) defines general contexts (not evaluation contexts) together with their typing rules.
+- [theories/cast_calculus/ctx_equiv.v](theories/cast_calculus/ctx_equiv.v) Defines contextual equivalence.
 
 ### Verifying the embedding from STLCmu into the cast calculus
 
-- [theories/embedding/expressions.v] defines the embedding on expressions
-- [theories/embedding/contexts.v] defines the embedding on contexts
-- [theories/embedding/types.v] defines the embedding on types
-- [theories/embedding/well_typedness.v] proves the preservation of well-typedness after embedding
+- [theories/embedding/expressions.v](theories/embedding/expressions.v) defines the embedding on expressions
+- [theories/embedding/contexts.v](theories/embedding/contexts.v) defines the embedding on contexts
+- [theories/embedding/types.v](theories/embedding/types.v) defines the embedding on types
+- [theories/embedding/well_typedness.v](theories/embedding/well_typedness.v) proves the preservation of well-typedness after embedding
 
 ### Verifying full abstraction claim
 
-The file [theories/fae.v] proves full abstraction of the embedding.
+The file [theories/fae.v](theories/fae.v) proves full abstraction of the embedding.
 Theorem `ctx_eq_preservation` proves preservation of equivalences, and `ctx_eq_reflection` proves reflection of equivalences.
 
 ## Proof structure (where's what?)
