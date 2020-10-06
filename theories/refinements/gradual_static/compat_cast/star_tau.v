@@ -3,10 +3,10 @@ From fae_gtlc_mu.cast_calculus Require Export lang.
 From iris.algebra Require Import list.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Import lifting.
-From fae_gtlc_mu.backtranslation Require Export cast_help.general.
+From fae_gtlc_mu.backtranslation Require Export cast_help.general_def_lemmas.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 From fae_gtlc_mu.refinements.gradual_static Require Export logical_relation resources_left resources_right compat_easy compat_cast.defs.
-From fae_gtlc_mu.cast_calculus Require Export consistency.structural types.
+From fae_gtlc_mu.cast_calculus Require Export types.
 
 Section compat_cast_star_tau.
   Context `{!implG Σ,!specG Σ}.
@@ -24,8 +24,8 @@ Section compat_cast_star_tau.
   Hint Extern 5 (AsVal _) => eexists; simpl; try done; eapply cast_calculus.lang.of_to_val; fast_done : typeclass_instances.
 
   Lemma back_cast_ar_star_tau:
-    ∀ (A : list (type * type)) (τ τG : type) (pτnG : Ground τ → False) (pτnStar : τ ≠ ⋆) (pτSτG : get_shape τ = Some τG) (pC1 : cons_struct A ⋆ τG) (pC2 : cons_struct A τG τ),
-      back_cast_ar pC1 → back_cast_ar pC2 → back_cast_ar (consStarTau A τ τG pτnG pτnStar pτSτG pC1 pC2).
+    ∀ (A : list (type * type)) (τ τG : type) (pτnG : Ground τ → False) (pτnStar : τ ≠ ⋆) (pτSτG : get_shape τ = Some τG) (pC1 : alternative_consistency A ⋆ τG) (pC2 : alternative_consistency A τG τ),
+      back_cast_ar pC1 → back_cast_ar pC2 → back_cast_ar (factorDown_Ground A τ τG pτnG pτnStar pτSτG pC1 pC2).
   Proof.
     intros A τ τG pτnG pτnStar pτSτG pC1 pC2 IHpC1 IHpC2.
     iIntros (ei' K' v v' fs) "(#Hfs & #Hvv' & #Hei' & Hv')".

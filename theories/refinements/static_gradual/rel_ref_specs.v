@@ -1,7 +1,7 @@
 From fae_gtlc_mu.refinements.static_gradual Require Export logical_relation compat_easy.
-From fae_gtlc_mu.embedding Require Import expressions types.
+From fae_gtlc_mu.embedding Require Import expressions types types_lemmas.
 From fae_gtlc_mu.stlc_mu Require Export typing.
-From fae_gtlc_mu.cast_calculus Require Export types.
+From fae_gtlc_mu.cast_calculus Require Export types consistency_lemmas.
 
 Section relation_for_specification_lemma.
   Context `{!implG Σ, !specG Σ}.
@@ -43,10 +43,10 @@ Section relation_for_specification_lemma.
     - by eapply bin_log_related_app.
     - by apply bin_log_related_fold.
     - by apply bin_log_related_unfold.
-    - assert (pτi : cast_calculus.types.TClosed τi). apply (cast_calculus.typing.typed_closed H).
-      destruct (cons_stand_open_dec τi τf);
-                destruct (decide (cast_calculus.types.TClosed τi));
-                destruct (decide (cast_calculus.types.TClosed τf)); try by contradiction.
+    - assert (pτi : Closed τi). apply (cast_calculus.typing.typed_closed H).
+      destruct (consistency_open_dec τi τf);
+                destruct (decide (Closed τi));
+                destruct (decide (Closed τf)); try by contradiction.
       by apply bin_log_related_back_cast.
     - apply bin_log_related_omega.
   Qed.
@@ -55,7 +55,7 @@ Section relation_for_specification_lemma.
   From fae_gtlc_mu.cast_calculus Require Export contexts.
   From fae_gtlc_mu.backtranslation Require Import contexts.
 
-  Lemma back_ctx_item_relates (Γ : list cast_calculus.types.type) (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : cast_calculus.types.type) (pτ : TClosed τ)
+  Lemma back_ctx_item_relates (Γ : list cast_calculus.types.type) (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : cast_calculus.types.type) (pτ : Closed τ)
         (Γ' : list cast_calculus.types.type) (τ' : cast_calculus.types.type) (C : cast_calculus.contexts.ctx_item) :
       cast_calculus.contexts.typed_ctx_item C Γ τ Γ' τ' →
       Γ ⊨ e ≤log≤ e' : τ →
@@ -76,13 +76,13 @@ Section relation_for_specification_lemma.
     - eapply bin_log_related_case; try apply back_relates; try done.
     - by apply bin_log_related_fold.
     - by apply bin_log_related_unfold.
-    - destruct (cons_stand_open_dec τ τ');
-                destruct (decide (cast_calculus.types.TClosed τ));
-                destruct (decide (cast_calculus.types.TClosed τ')); try by contradiction.
+    - destruct (consistency_open_dec τ τ');
+                destruct (decide (Closed τ));
+                destruct (decide (Closed τ')); try by contradiction.
       by apply bin_log_related_back_cast.
   Qed.
 
-  Lemma back_ctx_relates (Γ : list cast_calculus.types.type) (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : cast_calculus.types.type) (pτ : TClosed τ)
+  Lemma back_ctx_relates (Γ : list cast_calculus.types.type) (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : cast_calculus.types.type) (pτ : Closed τ)
         (Γ' : list cast_calculus.types.type) (τ' : cast_calculus.types.type) (C : cast_calculus.contexts.ctx) :
       cast_calculus.contexts.typed_ctx C Γ τ Γ' τ' →
       Γ ⊨ e ≤log≤ e' : τ →
@@ -97,7 +97,7 @@ Section relation_for_specification_lemma.
 
   From fae_gtlc_mu Require Export embedding.contexts.
 
-  Lemma embed_ctx_item_relates (Γ : list stlc_mu.types.type) (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : stlc_mu.types.type) (pτ : stlc_mu.types.TClosed τ)
+  Lemma embed_ctx_item_relates (Γ : list stlc_mu.types.type) (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : stlc_mu.types.type) (pτ : Closed τ)
         (Γ' : list stlc_mu.types.type) (τ' : stlc_mu.types.type) (C : stlc_mu.contexts.ctx_item) :
       stlc_mu.contexts.typed_ctx_item C Γ τ Γ' τ' →
       (map embed_type Γ) ⊨ e ≤log≤ e' : (embed_type τ) →
@@ -134,7 +134,7 @@ Section relation_for_specification_lemma.
     - rewrite embd_unfold_comm. by apply bin_log_related_unfold.
   Qed.
 
-  Lemma embed_ctx_relates (Γ : list stlc_mu.types.type) (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : stlc_mu.types.type) (pτ : stlc_mu.types.TClosed τ)
+  Lemma embed_ctx_relates (Γ : list stlc_mu.types.type) (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : stlc_mu.types.type) (pτ : Closed τ)
         (Γ' : list stlc_mu.types.type) (τ' : stlc_mu.types.type) (C : stlc_mu.contexts.ctx) :
       stlc_mu.contexts.typed_ctx C Γ τ Γ' τ' →
       (map embed_type Γ) ⊨ e ≤log≤ e' : (embed_type τ) →

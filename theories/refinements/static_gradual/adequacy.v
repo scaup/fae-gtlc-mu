@@ -1,15 +1,9 @@
-From iris.algebra Require Import excl auth frac agree.
+From iris.algebra Require Import frac agree.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Import adequacy.
-From iris.algebra Require Import agree.
 
 From fae_gtlc_mu Require Import stlc_mu.lang cast_calculus.lang.
 From fae_gtlc_mu Require Import refinements.static_gradual.logical_relation.
-From fae_gtlc_mu Require Import refinements.static_gradual.compat_easy. (* just for notation *)
-
-Definition Halts_grad := cast_calculus.lang.Halts.
-
-Definition Halts_stat := stlc_mu.lang.Halts.
 
 Section adequacy.
   Context `{!inG Σ specR, !invPreG Σ}.
@@ -17,12 +11,12 @@ Section adequacy.
   Lemma adequacy
     (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : cast_calculus.types.type) :
     (∀ `{!implG Σ, !specG Σ}, [] ⊨ e ≤log≤ e' : τ) →
-    (Halts_stat e) →
-    (Halts_grad e').
+    (stlc_mu.lang.Halts e) →
+    (cast_calculus.lang.Halts e').
   Proof.
     intros Hlog Hsteps.
     cut (adequate NotStuck e tt (λ _ _, ∃ v', rtc erased_step ([e'], tt) (of_val v' :: [], tt))).
-    { rewrite /Halts_stat in Hsteps. rewrite /stlc_mu.lang.Halts in Hsteps. destruct 1. naive_solver. }
+    { rewrite /stlc_mu.lang.Halts in Hsteps. destruct 1. naive_solver. }
     eapply (wp_adequacy Σ); first by apply _.
     iIntros (Hinv ?).
     iMod (own_alloc ((((1/2)%Qp , to_agree e') ⋅ ((1/2)%Qp , to_agree e')) : specR)) as (spec_name) "[Hs1 Hs2]".
@@ -36,7 +30,7 @@ Section adequacy.
     iApply wp_fupd. iApply (wp_wand with "[-]").
     - iPoseProof (Hlog ImplΣ SpecΣ [] e' with "[]") as "Hrel".
       { iSplit; auto. iApply interp_env_nil. }
-      replace e with (e.[stlc_mu.typing.env_subst [] ]) at 2 by by asimpl.
+      replace e with (e.[stlc_mu.typing_lemmas.env_subst [] ]) at 2 by by asimpl.
       iApply ("Hrel" $! []). asimpl; iFrame.
     - iModIntro. simpl. iIntros (v'). iDestruct 1 as (v2) "[Hj #Hinterp]".
       iExists v2.
@@ -56,6 +50,3 @@ Definition actualΣ : gFunctors := #[ invΣ ; GFunctor specR ].
 
 Instance subG_inG_specR {Σ} : subG (GFunctor specR) Σ → inG Σ specR.
 Proof. solve_inG. Qed.
-
-(* Lemma actualΣ_inG_specR : invPreG actualΣ. *)
-(* Proof. apply subG_invΣ. rewrite /actualΣ. solve_inG. :( *)

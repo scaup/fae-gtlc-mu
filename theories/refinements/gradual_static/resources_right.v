@@ -90,8 +90,8 @@ Section cfg.
     - intros e1 e2 H. inversion H. simplify_eq. constructor.
     - intros e1 e2 H. inversion H. econstructor.
       SearchAbout pure_step.
-      apply pure_step_ctx.
-      apply hack. apply H1. by apply IHn.
+      apply (pure_step_ctx (fill K)).
+      apply H1. by apply IHn.
   Qed.
 
   Lemma pure_step_prim_step e e' : pure_step e e' → prim_step e tt [] e' tt [].

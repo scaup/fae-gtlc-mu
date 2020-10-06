@@ -6,8 +6,7 @@ From iris.algebra Require Import list.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Import lifting.
 From fae_gtlc_mu.stlc_mu Require Export types.
-From fae_gtlc_mu.cast_calculus Require Export consistency.structural.
-From fae_gtlc_mu.backtranslation Require Export cast_help.general cast_help.extract cast_help.embed.
+From fae_gtlc_mu.backtranslation Require Export cast_help.general_def cast_help.extract cast_help.embed.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 
 (* Coercion cast_calculus.lang.of_val : cast_calculus.lang.val >-> cast_calculus.lang.expr. *)
@@ -50,7 +49,7 @@ Section defs.
 
   (* TODO!! 𝓕cV instead of 𝓕c *)
 
-  Definition back_cast_ar {A} {τi τf} (pC : cons_struct A τi τf) :=
+  Definition back_cast_ar {A} {τi τf} (pC : alternative_consistency A τi τf) :=
     ∀ ei' K' v v' fs, (rel_cast_functions A fs ∧ ⟦ τi ⟧ (v, v') ∧ initially_inv ei' ∧ currently_half (fill K' (𝓕c pC fs (stlc_mu.lang.of_val v'))))
                      ⊢ (WP Cast (cast_calculus.lang.of_val v) τi τf ?{{ w, ∃ w', currently_half (fill K' (stlc_mu.lang.of_val w')) ∧ ⟦ τf ⟧ (w, w') }})%I.
 End defs.

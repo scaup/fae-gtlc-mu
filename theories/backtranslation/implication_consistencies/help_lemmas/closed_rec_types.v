@@ -3,7 +3,18 @@ From stdpp Require Export base list sets mapset.
 From Autosubst Require Export Autosubst.
 Require Export Utf8_core.
 Require Import Coq.Arith.Minus.
-From fae_gtlc_mu.cast_calculus Require Import types consistency.equivalence.listset_ext.
+From fae_gtlc_mu.backtranslation Require Import implication_consistencies.help_lemmas.listset_ext.
+From fae_gtlc_mu.cast_calculus Require Export types types_lemmas.
+
+(* Lemma scomp_comp (σ1 σ2 : var → type) τ : (subst σ1 ∘ subst σ2) τ = subst (σ2 >> σ1) τ. *)
+(* Proof. by asimpl. Qed. *)
+
+(* Lemma scomp_assoc (σ1 σ2 σ3 : var → type) : (σ1 >> σ2) >> σ3 = σ1 >> (σ2 >> σ3). *)
+(* Proof. by asimpl. Qed. *)
+
+(* Lemma subst_commut (τ : type) (σ : var → type) : up σ >> scons (τ.[σ]) ids = scons τ ids >> σ. *)
+(* Proof. by asimpl. Qed. *)
+
 
 Fixpoint closed_rec_types (τ : type) : listset type :=
   match τ with
@@ -316,7 +327,7 @@ Lemma elem_of_closed_rec_types' n : forall (τ : type) (αb : type)
       (ls : list type) (Hls : length ls = n) (pch : Chain (TRec αb) τ ls), (TRec αb).[subst_chain ls] ∈ closed_rec_types τ.
 Proof. intros. apply elem_of_subseteq_singleton. by eapply elem_of_closed_rec_types. Qed.
 
-Lemma crt_closed_gen τ : forall n, TnClosed n τ → set_Forall (TnClosed n) (closed_rec_types τ).
+Lemma crt_closed_gen τ : forall n, NClosed n τ → set_Forall (NClosed n) (closed_rec_types τ).
 Proof.
   induction τ; intros; simpl.
   - apply set_Forall_empty.
@@ -331,14 +342,14 @@ Proof.
     + apply IHτ2. by eapply TArrow_nclosed2.
   - apply set_Forall_union.
     + by apply set_Forall_singleton.
-    + specialize (IHτ (S n)). apply set_Forall_fmap_impl with (P := TnClosed (S n)).
-      { intros τ' Hτ'. by apply TnClosed_subst. }
+    + specialize (IHτ (S n)). apply set_Forall_fmap_impl with (P := NClosed (S n)).
+      { intros τ' Hτ'. by apply NClosed_subst. }
       apply IHτ. by apply TRec_nclosed1.
   - apply set_Forall_empty.
   - apply set_Forall_empty.
 Qed.
 
-Lemma crt_closed τ (pτ : TClosed τ) : set_Forall TClosed (closed_rec_types τ).
+Lemma crt_closed τ (pτ : Closed τ) : set_Forall Closed (closed_rec_types τ).
 Proof. eapply set_Forall_impl. apply (crt_closed_gen _ 0). auto. auto. Qed.
 
 Lemma nat_total_induction (P : nat → Prop) (base : P 0) (IH : forall n, (forall m, m ≤ n → P m) → P (S n)) : forall n, P n.
@@ -350,7 +361,7 @@ Proof.
     + intros. inversion H. apply IH. apply IHn. by apply IHn.
 Qed.
 
-Lemma closed_rec_types_unfold_subset_gen τ (pτ : TClosed τ) : ∀ (n : nat),
+Lemma closed_rec_types_unfold_subset_gen τ (pτ : Closed τ) : ∀ (n : nat),
     forall (α : type) (k : nat) (pk : list type) (Hpk : length pk = k) (αk : type) (pchk : Chain α αk pk)
     (pn : list type) (Hpn : length pn = n) (pchn : Chain αk τ pn),
     fmap (subst (subst_chains_fmap pk pn)) (closed_rec_types α.[upn k (subst_chain pn)]) ⊆ closed_rec_types τ.
@@ -421,10 +432,10 @@ Proof.
            specialize (Hni (n - j) ltac:(lia) (TRec τj) 0 [] ltac:(auto) (TRec τj) (nil_Chain _ _ (rtc_refl _ _)) (drop j pn) ltac:(by rewrite drop_length Hpn) Hch).
            rewrite upn0 in Hni. simpl (subst_chains_fmap [] (drop j pn)) in Hni. rewrite subst_idX in Hni.
            assert (Hni' : closed_rec_types (TRec τj).[subst_chain (drop j pn)] ⊆ closed_rec_types τ). set_solver. clear Hni. rename Hni' into Hni.
-           assert (Hc : TClosed (TRec τj).[subst_chain (drop j pn)]).
+           assert (Hc : Closed (TRec τj).[subst_chain (drop j pn)]).
            { apply (crt_closed τ pτ). eapply elem_of_closed_rec_types'; auto. }
            rewrite Hc.
-           assert (Hcc : set_Forall TClosed (closed_rec_types (TRec τj).[subst_chain (drop j pn)])).
+           assert (Hcc : set_Forall Closed (closed_rec_types (TRec τj).[subst_chain (drop j pn)])).
            { eapply set_Forall_subseteq. apply Hni. apply (crt_closed τ pτ). }
            rewrite (set_Forall_fmap_ext_1 _ id). set_solver.
            eapply set_Forall_impl. apply Hcc. intros. by rewrite H.
@@ -432,7 +443,7 @@ Proof.
     + simpl. set_solver.
 Qed.
 
-Lemma closed_rec_types_unfold_subset τb (pμτb : TClosed (TRec τb)) : closed_rec_types τb.[TRec τb/] ⊆ closed_rec_types (TRec τb).
+Lemma closed_rec_types_unfold_subset τb (pμτb : Closed (TRec τb)) : closed_rec_types τb.[TRec τb/] ⊆ closed_rec_types (TRec τb).
 Proof.
   cut (fmap (subst (subst_chains_fmap [] [τb])) (closed_rec_types τb.[upn 0 (subst_chain [τb])])  ⊆ closed_rec_types (TRec τb)).
   { intro. asimpl. asimpl in H. set_solver. }

@@ -8,9 +8,6 @@ From iris.program_logic Require Import lifting.
 From fae_gtlc_mu.refinements.gradual_static Require Export resources_right logical_relation.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 
-Notation "Γ ⊨ e '≤log≤' e' : τ" :=
-  (bin_log_related Γ e e' τ) (at level 74, e, e', τ at next level).
-
 Section fundamental.
   Context `{!implG Σ,!specG Σ}.
   Notation D := (prodO cast_calculus.lang.valO stlc_mu.lang.valO -n> iPropO Σ).
@@ -26,8 +23,8 @@ Section fundamental.
 
   (* Put all quantifiers at the outer level *)
   Lemma bin_log_related_alt {Γ e e' τ} : Γ ⊨ e ≤log≤ e' : τ → ∀ vvs ei' K',
-    initially_inv ei' ∧ ⟦ Γ ⟧* vvs ∗ currently_half (ectx_language.fill K' (e'.[stlc_mu.typing.env_subst (vvs.*2)]))
-    ⊢ WP e.[cast_calculus.typing.env_subst (vvs.*1)] ?{{ v, ∃ v',
+    initially_inv ei' ∧ ⟦ Γ ⟧* vvs ∗ currently_half (ectx_language.fill K' (e'.[stlc_mu.typing_lemmas.env_subst (vvs.*2)]))
+    ⊢ WP e.[cast_calculus.typing_lemmas.env_subst (vvs.*1)] ?{{ v, ∃ v',
         currently_half (ectx_language.fill K' (stlc_mu.lang.of_val v')) ∧ interp τ (v, v') }}.
   Proof.
     iIntros (Hlog vvs K ρ) "[#Hρ [HΓ Hj]]". asimpl.
@@ -42,8 +39,8 @@ Section fundamental.
     iIntros (? vvs ei') "[#Hρ #HΓ]". iIntros (K). iIntros "Hj /=".
     iDestruct (interp_env_Some_l with "HΓ") as ([v v']) "[Heq Hv]"; first done.
     iDestruct "Heq" as %Heq.
-    erewrite !cast_calculus.typing.env_subst_lookup; rewrite ?list_lookup_fmap ?Heq; eauto.
-    erewrite !stlc_mu.typing.env_subst_lookup; rewrite ?list_lookup_fmap ?Heq; eauto.
+    erewrite !cast_calculus.typing_lemmas.env_subst_lookup; rewrite ?list_lookup_fmap ?Heq; eauto.
+    erewrite !stlc_mu.typing_lemmas.env_subst_lookup; rewrite ?list_lookup_fmap ?Heq; eauto.
     iApply wp_value. eauto.
   Qed.
 
@@ -59,8 +56,8 @@ Section fundamental.
     Γ ⊨ cast_calculus.lang.Pair e1 e2 ≤log≤ stlc_mu.lang.Pair e1' e2' : TProd τ1 τ2.
   Proof.
     iIntros (vvs ei') "#[Hρ HΓ]"; iIntros (K) "Hj /=".
-    smart_wp_bind (cast_calculus.lang.PairLCtx e2.[cast_calculus.typing.env_subst _]) v v' "[Hv #Hiv]"
-      ('`IHHtyped1 _ _ ((stlc_mu.lang.PairLCtx e2'.[stlc_mu.typing.env_subst _]) :: K)).
+    smart_wp_bind (cast_calculus.lang.PairLCtx e2.[cast_calculus.typing_lemmas.env_subst _]) v v' "[Hv #Hiv]"
+      ('`IHHtyped1 _ _ ((stlc_mu.lang.PairLCtx e2'.[stlc_mu.typing_lemmas.env_subst _]) :: K)).
       (* ('`IHHtyped1 _ _ ((PairLCtx e2'.[env_subst _]) :: K)). *)
     smart_wp_bind (cast_calculus.lang.PairRCtx v) w w' "[Hw #Hiw]"
       ('`IHHtyped2 _ _ ((stlc_mu.lang.PairRCtx v') :: K)).
@@ -168,7 +165,7 @@ Section fundamental.
     Γ ⊨ cast_calculus.lang.App e1 e2 ≤log≤ App e1' e2' :  τ2.
   Proof.
     iIntros (vvs ei') "#[Hρ HΓ]"; iIntros (K) "Hj /=".
-    smart_wp_bind (cast_calculus.lang.AppLCtx (e2.[cast_calculus.typing.env_subst (vvs.*1)])) v v' "[Hv #Hiv]"
+    smart_wp_bind (cast_calculus.lang.AppLCtx (e2.[cast_calculus.typing_lemmas.env_subst (vvs.*1)])) v v' "[Hv #Hiv]"
       ('`IHHtyped1 _ _ (((AppLCtx (e2'.[_]))) :: K)); cbn.
     smart_wp_bind (cast_calculus.lang.AppRCtx v) w w' "[Hw #Hiw]"
                   ('`IHHtyped2 _ _ ((AppRCtx v') :: K)); cbn.

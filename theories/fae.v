@@ -1,22 +1,17 @@
-From fae_gtlc_mu.stlc_mu Require Export contexts typing.
-From fae_gtlc_mu.cast_calculus Require Export contexts typing.
-From fae_gtlc_mu.embedding Require Export expressions types well_typedness.
+From fae_gtlc_mu.stlc_mu Require Export contexts typing ctx_equiv.
+From fae_gtlc_mu.cast_calculus Require Export contexts typing ctx_equiv.
+From fae_gtlc_mu.embedding Require Export expressions types types_lemmas well_typedness.
 From fae_gtlc_mu.backtranslation Require Export contexts well_typedness.
-
-Notation "Γ ⊨ e '=ctx-grad=' e' : τ" :=
-  (cast_calculus.contexts.ctx_equiv Γ e e' τ) (at level 74, e, e', τ at next level).
-
-Notation "Γ ⊨ e '=ctx-stat=' e' : τ" :=
-  (stlc_mu.contexts.ctx_equiv Γ e e' τ) (at level 74, e, e', τ at next level).
 
 Section static_gradual.
   From fae_gtlc_mu.refinements.static_gradual Require Export adequacy.
   From fae_gtlc_mu.refinements.static_gradual Require Export rel_ref_specs.
 
+  (** left to right in theorem 4.1 *)
   Lemma static_ctx_refines_gradual (Γ : list stlc_mu.types.type) (e : stlc_mu.lang.expr) (τ : stlc_mu.types.type) (de : Γ ⊢ₛ e : τ) :
     ∀ (Cₜ : cast_calculus.contexts.ctx), cast_calculus.contexts.typed_ctx Cₜ (map embed_type Γ) (embed_type τ) [] TUnit →
-       Halts_stat (stlc_mu.contexts.fill_ctx (backtranslate_ctx Cₜ) e) →
-       Halts_grad (fill_ctx Cₜ [[e]]).
+       stlc_mu.lang.Halts (stlc_mu.contexts.fill_ctx (backtranslate_ctx Cₜ) e) →
+       cast_calculus.lang.Halts (fill_ctx Cₜ [[e]]).
   Proof.
     intros Cₜ dCₜ Hs.
     apply (@adequacy actualΣ _ _ (stlc_mu.contexts.fill_ctx (backtranslate_ctx Cₜ) e) _ TUnit); auto. intros.
@@ -29,8 +24,8 @@ Section static_gradual.
 
   Lemma static_ctx_refines_gradual_easy (Γ : list stlc_mu.types.type) (e : stlc_mu.lang.expr) (τ : stlc_mu.types.type) (de : Γ ⊢ₛ e : τ) :
     ∀ (C : stlc_mu.contexts.ctx), stlc_mu.contexts.typed_ctx C Γ τ [] stlc_mu.types.TUnit →
-       Halts_stat (stlc_mu.contexts.fill_ctx C e) →
-       Halts_grad (fill_ctx (embed_ctx C) [[e]]).
+       stlc_mu.lang.Halts (stlc_mu.contexts.fill_ctx C e) →
+       cast_calculus.lang.Halts (fill_ctx (embed_ctx C) [[e]]).
   Proof.
     intros C dC Hs.
     apply (@adequacy actualΣ _ _ (stlc_mu.contexts.fill_ctx C e) _ (embed_type stlc_mu.types.TUnit)); auto. intros.
@@ -45,10 +40,11 @@ Section gradual_static.
   From fae_gtlc_mu.refinements.gradual_static Require Export adequacy.
   From fae_gtlc_mu.refinements.gradual_static Require Export rel_ref_specs.
 
+  (** right to left in theorem 4.1 *)
   Lemma gradual_ctx_refines_static (Γ : list stlc_mu.types.type) (e : stlc_mu.lang.expr) (τ : stlc_mu.types.type) (de : Γ ⊢ₛ e : τ ):
     ∀ (K : cast_calculus.contexts.ctx), cast_calculus.contexts.typed_ctx K (map embed_type Γ) (embed_type τ) [] TUnit →
-       Halts_grad (fill_ctx K [[e]]) →
-       Halts_stat (stlc_mu.contexts.fill_ctx (backtranslate_ctx K) e).
+       cast_calculus.lang.Halts (fill_ctx K [[e]]) →
+       stlc_mu.lang.Halts (stlc_mu.contexts.fill_ctx (backtranslate_ctx K) e).
   Proof.
     intros Cₜ dCₜ Hs.
     apply (@adequacy actualΣ _ _ (fill_ctx Cₜ [[e]]) (stlc_mu.contexts.fill_ctx (backtranslate_ctx Cₜ) e) TUnit); auto. intros.
@@ -58,8 +54,8 @@ Section gradual_static.
 
   Lemma gradual_ctx_refines_static_easy (Γ : list stlc_mu.types.type) (e : stlc_mu.lang.expr) (τ : stlc_mu.types.type) (de : Γ ⊢ₛ e : τ) :
     ∀ (C : stlc_mu.contexts.ctx), stlc_mu.contexts.typed_ctx C Γ τ [] stlc_mu.types.TUnit →
-       Halts_grad (fill_ctx (embed_ctx C) [[e]]) →
-       Halts_stat (stlc_mu.contexts.fill_ctx C e).
+       cast_calculus.lang.Halts (fill_ctx (embed_ctx C) [[e]]) →
+       stlc_mu.lang.Halts (stlc_mu.contexts.fill_ctx C e).
   Proof.
     intros C dC Hs.
     apply (@adequacy actualΣ _ _ (fill_ctx (embed_ctx C) [[e]]) (stlc_mu.contexts.fill_ctx C e) (embed_type stlc_mu.types.TUnit)); auto. intros.

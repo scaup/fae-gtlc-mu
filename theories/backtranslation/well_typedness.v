@@ -1,7 +1,7 @@
 From fae_gtlc_mu.cast_calculus Require Export typing contexts.
 From fae_gtlc_mu.stlc_mu Require Export typing contexts.
-
-From fae_gtlc_mu.backtranslation Require Import types expressions cast_help.general contexts.
+From fae_gtlc_mu.cast_calculus Require Import lang consistency consistency_lemmas.
+From fae_gtlc_mu.backtranslation Require Import types expressions cast_help.general_def cast_help.general_def_lemmas contexts.
 
 Lemma well_typedness_expr Γ e τ : (Γ ⊢ₜ e : τ) →
     map backtranslate_type Γ ⊢ₛ backtranslate_expr e : backtranslate_type τ.
@@ -15,10 +15,10 @@ Proof.
     by rewrite back_unfold_comm in IHtyped.
   - rewrite back_unfold_comm.
     by apply Unfold_typed.
-  - assert (pτi : cast_calculus.types.TClosed τi). apply (cast_calculus.typing.typed_closed H).
-    destruct (cons_stand_open_dec τi τf);
-      destruct (decide (cast_calculus.types.TClosed τi));
-      destruct (decide (cast_calculus.types.TClosed τf)); try by contradiction.
+  - assert (pτi : Closed τi). apply (cast_calculus.typing.typed_closed H).
+    destruct (consistency_open_dec τi τf);
+      destruct (decide (Closed τi));
+      destruct (decide (Closed τf)); try by contradiction.
     eapply App_typed with (τ1 := <<τi>>).
     apply EClosed_typed; auto. apply 𝓕c_closed; auto.
     rewrite /𝓕c /env_subst. asimpl.
@@ -28,7 +28,7 @@ Qed.
 
 (* From fae_gtlc_mu.embedding Require Export types. *)
 
-Lemma well_typedness_ctx_item Γ τ (pτ : cast_calculus.types.TClosed τ) Γ' τ' C :
+Lemma well_typedness_ctx_item Γ (τ : cast_calculus.types.type) (pτ : Closed τ) Γ' τ' C :
   cast_calculus.contexts.typed_ctx_item C Γ τ Γ' τ' →
   typed_ctx_item (backtranslate_ctx_item C) (map backtranslate_type Γ) (backtranslate_type τ) (map backtranslate_type Γ') (backtranslate_type τ').
 Proof.
@@ -51,12 +51,12 @@ Proof.
     by apply well_typedness_expr. rewrite -map_cons. by apply well_typedness_expr.
   - rewrite back_unfold_comm. apply TP_CTX_Fold.
   - rewrite back_unfold_comm. apply TP_CTX_Unfold.
-  - simpl. destruct (cons_stand_open_dec τi τf); destruct (decide (cast_calculus.types.TClosed τi)); destruct (decide (cast_calculus.types.TClosed τf)); try by contradiction.
+  - simpl. destruct (consistency_open_dec τi τf); destruct (decide (Closed τi)); destruct (decide (Closed τf)); try by contradiction.
     apply TP_CTX_AppR. apply EClosed_typed. apply 𝓕c_closed; auto.
     rewrite /𝓕c /=. asimpl. apply 𝓕_typed with (A := []); auto.
 Qed.
 
-Lemma well_typedness_ctx Γ τ (pτ : cast_calculus.types.TClosed τ) Γ' τ' C :
+Lemma well_typedness_ctx Γ (τ : cast_calculus.types.type) (pτ : Closed τ) Γ' τ' C :
   cast_calculus.contexts.typed_ctx C Γ τ Γ' τ' →
   typed_ctx (backtranslate_ctx C) (map backtranslate_type Γ) (backtranslate_type τ) (map backtranslate_type Γ') (backtranslate_type τ').
 Proof.

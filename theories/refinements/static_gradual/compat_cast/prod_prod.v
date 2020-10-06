@@ -1,11 +1,10 @@
-From fae_gtlc_mu.refinements.static_gradual Require Export logical_relation resources_right compat_easy help_left compat_cast.defs.
+From fae_gtlc_mu.refinements.static_gradual Require Export logical_relation resources_right compat_easy compat_cast.defs.
 From fae_gtlc_mu.cast_calculus Require Export types typing.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 From iris.algebra Require Import list.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Import lifting.
-From fae_gtlc_mu.cast_calculus Require Export consistency.structural.
-From fae_gtlc_mu.backtranslation Require Export cast_help.general cast_help.extract cast_help.embed.
+From fae_gtlc_mu.backtranslation.cast_help Require Export general_def general_def_lemmas extract embed.
 From fae_gtlc_mu.cast_calculus Require Export lang types.
 
 Section compat_cast_prod_prod.
@@ -29,9 +28,9 @@ Section compat_cast_prod_prod.
   (* Qed. *)
 
   Lemma back_cast_ar_prod_prod:
-    ∀ (A : list (type * type)) (τ1 τ1' τ2 τ2' : type) (pC1 : cons_struct A τ1 τ1') (pC2 : cons_struct A τ2 τ2')
+    ∀ (A : list (type * type)) (τ1 τ1' τ2 τ2' : type) (pC1 : alternative_consistency A τ1 τ1') (pC2 : alternative_consistency A τ2 τ2')
       (IHpC1 : back_cast_ar pC1) (IHpC2 : back_cast_ar pC2),
-      back_cast_ar (consTProdTProd A τ1 τ1' τ2 τ2' pC1 pC2).
+      back_cast_ar (throughProd A τ1 τ1' τ2 τ2' pC1 pC2).
   Proof.
     intros A τ1 τ1' τ2 τ2' pC1 pC2 IHpC1 IHpC2.
     rewrite /back_cast_ar. iIntros (ei' K' v v' fs) "(#Hfs & #Hvv' & #Hei' & Hv')".
@@ -80,7 +79,6 @@ Section compat_cast_prod_prod.
     iExists (PairV v1f' v2f'). iSplitL. done.
     rewrite interp_rw_TProd.
     iExists (v1f , v1f') , (v2f , v2f') . iSplitR. done. by iSplit.
-    Unshelve. all:apply hack.
 Qed.
 
 End compat_cast_prod_prod.

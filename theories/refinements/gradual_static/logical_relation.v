@@ -2,9 +2,8 @@ From iris.proofmode Require Import tactics.
 From iris.program_logic Require Export weakestpre.
 From iris.base_logic Require Export invariants.
 From fae_gtlc_mu.backtranslation.cast_help Require Export embed.
-From fae_gtlc_mu.refinements Require Export prelude.
 From fae_gtlc_mu.refinements.gradual_static Require Export resources_left resources_right.
-From fae_gtlc_mu.cast_calculus Require Export types lang.
+From fae_gtlc_mu.cast_calculus Require Export types typing_lemmas lang.
 From iris.algebra Require Import list ofe.
 From stdpp Require Import tactics.
 Import uPred.
@@ -57,7 +56,7 @@ Section logrel.
     currently_half (fill K' (ee.2)) →
     WP ee.1 ?{{ v, ∃ v', currently_half (fill K' (of_val v')) ∧ interp_cor_val (v, v') }})%I.
 
-  Definition TClosed (τ : type) : Prop := forall σ, τ.[σ] = τ.
+  Definition Closed (τ : type) : Prop := forall σ, τ.[σ] = τ.
 
   (** only to be used with closed types *)
 
@@ -247,5 +246,8 @@ Section bin_log_def.
   (Γ : list cast_calculus.types.type) (e : cast_calculus.lang.expr) (e' : stlc_mu.lang.expr) (τ : cast_calculus.types.type) :=
     ∀ vvs (ei' : stlc_mu.lang.expr),
     initially_inv ei' ∧ ⟦ Γ ⟧* vvs ⊢
-    ⟦ τ ⟧ₑ (e.[cast_calculus.typing.env_subst (vvs.*1)], e'.[stlc_mu.typing.env_subst (vvs.*2)]).
+    ⟦ τ ⟧ₑ (e.[cast_calculus.typing_lemmas.env_subst (vvs.*1)], e'.[stlc_mu.typing_lemmas.env_subst (vvs.*2)]).
 End bin_log_def.
+
+Notation "Γ ⊨ e '≤log≤' e' : τ" :=
+  (bin_log_related Γ e e' τ) (at level 74, e, e', τ at next level).

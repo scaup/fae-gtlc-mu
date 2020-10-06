@@ -1,6 +1,6 @@
-From fae_gtlc_mu.cast_calculus Require Import lang contexts.
+From fae_gtlc_mu.cast_calculus Require Import lang contexts consistency consistency_lemmas.
+From fae_gtlc_mu.backtranslation Require Import cast_help.general_def implication_consistencies.proof expressions.
 From fae_gtlc_mu.stlc_mu Require Import lang contexts.
-From fae_gtlc_mu.backtranslation Require Import cast_help.general expressions.
 From fae_gtlc_mu.cast_calculus Require Import types.
 
 Reserved Notation "<{ C }>" (at level 4, C at next level).
@@ -20,7 +20,7 @@ Fixpoint backtranslate_ctx_item (C : cast_calculus.contexts.ctx_item) : ctx_item
   | cast_calculus.contexts.CTX_CaseR e0 e1 => CTX_CaseR <<e0>> <<e1>>
   | cast_calculus.contexts.CTX_Fold => CTX_Fold
   | cast_calculus.contexts.CTX_Unfold => CTX_Unfold
-  | CTX_Cast τi τf => match (cons_stand_open_dec τi τf, decide (TClosed τi) , decide (TClosed τf)) with
+  | CTX_Cast τi τf => match (consistency_open_dec τi τf, decide (Closed τi) , decide (Closed τf)) with
                      | (inleft pC , left pi, left pf) => CTX_AppR (𝓕c (proof.cons_co τi pi τf pf pC) [])
                      | _ => CTX_Lam
                      end

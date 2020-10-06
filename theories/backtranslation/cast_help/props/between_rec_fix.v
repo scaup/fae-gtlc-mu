@@ -1,5 +1,5 @@
-From fae_gtlc_mu.stlc_mu Require Export lang.
-From fae_gtlc_mu.backtranslation.cast_help Require Export between.
+From fae_gtlc_mu.stlc_mu Require Export lang typing_lemmas.
+From fae_gtlc_mu.backtranslation.cast_help Require Export between general_def general_def_lemmas.
 
 (* from resourcers_left {{{ *)
 
@@ -50,24 +50,30 @@ Proof.
   constructor.
 Qed.
 
+Lemma rewrite_subs_app (e1 e2 : expr) σ :
+  (App e1 e2).[σ] = App e1.[σ] e2.[σ].
+Proof.
+  by simpl.
+Qed.
+
 Lemma between_TRec_steps_help f v : nsteps pure_step 1 (between_TRec f (of_val v))
   (Fix (Lam (Lam (Fold (f.[(ren (+ 1))] (Unfold (Var 0)))))) (of_val v)).
 Proof.
-  new_step. rewrite /between_TRec. ps_head_step. rewrite rewrite_subs_app Fix_subs_rewrite.
+  new_step. rewrite /between_TRec. ps_head_step.
+  rewrite rewrite_subs_app Fix_subs_rewrite.
   asimpl. constructor.
 Qed.
 
-From fae_gtlc_mu.backtranslation Require Export general.
-From fae_gtlc_mu.cast_calculus Require Export types consistency.structural.
+From fae_gtlc_mu.cast_calculus Require Export types consistency.
 
-Lemma between_TRec_steps {A} {τl τr} (pC : cons_struct ((TRec τl, TRec τr) :: A) τl.[TRec τl/] τr.[TRec τr/]) fs (H : length A = length fs) (pμτlμτrnotA : (TRec τl, TRec τr) ∉ A) v :
+Lemma between_TRec_steps {A} {τl τr} (pC : alternative_consistency ((TRec τl, TRec τr) :: A) τl.[TRec τl/] τr.[TRec τr/]) fs (H : length A = length fs) (pμτlμτrnotA : (TRec τl, TRec τr) ∉ A) v :
   nsteps pure_step 6
     ((between_TRec (𝓕 pC)).[env_subst fs] (of_val (FoldV v)))
-    (Fold ((𝓕c pC (𝓕cV (consTRecTRecExposeCall A τl τr pμτlμτrnotA pC) fs H :: fs)) v)).
+    (Fold ((𝓕c pC (𝓕cV (exposeRecursiveCAll A τl τr pμτlμτrnotA pC) fs H :: fs)) v)).
 Proof.
   new_step. apply nsteps_once_inv. rewrite between_TRec_subst_rewrite. apply between_TRec_steps_help.
   cut (nsteps pure_step 5 (Fix (LamV (LamV (Fold ((𝓕 pC).[up (env_subst fs)].[ren (+1)] (Unfold (Var 0)))))) (of_val (FoldV v)))
-    (Fold ((𝓕 pC).[env_subst (𝓕cV (consTRecTRecExposeCall A τl τr pμτlμτrnotA pC) fs H :: fs)] (# v)))). by simpl.
+    (Fold ((𝓕 pC).[env_subst (𝓕cV (exposeRecursiveCAll A τl τr pμτlμτrnotA pC) fs H :: fs)] (# v)))). by simpl.
   eapply (nsteps_trans 4 1).
   apply Fix_steps2. simpl. asimpl.
   assert (triv : (𝓕 pC).[Lam
@@ -80,9 +86,9 @@ Proof.
                                  (Lam
                                     (Lam (Lam (Fold ((𝓕 pC).[ids 1 .: env_subst fs >> ren (+4)] (Unfold (ids 0)))))
                                          (Lam (Unfold (ids 1) (ids 1) (ids 0)))))) (Var 0)) .: env_subst fs] =
-                 (𝓕 pC).[env_subst (((between_TRecV (𝓕 pC).[up (stlc_mu.typing.env_subst fs)])) :: fs)]).
+                 (𝓕 pC).[env_subst (((between_TRecV (𝓕 pC).[up (stlc_mu.typing_lemmas.env_subst fs)])) :: fs)]).
   rewrite /between_TRecV /between_TRec /Fix. by asimpl. rewrite triv. clear triv.
-  fold (𝓕c pC (between_TRecV (𝓕 pC).[up (stlc_mu.typing.env_subst fs)] :: fs)).
+  fold (𝓕c pC (between_TRecV (𝓕 pC).[up (stlc_mu.typing_lemmas.env_subst fs)] :: fs)).
   rewrite (𝓕c_rewrite pC). simpl. auto. intros H'.
   new_step. apply (pure_step_ctx (fill [AppRCtx _ ; FoldCtx])). ps_head_step. simpl.
   constructor.

@@ -1,6 +1,7 @@
 From Autosubst Require Export Autosubst.
 From iris.program_logic Require Export language ectx_language ectxi_language.
 
+(** Expressions *)
 Inductive expr :=
 | Var (x : var)
 | Lam (e : {bind 1 of expr})
@@ -26,14 +27,7 @@ Instance Rename_expr : Rename expr. derive. Defined.
 Instance Subst_expr : Subst expr. derive. Defined.
 Instance SubstLemmas_expr : SubstLemmas expr. derive. Qed.
 
-Lemma rewrite_subs_app (e1 e2 : expr) σ :
-  (App e1 e2).[σ] = App e1.[σ] e2.[σ].
-Proof.
-  by simpl.
-Qed.
-
-Definition EClosed (e : expr) := forall σ, e.[σ] = e.
-
+(** Values *)
 Inductive val :=
 | LamV (e : {bind 1 of expr})
 | UnitV
@@ -53,11 +47,6 @@ Fixpoint of_val (v : val) : expr :=
   end.
 Notation "# v" := (of_val v) (at level 20).
 
-Definition VClosed (v : val) := forall σ, (# v).[σ] = # v.
-
-Lemma ve_closed v : VClosed v → EClosed (# v).
-Proof. intro H. intro w. apply H. Qed.
-
 Coercion of_val : val >-> expr.
 
 Fixpoint to_val (e : expr) : option val :=
@@ -71,7 +60,8 @@ Fixpoint to_val (e : expr) : option val :=
   | _ => None
   end.
 
-(** Evaluation contexts *)
+(** Evaluation contexts of depth 1 *)
+(** General evalution contexts are represented by `list ectx_item` *)
 Inductive ectx_item :=
 | AppLCtx (e2 : expr)
 | AppRCtx (v1 : val)
@@ -102,6 +92,7 @@ Definition fill_item (Ki : ectx_item) (e : expr) : expr :=
 
 Definition state : Type := ().
 
+(** Head steps *)
 Inductive head_step : expr → state → list Empty_set → expr → state → list expr → Prop :=
 (* β *)
 | BetaS e1 e2 v2 σ :
@@ -126,7 +117,6 @@ Inductive head_step : expr → state → list Empty_set → expr → state → l
     to_val e = Some v →
     head_step (Unfold (Fold e)) σ [] e σ [].
 
-(** Basic properties about the language *)
 Lemma to_of_val v : to_val (of_val v) = Some v.
 Proof. by induction v; simplify_option_eq. Qed.
 
@@ -176,7 +166,7 @@ Canonical Structure stateO := leibnizO state.
 Canonical Structure valO := leibnizO val.
 Canonical Structure exprO := leibnizO expr.
 
-(** Language *)
+(** `EctxiLanguage` naturally extents our evaluation contexts of depth 1, and it naturally defines our total reduction relation *)
 Canonical Structure ectxi_lang := EctxiLanguage lang_mixin.
 Canonical Structure ectx_lang := EctxLanguageOfEctxi ectxi_lang.
 Canonical Structure lang := LanguageOfEctx ectx_lang.
@@ -191,9 +181,6 @@ Hint Extern 5 (AsVal _) => eexists; eapply of_to_val; fast_done : typeclass_inst
 Hint Extern 10 (AsVal _) =>
   eexists; rewrite /IntoVal; eapply of_to_val; rewrite /= !to_of_val /=; solve [ eauto ] : typeclass_instances.
 
+(** Definition of halting *)
 Definition Halts (e : expr) :=
   ∃ v, rtc erased_step ([e], tt) ([of_val v], tt).
-
-Definition hack K : @LanguageCtx ectx_lang (fill K) := (ectx_lang_ctx K).
-
-Definition hacki Ki : @LanguageCtx ectxi_lang (fill_item Ki) := ectxi_lang_ctx_item Ki.

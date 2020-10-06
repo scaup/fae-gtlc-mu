@@ -1,6 +1,6 @@
-From fae_gtlc_mu.cast_calculus Require Export types.
-From fae_gtlc_mu.stlc_mu Require Export typing lang lib.fix.
-From fae_gtlc_mu.backtranslation Require Export universe types.
+From fae_gtlc_mu.cast_calculus Require Export types typing lang.
+From fae_gtlc_mu.stlc_mu Require Import types_notations.
+From fae_gtlc_mu.backtranslation Require Export universe types cast_help.fix.
 
 (** Embeddings *)
 
@@ -13,7 +13,7 @@ Definition embed_TUnit : val :=
 Lemma embed_TUnit_typed Γ :
   Γ ⊢ₛ embed_TUnit : (TArrow TUnit Universe).
 Proof.
-  apply Lam_typed, Fold_typed. apply TUnit_TClosed.
+  apply Lam_typed, Fold_typed. apply TUnit_Closed.
   repeat apply InjL_typed.
   all:try (intro σ; by asimpl).
   by apply Var_typed.
@@ -106,4 +106,3 @@ Lemma embed_no_subs {τ : cast_calculus.types.type} {G : Ground τ} σ : (# (emb
 Proof.
   destruct G; by asimpl.
 Qed.
-

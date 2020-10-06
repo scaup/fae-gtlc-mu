@@ -1,12 +1,11 @@
-From fae_gtlc_mu.refinements.static_gradual Require Export logical_relation resources_right compat_easy help_left compat_cast.defs.
+From fae_gtlc_mu.refinements.static_gradual Require Export logical_relation resources_right compat_easy compat_cast.defs.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 From fae_gtlc_mu.cast_calculus Require Export lang.
 From iris.algebra Require Import list.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Import lifting.
 From fae_gtlc_mu.cast_calculus Require Export types.
-From fae_gtlc_mu.cast_calculus Require Export consistency.structural.
-From fae_gtlc_mu.backtranslation Require Export cast_help.general cast_help.extract cast_help.embed cast_help.props.extract_embed.
+From fae_gtlc_mu.backtranslation Require Export cast_help.general_def cast_help.extract cast_help.embed cast_help.props.extract_embed.
 From fae_gtlc_mu.cast_calculus Require Export types typing.
 
 Section star_ground.
@@ -28,7 +27,7 @@ Section star_ground.
 
   Opaque Ω.
 
-  Lemma back_cast_ar_star_ground (A : list (type * type)) (τG : type) (G : Ground τG) : back_cast_ar (consStarTGround A τG G).
+  Lemma back_cast_ar_star_ground (A : list (type * type)) (τG : type) (G : Ground τG) : back_cast_ar (atomic_Unknown_Ground A τG G).
   Proof.
     rewrite /back_cast_ar /𝓕c /𝓕. iIntros (ei' K' v v' fs) "(#Hfs & #Hvv' & #Hei' & Hv')". rewrite extract_no_subs.
     destruct G; rewrite interp_rw_TUnknown.
@@ -78,7 +77,6 @@ Section star_ground.
                       (FoldV w') with "[Hv']") as "Hv'".
       eapply Same_Ground. auto. constructor. auto. auto. wp_value.
       iExists _. rewrite interp_rw_TRec. asimpl. iSplit; auto. by simpl.
-      Unshelve. all:apply hacki.
   Qed.
 
 End star_ground.

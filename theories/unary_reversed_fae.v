@@ -9,7 +9,7 @@ Section gradual_static.
   From fae_gtlc_mu.refinements.gradual_static Require Export adequacy.
   From fae_gtlc_mu.refinements.gradual_static Require Export rel_ref_specs.
 
-  Lemma gradual_static (Γ : list stlc_mu.types.type) (e : cast_calculus.lang.expr) (τ : stlc_mu.types.type) (pτ : stlc_mu.types.TClosed τ) (de : (map embed_type Γ) ⊢ₜ e : (embed_type τ)):
+  Lemma gradual_static (Γ : list stlc_mu.types.type) (e : cast_calculus.lang.expr) (τ : stlc_mu.types.type) (pτ : stlc_mu.types.Closed τ) (de : (map embed_type Γ) ⊢ₜ e : (embed_type τ)):
     ∀ (Cₛ : stlc_mu.contexts.ctx), stlc_mu.contexts.typed_ctx Cₛ Γ τ [] stlc_mu.types.TUnit →
        Halts_grad (fill_ctx (embed_ctx Cₛ) e) →
        Halts_stat (stlc_mu.contexts.fill_ctx Cₛ (backtranslate_expr e)).
@@ -32,11 +32,11 @@ Definition stuck_diverge_stat : stlc_mu.lang.expr → Prop :=
   fun e => ¬ stlc_mu.lang.Halts e.
 
 Definition stat_P C Γ τ : Prop :=
-    (stlc_mu.types.TClosed τ) ∧ (stlc_mu.contexts.typed_ctx C Γ τ [] stlc_mu.types.TUnit)
+    (stlc_mu.types.Closed τ) ∧ (stlc_mu.contexts.typed_ctx C Γ τ [] stlc_mu.types.TUnit)
   ∧ (∀ e, Γ ⊢ₛ e : τ → stuck_diverge_stat (stlc_mu.contexts.fill_ctx C e)).
 
 Definition grad_P C Γ τ : Prop :=
-    (cast_calculus.types.TClosed τ) ∧ (cast_calculus.contexts.typed_ctx C Γ τ [] cast_calculus.types.TUnit)
+    (cast_calculus.types.Closed τ) ∧ (cast_calculus.contexts.typed_ctx C Γ τ [] cast_calculus.types.TUnit)
   ∧ (∀ e, Γ ⊢ₜ e : τ → stuck_diverge_grad (cast_calculus.contexts.fill_ctx C e)).
 
 (** stat_P and grad_P are the properties on contexts that we want to preserve and reflect *upon embedding* *)
@@ -53,7 +53,7 @@ Proof.
   apply (gradual_static Γ _ τ); auto.
 Qed.
 
-Theorem reflection C Γ τ (pτ : stlc_mu.types.TClosed τ) (dC : stlc_mu.contexts.typed_ctx C Γ τ [] stlc_mu.types.TUnit) :
+Theorem reflection C Γ τ (pτ : stlc_mu.types.Closed τ) (dC : stlc_mu.contexts.typed_ctx C Γ τ [] stlc_mu.types.TUnit) :
   (grad_P (embed_ctx C) (map embed_type Γ) (embed_type τ)) → stat_P C Γ τ.
 Proof.
   intro Hg. destruct Hg as [peτ [peC Hg] ].

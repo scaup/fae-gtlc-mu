@@ -1,6 +1,6 @@
-From fae_gtlc_mu.cast_calculus Require Import lang consistency.standard consistency.equivalence.proof.
+From fae_gtlc_mu.cast_calculus Require Import lang consistency consistency_lemmas.
+From fae_gtlc_mu.backtranslation Require Import cast_help.general_def implication_consistencies.proof.
 From fae_gtlc_mu.stlc_mu Require Import lang.
-From fae_gtlc_mu.backtranslation Require Import cast_help.general.
 From fae_gtlc_mu.cast_calculus Require Import types.
 
 Reserved Notation "<< e >>" (at level 4, e at next level).
@@ -19,7 +19,7 @@ Fixpoint backtranslate_expr (e : cast_calculus.lang.expr) : expr :=
   | cast_calculus.lang.Fold e => Fold <<e>>
   | cast_calculus.lang.Unfold e => Unfold <<e>>
   | Cast e τi τf =>
-    match (cons_stand_open_dec τi τf, decide (TClosed τi) , decide (TClosed τf)) with
+    match (consistency_open_dec τi τf, decide (Closed τi) , decide (Closed τf)) with
     | (inleft pC , left pi, left pf) => (𝓕c (cons_co τi pi τf pf pC) []) <<e>>
     | _ => Unit
     end

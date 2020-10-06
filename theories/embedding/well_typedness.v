@@ -1,7 +1,7 @@
+From fae_gtlc_mu.embedding Require Import types types_lemmas expressions contexts.
 From fae_gtlc_mu.stlc_mu Require Export typing contexts.
 From fae_gtlc_mu.cast_calculus Require Export typing contexts.
 
-From fae_gtlc_mu.embedding Require Import types expressions contexts.
 
 Lemma well_typedness_expr Γ e τ : (Γ ⊢ₛ e : τ) →
     map embed_type Γ ⊢ₜ embed_expr e : embed_type τ.
@@ -17,7 +17,7 @@ Proof.
     by apply Unfold_typed.
 Qed.
 
-Lemma well_typedness_ctx_item Γ τ (pτ : stlc_mu.types.TClosed τ) Γ' τ' C :
+Lemma well_typedness_ctx_item Γ (τ : stlc_mu.types.type) (pτ : Closed τ) Γ' τ' C :
   stlc_mu.contexts.typed_ctx_item C Γ τ Γ' τ' →
   typed_ctx_item (embed_ctx_item C) (map embed_type Γ) (embed_type τ) (map embed_type Γ') (embed_type τ').
 Proof.
@@ -42,7 +42,7 @@ Proof.
   - rewrite embd_unfold_comm. apply TP_CTX_Unfold.
 Qed.
 
-Lemma well_typedness_ctx Γ τ (pτ : stlc_mu.types.TClosed τ) Γ' τ' C :
+Lemma well_typedness_ctx Γ (τ : stlc_mu.types.type) (pτ : Closed τ) Γ' τ' C :
   stlc_mu.contexts.typed_ctx C Γ τ Γ' τ' →
   typed_ctx (embed_ctx C) (map embed_type Γ) (embed_type τ) (map embed_type Γ') (embed_type τ').
 Proof.

@@ -5,7 +5,7 @@ From iris.algebra Require Import auth frac agree gmap.
 From iris.proofmode Require Import tactics.
 From iris.base_logic Require Export gen_heap.
 From iris.program_logic Require Import language.
-From fae_gtlc_mu.cast_calculus Require Export lang lang_props.
+From fae_gtlc_mu.cast_calculus Require Export lang lang_lemmas.
 Import uPred.
 
 Class implG Σ := ImplG { (* resources for the implementation side *)
@@ -18,6 +18,9 @@ Instance implG_irisG `{implG Σ} : irisG lang Σ := {
   fork_post _ := True%I;
 }.
 Global Opaque iris_invG.
+
+Instance expr_eq (e e' : expr) : Decision (e = e').
+Proof. solve_decision. Qed.
 
 Section lang_rules.
   Context `{implG Σ}.

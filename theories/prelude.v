@@ -1,11 +1,6 @@
 Require Export Utf8_core.
 From iris.algebra Require Export base.
 
-(* Definition iff := λ A B : Type, (A -> B)  (B -> A). *)
-Definition TDecision : Type -> Type := λ P : Type, sum P (P -> False).
-
-(* Definition TNeg : Type -> Type := λ P : Type, P → False. *)
-
 From Autosubst Require Export Autosubst.
 
 Section Autosubst_Lemmas.
@@ -40,15 +35,8 @@ Section Autosubst_Lemmas.
       + asimpl. rewrite IHn. by asimpl. lia.
   Qed.
 
+  Definition Closed (x : term) := ∀ σ, x.[σ] = x.
+
+  Definition NClosed n (x : term) := ∀ σ, x.[upn n σ] = x.
+
 End Autosubst_Lemmas.
-
-Inductive ForallT {A : Type} (P : A → Type) : list A → Type :=
-    ForallT_nil : ForallT P []
-  | ForallT_cons : ∀ (x : A) (l : list A), P x → ForallT P l → ForallT P (x :: l).
-
-Lemma rewrite_for_context_weakening {A} (Γ : list A) τ : τ :: Γ = [τ] ++ Γ.
-by simpl.
-Qed.
-
-Definition update {A : Type} (l : list A) (i : nat) (a : A) : list A :=
-  alter (fun _ => a) i l.

@@ -1,7 +1,5 @@
-From fae_gtlc_mu Require Export stlc_mu.lang.
-From fae_gtlc_mu Require Export stlc_mu.typing.
-
-(* Infix "→" := TArrow : type_scope. *)
+From fae_gtlc_mu.stlc_mu Require Import types types_notations.
+Require Import fae_gtlc_mu.prelude.
 
 Definition Universe_body : type :=
   (
@@ -20,6 +18,5 @@ Definition Universe : type :=
 Definition Universe_unfolded : type :=
   Universe_body.[Universe/]%type.
 
-Lemma Universe_closed : TClosed Universe.
+Lemma Universe_closed : Closed Universe.
 Proof. intro σ. by asimpl. Qed.
-(* Coercion App : expr >-> Funclass. *)

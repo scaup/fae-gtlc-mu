@@ -3,10 +3,10 @@ From fae_gtlc_mu.cast_calculus Require Export lang.
 From iris.algebra Require Import list.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Import lifting.
-From fae_gtlc_mu.backtranslation Require Export cast_help.general cast_help.extract cast_help.embed.
+From fae_gtlc_mu.backtranslation Require Export cast_help.general_def cast_help.extract cast_help.embed.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 From fae_gtlc_mu.refinements.gradual_static Require Export logical_relation resources_left resources_right compat_easy compat_cast.defs.
-From fae_gtlc_mu.cast_calculus Require Export consistency.structural types.
+From fae_gtlc_mu.cast_calculus Require Export types.
 From fae_gtlc_mu.refinements.gradual_static.compat_cast Require Export between_rec prod_prod sum_sum arrow_arrow identity tau_star ground_star tau_star star_tau star_ground.
 
 Section compat_cast_all.
@@ -18,7 +18,7 @@ Section compat_cast_all.
   Local Hint Resolve to_of_val : core.
   Local Hint Resolve cast_calculus.lang.to_of_val : core.
 
-  Lemma back_cast_ar_all {A} {τi τf} (pC : cons_struct A τi τf) : back_cast_ar pC.
+  Lemma back_cast_ar_all {A} {τi τf} (pC : alternative_consistency A τi τf) : back_cast_ar pC.
   Proof.
     induction pC.
     - by apply back_cast_ar_star_ground.
@@ -36,7 +36,7 @@ Section compat_cast_all.
 
   Notation "'` H" := (bin_log_related_alt H) (at level 8).
 
-  Lemma bin_log_related_back_cast Γ e e' τi τf (pC : cons_struct [] τi τf)
+  Lemma bin_log_related_back_cast Γ e e' τi τf (pC : alternative_consistency [] τi τf)
       (IHHtyped : Γ ⊨ e ≤log≤ e' : τi) :
     Γ ⊨ Cast e τi τf ≤log≤ 𝓕c pC [] e' : τf.
   Proof.

@@ -1,11 +1,10 @@
-From fae_gtlc_mu.refinements.static_gradual Require Export logical_relation resources_right compat_easy help_left compat_cast.defs.
+From fae_gtlc_mu.refinements.static_gradual Require Export logical_relation resources_right compat_easy compat_cast.defs.
 From fae_gtlc_mu.cast_calculus Require Export types typing.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 From iris.algebra Require Import list.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Import lifting.
-From fae_gtlc_mu.cast_calculus Require Export consistency.structural.
-From fae_gtlc_mu.backtranslation Require Export cast_help.general cast_help.extract cast_help.embed.
+From fae_gtlc_mu.backtranslation Require Export cast_help.general_def cast_help.extract cast_help.embed.
 From fae_gtlc_mu.cast_calculus Require Export lang types.
 
 Section compat_cast_identity.
@@ -30,7 +29,7 @@ Section compat_cast_identity.
 
 
   Lemma back_cast_ar_base_base:
-    ∀ A : list (type * type), back_cast_ar (consBaseBase A).
+    ∀ A : list (type * type), back_cast_ar (atomic_Base A).
   Proof.
     intros A.
     rewrite /back_cast_ar. iIntros (ei' K' v v' fs) "(#Hfs & #Hvv' & #Hei' & Hv')".

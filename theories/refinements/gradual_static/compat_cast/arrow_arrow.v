@@ -3,10 +3,10 @@ From fae_gtlc_mu.cast_calculus Require Export lang.
 From iris.algebra Require Import list.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Import lifting.
-From fae_gtlc_mu.backtranslation Require Export cast_help.general cast_help.extract cast_help.embed.
+From fae_gtlc_mu.backtranslation Require Export cast_help.general_def_lemmas cast_help.extract cast_help.embed.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 From fae_gtlc_mu.refinements.gradual_static Require Export logical_relation resources_left resources_right compat_easy compat_cast.defs.
-From fae_gtlc_mu.cast_calculus Require Export consistency.structural types.
+From fae_gtlc_mu.cast_calculus Require Export types.
 
 Section compat_cast_arrow_arrow.
   Context `{!implG Σ,!specG Σ}.
@@ -30,9 +30,9 @@ Section compat_cast_arrow_arrow.
   Hint Extern 5 (AsVal _) => eexists; simpl; try done; eapply cast_calculus.lang.of_to_val; fast_done : typeclass_instances.
 
   Lemma back_cast_ar_arrow_arrow:
-    ∀ (A : list (type * type)) (τ1 τ1' τ2 τ2' : type) (pC1 : cons_struct A τ1' τ1) (pC2 : cons_struct A τ2 τ2')
+    ∀ (A : list (type * type)) (τ1 τ1' τ2 τ2' : type) (pC1 : alternative_consistency A τ1' τ1) (pC2 : alternative_consistency A τ2 τ2')
       (IHpC1 : back_cast_ar pC1) (IHpC2 : back_cast_ar pC2),
-      back_cast_ar (consTArrowTArrow A τ1 τ1' τ2 τ2' pC1 pC2).
+      back_cast_ar (throughArrow A τ1 τ1' τ2 τ2' pC1 pC2).
   Proof.
     intros A τ1 τ1' τ2 τ2' pC1 pC2 IHpC1 IHpC2.
     rewrite /back_cast_ar. iIntros (ei' K' v v' fs) "(#Hfs & #Hvv' & #Hei' & Hv')".

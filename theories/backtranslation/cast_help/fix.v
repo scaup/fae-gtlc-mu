@@ -1,20 +1,39 @@
-From fae_gtlc_mu Require Export stlc_mu.lang.
-From fae_gtlc_mu Require Export stlc_mu.typing.
+From fae_gtlc_mu.stlc_mu Require Export lang typing typing_lemmas.
+From fae_gtlc_mu.stlc_mu Require Import typing_lemmas.
 
 Definition Fix (f : expr) : expr :=
   (Unfold (Fold (Lam ((f.[ren (+1)]) (Lam ((Unfold (Var 1)) (Var 1) (Var 0)))))))
     (Fold (Lam (f.[ren (+1)] (Lam ((Unfold (Var 1)) (Var 1) (Var 0)))))).
+
+Lemma Unfold_Fold_typed Γ e τ :
+  Γ ⊢ₛ e : τ → Γ ⊢ₛ Unfold (Fold e) : τ.
+Proof.
+  intro.
+  rewrite -(typed_closed H (TRec τ .: ids)).
+  apply Unfold_typed.
+  apply Fold_typed.
+  by rewrite (typed_closed H (TRec τ .: ids)).
+Qed.
+
+Lemma Unfold_typed_eq Γ e τb τ' : (τb.[TRec τb/] = τ') →
+  Γ ⊢ₛ e : (TRec τb) →
+  Γ ⊢ₛ Unfold e : τ'.
+Proof. intros eq d. rewrite -eq. by apply Unfold_typed. Qed.
+
+Lemma rewrite_typed {Γ e τ τ'} :
+  Γ ⊢ₛ e : τ → τ = τ' → Γ ⊢ₛ e : τ'.
+Proof. intros P eq. by simplify_eq. Qed.
 
 Lemma Fix_typed Γ τa τr f :
   (Γ ⊢ₛ f : TArrow (TArrow τa τr) (TArrow τa τr))
   -> (Γ ⊢ₛ Fix f : TArrow τa τr).
 Proof.
   intros H.
-  assert (pτa : TClosed τa). { intro σ.
-    assert (x : TClosed (TArrow (TArrow τa τr) (TArrow τa τr))). by eapply typed_closed.
+  assert (pτa : Closed τa). { intro σ.
+    assert (x : Closed (TArrow (TArrow τa τr) (TArrow τa τr))). by eapply typed_closed.
     specialize (x σ). inversion x. by repeat rewrite H1. }
-  assert (pτr : TClosed τr). { intro σ.
-    assert (x : TClosed (TArrow (TArrow τa τr) (TArrow τa τr))). by eapply typed_closed.
+  assert (pτr : Closed τr). { intro σ.
+    assert (x : Closed (TArrow (TArrow τa τr) (TArrow τa τr))). by eapply typed_closed.
     specialize (x σ). inversion x. by repeat rewrite H2. }
   apply App_typed with (τ1 := (TRec (TArrow (TVar 0) (TArrow τa τr)))).
   - apply Unfold_Fold_typed.
@@ -40,10 +59,8 @@ Proof.
   Unshelve. all: ((try intro σ); asimpl; by repeat rewrite pτa pτr).
 Qed.
 
-
 Lemma Fix_subs_rewrite f σ : (Fix f).[σ] = Fix (f.[σ]).
 Proof.
   rewrite /Fix.
   by asimpl.
 Qed.
-

@@ -3,7 +3,12 @@
 This repo contains a Coq/Iris proof of the fact that the embedding of STLCmu (the simply typed lambda calculus with equirecursive types) into GTLCmu (its gradualization) is fully abstract.
 It accompanies the paper  "Fully abstract from Static to Gradual".
 
-## Requirements for compiling
+## VM-Image for artifact evaluation
+
+For the purpose of artifact evaluation, a vm-image was created and can be found at ...
+It contains the compiled Coq code of this repository, some tools to interact with the Coq code (e.g. CoqIDE), and extra documentation.
+
+## Requirements for compiling coq code
 
 - Coq: 8.11.1
 - Coq libraries
@@ -13,34 +18,38 @@ It accompanies the paper  "Fully abstract from Static to Gradual".
 
 ## Getting started quickly with opam
 
-Get opam: http://opam.ocaml.org/doc/Install.html
-> The quickest way to get the latest opam up and working is to run this script:
+An easy way to get the correct version of Coq and the required libraries is by using opam.
+
+Get opam (http://opam.ocaml.org/doc/Install.html), by fetching and running the install script.
+You need curl for this (e.g. `apt install curl`).
 ```
 sh <(curl -sL https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh)
 ```
-Don't forget to add the directory of installation to your path!
+Don't forget to add the directory of installation to your path such that you don't have to refer to opam by its full path.
 Initialize opam.
 ```
 $ opam init
 $ eval $(opam env) # optionally; see output of previous command
 ```
 Create a new switch with the ocaml-base-compiler.4.09.0.
+To do this, you need some base dependencies: make m4 cc (e.g. `apt install make m4 gcc`).
 ```
 $ opam switch create fae ocaml-base-compiler.4.09.0
 $ opam switch # output should be like: → fae
 ``` 
 Add coq and iris-dev repositories to this switch.
+For the iris-dev repo, you need to have git (e.g. `apt install git`).
 ```
 $ opam repo add coq-released https://coq.inria.fr/opam/released
 $ opam repo add iris-dev https://gitlab.mpi-sws.org/iris/opam.git
 ``` 
-Install Coq and the required libraries.
+Install the correct version of Coq and the required libraries.
 ```
 $ opam install coq.8.11.1 coq-stdpp.dev.2020-04-03.1.eeef6250 coq-iris.dev.2020-04-07.7.64bed0ca coq-autosubst.dev.coq86
 ```
 Optionally, you can also install coqide, a GUI to interact with the Coq code.
 ```
-$ opam install coqide.8.11.1
+$ opam install coqide.8.11.1 # will likely ask you to install missing dependencies
 ```
 Verify that installation went OK
 ```
@@ -54,38 +63,51 @@ Compile by running `make` in the root of this project.
 ```
 $ make
 ```
-## Verifying the main result only
-Go through the following files if you only want to verify the fully abstract embedding claim.
+## Verifying the full abstraction claim
 
-Files related to the definition of stlc_mu:
-```
-theories/stlc_mu/lang.v # dynamics
-theories/stlc_mu/types.v # types
-theories/stlc_mu/typing.v # typing derivations
-theories/stlc_mu/contexts.v # (general) contexts + definition contextual equivalence
-```
-Files related to the definition of the cast calculus:
-```
-theories/cast_calculus/types.v # types
-theories/cast_calculus/consistency/standard.v # the (conventional) consistency relation
-theories/cast_calculus/lang.v # dynamics
-theories/cast_calculus/typing.v # typing derivations
-theories/cast_calculus/contexts.v # contexts  + definition contextual equivalence
-```
-Files related to the embedding from stlc_mu to the cast_calculus:
-```
-theories/embedding/expressions.v
-theories/embedding/contexts.v
-theories/embedding/types.v
-theories/embedding/well_typedness.v # well-typedness of embedding
-```
-The file `theories/fae.v` contains the FAE-result.
-Theorem `ctx_eq_preservation` proofs preservation of equivalences.
-Theorem `ctx_eq_reflection` proofs reflection of equivalences.
+This section describes the files necessary to go through in order to verify that full abstraction is indeed proven for the embedding from STLCmu to GTLCmu.
+
+### Verifying definition of the simply typed lambda calculus with iso-recursive types
+
+The links in this section are relative to `theories/stlc_mu/`.
+- [theories/stlc_mu/lang.v](lang.v) starts by defining the expressions and values;
+for this we use De Bruijn indices, utilizing [https://www.ps.uni-saarland.de/autosubst/doc/manual.pdf](Autosubst) to do so (detailed knowledge is not required).
+Afterwards, it defines evaluation contexts (of depth 1) and head step reductions.
+The final language is defined using the `EctxiLanguage` construct from the Iris library; essentially, it naturally defines the general evaluation contexts and the total reduction relation.
+Lastly, we define the `Halts` predicative for expressions.
+- [theories/stlc_mu/types.v](types.v) defines the static types (again using Autosubst).
+- [theories/stlc_mu/typing.v] defines the typing rules for expressions.
+We restrict our typing derivations so that they only treat meaningful types; the closed types (types with no free variables) (see [theories/prelude.v] for the formal definition of closedness).
+- [theories/stlc_mu/contexts.v](contexts.v) defines general contexts (not evaluation contexts) together with their typing rules.
+- [theories/stlc_mu/ctx_equiv.v](ctx_equiv.v) defines contextual equivalence.
+
+### Verifying definition of the cast calculus of GTLCmu
+
+The links in this section are relative to `theories/cast_calculus/`.
+- [theories/cast_calculus/types.v](types.v) defines the gradual types, ground types, the shape operator (S in figure 2 of paper) and type `ICP` to encode inert pairs (two function types or a ground and unknown type) which is used in [theories/cast_calculus/lang.v](lang.v) to define which expressions are values.
+- [theories/cast_calculus/types_notations.v] defines some handy notations for types.
+- [theories/cast_calculus/lang.v](lang.v) defines expressions, values, evaluation contexts, head reductions, total reduction, and a `Halts` predicate on expressions.
+- [theories/cast_calculus/consistency.v](consistency.v) defines the conventional consistency relation (figure 1 in paper)
+- [theories/cast_calculus/typing.v](typing.v) defines the typing rules for expressions.
+We restrict our typing derivations so that they only treat meaningful types; the closed types (types with no free variables) (see [theories/prelude.v] for the formal definition of closedness).
+- [theories/cast_calculus/contexts.v](contexts.v) defines general contexts (not evaluation contexts) together with their typing rules.
+- [theories/cast_calculus/ctx_equiv.v](ctx_equiv.v) Defines contextual equivalence.
+
+### Verifying the embedding from STLCmu into the cast calculus
+
+- [theories/embedding/expressions.v] defines the embedding on expressions
+- [theories/embedding/contexts.v] defines the embedding on contexts
+- [theories/embedding/types.v] defines the embedding on types
+- [theories/embedding/well_typedness.v] proves the preservation of well-typedness after embedding
+
+### Verifying full abstraction claim
+
+The file [theories/fae.v] proves full abstraction of the embedding.
+Theorem `ctx_eq_preservation` proves preservation of equivalences, and `ctx_eq_reflection` proves reflection of equivalences.
 
 ## Proof structure (where's what?)
-Cool, so you're actually interested in the proof itself!
 
+Cool, so you're actually interested in the proof itself!
 The following files relate to the backtranslation:
 ```
 theories/backtranslation/cast_help/universe.v # defines universe type
@@ -124,3 +146,7 @@ The file `theories/fae.v` brings everything together.
 ## Credits
 Lots of code has its origin in the following;
 https://gitlab.mpi-sws.org/iris/examples/-/tree/master/theories/logrel/F_mu_ref_conc
+
+
+
+curl make m4 gcc git

@@ -1,5 +1,6 @@
-From fae_gtlc_mu.cast_calculus Require Export lang types typing.
+From fae_gtlc_mu.cast_calculus Require Export lang types typing_lemmas.
 
+(** Defines a context of depth 1 *)
 Inductive ctx_item :=
   | CTX_Lam
   | CTX_AppL (e2 : expr)
@@ -21,6 +22,7 @@ Inductive ctx_item :=
   (* Casts *)
   | CTX_Cast (τi τf : type).
 
+(** Filling in a term in such a context of depth 1 *)
 Fixpoint fill_ctx_item (ctx : ctx_item) (e : expr) : expr :=
   match ctx with
   | CTX_Lam => Lam e
@@ -40,13 +42,15 @@ Fixpoint fill_ctx_item (ctx : ctx_item) (e : expr) : expr :=
   | CTX_Cast τi τf => Cast e τi τf
   end.
 
+(** A general context is now represented by a list of these superficial contexts *)
 Definition ctx := list ctx_item.
 
+(** Filling in a term in these general contexts *)
 Definition fill_ctx (K : ctx) (e : expr) : expr := foldr fill_ctx_item e K.
 
-(** typed ctx *)
+(** Typing derivation for contexts of depth 1 *)
 Inductive typed_ctx_item : ctx_item → list type → type → list type → type → Prop :=
-  | TP_CTX_Lam Γ τ (pτ : TClosed τ) τ' :
+  | TP_CTX_Lam Γ τ (pτ : Closed τ) τ' :
      typed_ctx_item CTX_Lam (τ :: Γ) τ' Γ (TArrow τ τ')
   | TP_CTX_AppL Γ e2 τ τ' :
      typed Γ e2 τ →
@@ -64,9 +68,9 @@ Inductive typed_ctx_item : ctx_item → list type → type → list type → typ
      typed_ctx_item CTX_Fst Γ (TProd τ τ') Γ τ
   | TP_CTX_Snd Γ τ τ' :
      typed_ctx_item CTX_Snd Γ (TProd τ τ') Γ τ'
-  | TP_CTX_InjL Γ τ τ' (pτ' : TClosed τ') :
+  | TP_CTX_InjL Γ τ τ' (pτ' : Closed τ') :
      typed_ctx_item CTX_InjL Γ τ Γ (TSum τ τ')
-  | TP_CTX_InjR Γ τ (pτ : TClosed τ) τ' :
+  | TP_CTX_InjR Γ τ (pτ : Closed τ) τ' :
      typed_ctx_item CTX_InjR Γ τ' Γ (TSum τ τ')
   | TP_CTX_CaseL Γ e1 e2 τ1 τ2 τ' :
      typed (τ1 :: Γ) e1 τ' → typed (τ2 :: Γ) e2 τ' →
@@ -81,16 +85,16 @@ Inductive typed_ctx_item : ctx_item → list type → type → list type → typ
      typed_ctx_item CTX_Fold Γ τ.[(TRec τ)/] Γ (TRec τ)
   | TP_CTX_Unfold Γ τ :
      typed_ctx_item CTX_Unfold Γ (TRec τ) Γ τ.[(TRec τ)/]
-  | TP_CTX_Cast Γ τi τf (pτf : TClosed τf):
-      cons_stand_open τi τf ->
+  | TP_CTX_Cast Γ τi τf (pτf : Closed τf):
+      consistency_open τi τf ->
       typed_ctx_item (CTX_Cast τi τf) Γ τi Γ τf.
 
 (* We don't enforce the hole-type or output-type to be closed *)
 (* But we do have that closeness of the hole-type implies closeness of the output type *)
-(* We use contexts for well-typed terms, so this is sufficient *)
+(* We'll only fill in contexts with well-typed terms, so this is sufficient *)
 
 Lemma typed_ctx_item_closedness k Γ τ Γ' τ' :
-  TClosed τ → typed_ctx_item k Γ τ Γ' τ' → TClosed τ'.
+  Closed τ → typed_ctx_item k Γ τ Γ' τ' → Closed τ'.
 Proof.
   intro pτ. destruct 1; try done.
   by apply TArrow_closed.
@@ -108,12 +112,12 @@ Proof.
   by apply TRec_closed_unfold.
 Qed.
 
-
 Lemma typed_ctx_item_typed k Γ τ Γ' τ' e :
   typed Γ e τ → typed_ctx_item k Γ τ Γ' τ' →
   typed Γ' (fill_ctx_item k e) τ'.
 Proof. induction 2; simpl; eauto using typed. Qed.
 
+(** Typing derivation of general contexts *)
 Inductive typed_ctx: ctx → list type → type → list type → type → Prop :=
   | TPCTX_nil Γ τ :
      typed_ctx nil Γ τ Γ τ
@@ -122,40 +126,10 @@ Inductive typed_ctx: ctx → list type → type → list type → type → Prop 
      typed_ctx K Γ1 τ1 Γ2 τ2 →
      typed_ctx (k :: K) Γ1 τ1 Γ3 τ3.
 
-(* Again, we don't enforce the hole-type or output-type to be closed *)
-(* But we do have that closeness of the hole-type implies closeness of the output type *)
-(* We use contexts for well-typed terms, so this is sufficient *)
-
 Lemma typed_ctx_closedness K Γ τ Γ' τ' :
-  TClosed τ → typed_ctx K Γ τ Γ' τ' → TClosed τ'.
+  Closed τ → typed_ctx K Γ τ Γ' τ' → Closed τ'.
 Proof. induction 2. auto. eauto using typed_ctx_item_closedness. Qed.
 
 Lemma typed_ctx_typed K Γ τ Γ' τ' e :
   typed Γ e τ → typed_ctx K Γ τ Γ' τ' → typed Γ' (fill_ctx K e) τ'.
 Proof. induction 2; simpl; eauto using typed_ctx_item_typed. Qed.
-
-Lemma typed_ctx_n_closed K Γ τ Γ' τ' e :
-  (∀ f, e.[upn (length Γ) f] = e) → typed_ctx K Γ τ Γ' τ' →
-  ∀ f, (fill_ctx K e).[upn (length Γ') f] = (fill_ctx K e).
-Proof.
-  intros H1 H2; induction H2; simpl; auto.
-  induction H => f; asimpl; simpl in *;
-    repeat match goal with H : _ |- _ => rewrite fmap_length in H end;
-    try f_equal;
-    eauto using typed_n_closed;
-    try match goal with H : _ |- _ => eapply (typed_n_closed _ _ _ H) end.
-Qed.
-
-Definition ctx_refines (Γ : list type)
-    (e e' : expr) (τ : type) := ∀ K, typed_ctx K Γ τ [] TUnit →
-      Halts (fill_ctx K e) → Halts (fill_ctx K e').
-Notation "Γ ⊨ e '≤ctx≤' e' : τ" :=
-  (ctx_refines Γ e e' τ) (at level 74, e, e', τ at next level).
-
-Definition ctx_equiv (Γ : list type)
-    (e e' : expr) (τ : type) := Γ ⊢ₜ e : τ ∧ Γ ⊢ₜ e' : τ ∧
-  ∀ K, typed_ctx K Γ τ [] TUnit →
-  (Halts (fill_ctx K e) → Halts (fill_ctx K e')) ∧
-  (Halts (fill_ctx K e') → Halts (fill_ctx K e)).
-Notation "Γ ⊨ e '=ctx-' e' : τ" :=
-  (ctx_equiv Γ e e' τ) (at level 74, e, e', τ at next level).

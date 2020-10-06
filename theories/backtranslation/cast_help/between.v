@@ -1,6 +1,6 @@
-From fae_gtlc_mu.stlc_mu Require Export typing lang lib.fix.
-From fae_gtlc_mu Require Export prelude.
-From Coq Require Export List.
+From fae_gtlc_mu.cast_calculus Require Export types typing lang.
+From fae_gtlc_mu.stlc_mu Require Import types_notations typing typing_lemmas.
+From fae_gtlc_mu.backtranslation Require Export types cast_help.fix.
 
 (** Between sums, products, recursive types, arrow types *)
 
@@ -30,10 +30,10 @@ Lemma between_TSum_typed Γ (τ1 τ2 τ1' τ2' : type) (f1 f2 : expr)
       (d2 : Γ ⊢ₛ f2 : (TArrow τ2 τ2')) :
   Γ ⊢ₛ between_TSum f1 f2 : (TArrow (τ1 + τ2) (τ1' + τ2'))%type.
 Proof.
-  assert (pτ1 : TClosed τ1). by apply (TArrow_closed1 (typed_closed d1)).
-  assert (pτ2 : TClosed τ2). by apply (TArrow_closed1 (typed_closed d2)).
-  assert (pτ1' : TClosed τ1'). by apply (TArrow_closed2 (typed_closed d1)).
-  assert (pτ2' : TClosed τ2'). by apply (TArrow_closed2 (typed_closed d2)).
+  assert (pτ1 : Closed τ1). by apply (TArrow_closed1 (typed_closed d1)).
+  assert (pτ2 : Closed τ2). by apply (TArrow_closed1 (typed_closed d2)).
+  assert (pτ1' : Closed τ1'). by apply (TArrow_closed2 (typed_closed d1)).
+  assert (pτ2' : Closed τ2'). by apply (TArrow_closed2 (typed_closed d2)).
   apply Lam_typed. by apply TSum_closed.
   eapply Case_typed.
   apply Var_typed; auto. by apply TSum_closed.
@@ -60,10 +60,10 @@ Qed.
 Lemma between_TProd_typed Γ (τ1 τ2 τ1' τ2' : type) (f1 f2 : expr) (d1 : Γ ⊢ₛ f1 : (TArrow τ1 τ1')) (d2 : Γ ⊢ₛ f2 : (TArrow τ2 τ2')) :
   Γ ⊢ₛ between_TProd f1 f2 : (TArrow (τ1 × τ2) (τ1' × τ2'))%type.
 Proof.
-  assert (pτ1 : TClosed τ1). by apply (TArrow_closed1 (typed_closed d1)).
-  assert (pτ2 : TClosed τ2). by apply (TArrow_closed1 (typed_closed d2)).
-  assert (pτ1' : TClosed τ1'). by apply (TArrow_closed2 (typed_closed d1)).
-  assert (pτ2' : TClosed τ2'). by apply (TArrow_closed2 (typed_closed d2)).
+  assert (pτ1 : Closed τ1). by apply (TArrow_closed1 (typed_closed d1)).
+  assert (pτ2 : Closed τ2). by apply (TArrow_closed1 (typed_closed d2)).
+  assert (pτ1' : Closed τ1'). by apply (TArrow_closed2 (typed_closed d1)).
+  assert (pτ2' : Closed τ2'). by apply (TArrow_closed2 (typed_closed d2)).
   apply Lam_typed. by apply TProd_closed.
   apply Pair_typed.
   eapply App_typed.
@@ -93,9 +93,9 @@ Lemma between_TArrow_typed Γ (τ1 τ2 τ3 τ4 : type) (ca cr : expr)
       (dr : Γ ⊢ₛ cr : (TArrow τ2 τ4)) :
   Γ ⊢ₛ between_TArrow ca cr : (TArrow (TArrow τ1 τ2) (TArrow τ3 τ4))%type.
 Proof.
-  assert (pτ1 : TClosed τ1). by apply (TArrow_closed2 (typed_closed da)).
-  assert (pτ2 : TClosed τ2). by apply (TArrow_closed1 (typed_closed dr)).
-  assert (pτ3 : TClosed τ3). by apply (TArrow_closed1 (typed_closed da)).
+  assert (pτ1 : Closed τ1). by apply (TArrow_closed2 (typed_closed da)).
+  assert (pτ2 : Closed τ2). by apply (TArrow_closed1 (typed_closed dr)).
+  assert (pτ3 : Closed τ3). by apply (TArrow_closed1 (typed_closed da)).
   repeat apply Lam_typed; try done; try by apply TArrow_closed.
   apply App_typed with (τ1 := τ2).
   auto. apply up_type_two. apply dr. apply App_typed with (τ1 := τ1).
@@ -137,8 +137,8 @@ Lemma between_TRec_typed Γ (τi τf : type) (f : expr)
       (d : (TArrow (TRec τi) (TRec τf):: Γ) ⊢ₛ f : TArrow τi.[TRec τi/] τf.[TRec τf/]) :
   Γ ⊢ₛ between_TRec f : TArrow (TRec τi) (TRec τf)%type.
 Proof.
-  assert (Hi : TClosed (TRec τi)). apply (closed_Fold_typed_help _ (TArrow_closed1 (typed_closed d))).
-  assert (Hf : TClosed (TRec τf)). apply (closed_Fold_typed_help _ (TArrow_closed2 (typed_closed d))).
+  assert (Hi : Closed (TRec τi)). apply (closed_Fold_typed_help _ (TArrow_closed1 (typed_closed d))).
+  assert (Hf : Closed (TRec τf)). apply (closed_Fold_typed_help _ (TArrow_closed2 (typed_closed d))).
   apply Lam_typed; auto.
   apply App_typed with (τ1 := TRec τi).
   apply Fix_typed; auto.
@@ -147,13 +147,10 @@ Proof.
   apply Fold_typed.
   apply App_typed with (τ1 := τi.[(TRec τi)/]).
   apply up_type_one.
-  rewrite rewrite_for_context_weakening in d.
-  rewrite (rewrite_for_context_weakening Γ).
-  rewrite rewrite_for_context_weakening.
+  change (([TArrow (TRec τi) (TRec τf)] ++ [TRec τi] ++ Γ ⊢ₛ f.[upn 1 (ren (+1))] : TArrow τi.[TRec τi/] τf.[TRec τf/])).
   apply context_gen_weakening.
   apply d.
   apply Unfold_typed.
   apply Var_typed; auto.
   apply Var_typed; auto.
 Qed.
-

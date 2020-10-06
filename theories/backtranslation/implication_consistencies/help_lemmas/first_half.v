@@ -1,7 +1,8 @@
 From stdpp Require Import base list.
 From Autosubst Require Export Autosubst.
 Require Export Utf8_core.
-From fae_gtlc_mu.cast_calculus Require Import types consistency.standard consistency.equivalence.intermediate upper_bound.
+From fae_gtlc_mu.backtranslation.implication_consistencies.help_lemmas Require Import intermediate upper_bound.
+From fae_gtlc_mu.cast_calculus Require Export types types_notations types_lemmas consistency consistency_lemmas.
 Require Import Relation_Operators.
 Require Import Transitive_Closure.
 From Coq.Wellfounded Require Import Lexicographic_Product Union.
@@ -60,8 +61,8 @@ Require Import JMeq.
 
 (** TODO; remove program fixpoint... *)
 
-(* Lemma struct_validity (A : list (type * type)) (pA : Forall (fun p => TClosed p.1 ∧ TClosed p.2) A) *)
-(*       τ (pτC : TClosed τ) τ' (pτ'C : TClosed τ') (pStand : cons_stand τ τ') : cons_struct_pre A τ τ'. *)
+(* Lemma struct_validity (A : list (type * type)) (pA : Forall (fun p => Closed p.1 ∧ Closed p.2) A) *)
+(*       τ (pτC : Closed τ) τ' (pτ'C : Closed τ') (pStand : consistency τ τ') : alternative_consistency_pre A τ τ'. *)
 (* Proof. *)
 
 Inductive Cat : type → Type :=
@@ -94,8 +95,8 @@ Proof.
 Qed.
 
 
-Program Fixpoint struct_validity (A : list (type * type)) (pA : Forall (fun p => TClosed p.1 ∧ TClosed p.2) A) τ (pτC : TClosed τ) τ' (pτ'C : TClosed τ') (pStand : cons_stand_open τ τ')
-        {measure (existT (upper_bound A τ τ') (size_pair (τ , τ'))) lexord} : cons_struct_pre A τ τ' :=
+Program Fixpoint struct_validity (A : list (type * type)) (pA : Forall (fun p => Closed p.1 ∧ Closed p.2) A) τ (pτC : Closed τ) τ' (pτ'C : Closed τ') (pStand : consistency_open τ τ')
+        {measure (existT (upper_bound A τ τ') (size_pair (τ , τ'))) lexord} : alternative_consistency_pre A τ τ' :=
   match pStand with
   | GenSymUnit => consp_BaseBase A
   | GenSymUnknownL τr => _
@@ -110,13 +111,13 @@ Program Fixpoint struct_validity (A : list (type * type)) (pA : Forall (fun p =>
                      (struct_validity A pA τ2 ltac:(simplify_eq; by apply (TSum_closed2 pτC)) τ2' ltac:(simplify_eq; by apply (TSum_closed2 pτ'C)) s2)
   | GenSymArrow τ1 τ1' τ2 τ2' s1 s2 =>
     consp_TArrowTArrow A τ1 τ1' τ2 τ2'
-                     (struct_validity A pA τ1' ltac:(simplify_eq; by apply (TArrow_closed1 pτ'C)) τ1 ltac:(simplify_eq; by apply (TArrow_closed1 pτC)) (cons_stand_open_sym s1))
+                     (struct_validity A pA τ1' ltac:(simplify_eq; by apply (TArrow_closed1 pτ'C)) τ1 ltac:(simplify_eq; by apply (TArrow_closed1 pτC)) (consistency_open_sym s1))
                      (struct_validity A pA τ2 ltac:(simplify_eq; by apply (TArrow_closed2 pτC)) τ2' ltac:(simplify_eq; by apply (TArrow_closed2 pτ'C)) s2)
   | GenSymVar i => ltac:(simplify_eq; exfalso; apply (no_var_is_closed i pτC))
   | GenSymRec τ τ' P => _
     (* match decide (exists (i : nat), A !! i = Some (TRec τ , TRec τ')) with *)
-    (* | left pYes => consTRecTRecUseCall A τ τ' _ _ *)
-    (* | right pNo => consTRecTRecExposeCall A τ τ' _ (struct_validity ((TRec τ, TRec τ') :: A) τ.[TRec τ/] ltac:(simplify_eq; by apply (TRec_closed_unfold pτC)) τ'.[TRec τ'/] ltac:(simplify_eq; by apply (TRec_closed_unfold pτ'C)) (cons_stand_unfold P)) *)
+    (* | left pYes => atomic_UseRecursion A τ τ' _ _ *)
+    (* | right pNo => exposeRecursiveCAll A τ τ' _ (struct_validity ((TRec τ, TRec τ') :: A) τ.[TRec τ/] ltac:(simplify_eq; by apply (TRec_closed_unfold pτC)) τ'.[TRec τ'/] ltac:(simplify_eq; by apply (TRec_closed_unfold pτ'C)) (consistency_unfold P)) *)
     (* end *)
   end.
 
@@ -213,7 +214,7 @@ Proof.
     simplify_eq.
     apply (struct_validity ((TRec τ, TRec τ') :: A)). constructor; simpl; auto. apply (TRec_closed_unfold pτC). apply (TRec_closed_unfold pτ'C).
     (* apply (struct_validity ((TRec τ, TRec τ') :: A) τ.[TRec τ/] (TRec_closed_unfold pτC) τ'.[TRec τ'/] (TRec_closed_unfold pτ'C)). *)
-    by apply cons_stand_open_unfold.
+    by apply consistency_open_unfold.
     { apply ord_left. apply upper_bound_lt_rec_rec; auto. }
 Qed.
 

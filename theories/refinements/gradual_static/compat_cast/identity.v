@@ -3,10 +3,10 @@ From fae_gtlc_mu.cast_calculus Require Export lang.
 From iris.algebra Require Import list.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Import lifting.
-From fae_gtlc_mu.backtranslation Require Export cast_help.general cast_help.extract cast_help.embed.
+From fae_gtlc_mu.backtranslation.cast_help Require Export general_def general_def_lemmas extract embed.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 From fae_gtlc_mu.refinements.gradual_static Require Export logical_relation resources_left resources_right compat_easy compat_cast.defs.
-From fae_gtlc_mu.cast_calculus Require Export consistency.structural types.
+From fae_gtlc_mu.cast_calculus Require Export types.
 
 Section compat_cast_identity.
   Context `{!implG Σ,!specG Σ}.
@@ -23,7 +23,7 @@ Section compat_cast_identity.
   Hint Extern 5 (AsVal _) => eexists; simpl; try done; eapply cast_calculus.lang.of_to_val; fast_done : typeclass_instances.
 
   Lemma back_cast_ar_base_base:
-    ∀ A : list (type * type), back_cast_ar (consBaseBase A).
+    ∀ A : list (type * type), back_cast_ar (atomic_Base A).
   Proof.
     intros A.
     rewrite /back_cast_ar. iIntros (ei' K' v v' fs) "(#Hfs & #Hvv' & #Hei' & Hv')".

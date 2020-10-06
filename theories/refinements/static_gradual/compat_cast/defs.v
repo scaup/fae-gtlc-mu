@@ -1,4 +1,4 @@
-From fae_gtlc_mu.refinements.static_gradual Require Export logical_relation resources_right compat_easy help_left.
+From fae_gtlc_mu.refinements.static_gradual Require Export logical_relation resources_right compat_easy.
 From fae_gtlc_mu.cast_calculus Require Export types typing.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 From fae_gtlc_mu.cast_calculus Require Export lang.
@@ -6,8 +6,8 @@ From iris.algebra Require Import list.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Import lifting.
 From fae_gtlc_mu.cast_calculus Require Export types.
-From fae_gtlc_mu.cast_calculus Require Export consistency.structural.
-From fae_gtlc_mu.backtranslation Require Export cast_help.general cast_help.extract cast_help.embed.
+From fae_gtlc_mu.cast_calculus Require Export consistency.
+From fae_gtlc_mu.backtranslation Require Export cast_help.general_def cast_help.extract cast_help.embed.
 From fae_gtlc_mu.cast_calculus Require Export lang.
 
 (* Coercion stlc_mu.lang.of_val : stlc_mu.lang.val >-> stlc_mu.lang.expr. *)
@@ -49,7 +49,7 @@ Section defs.
 
   (* TODO!! 𝓕cV instead of 𝓕c *)
 
-  Definition back_cast_ar {A} {τi τf} (pC : cons_struct A τi τf) :=
+  Definition back_cast_ar {A} {τi τf} (pC : alternative_consistency A τi τf) :=
   ∀ ei' K' v v' fs, (rel_cast_functions A fs ∧ ⟦ τi ⟧ (v, v') ∧ initially_inv ei' ∧ currently_half (fill K' (Cast (cast_calculus.lang.of_val v') τi τf)))
                      ⊢ (WP (𝓕c pC fs (stlc_mu.lang.of_val v)) {{ w, ∃ w', currently_half (fill K' (cast_calculus.lang.of_val w')) ∧ ⟦ τf ⟧ (w, w') }})%I.
 End defs.

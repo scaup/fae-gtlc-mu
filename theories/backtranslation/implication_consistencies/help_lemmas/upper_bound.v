@@ -1,4 +1,5 @@
-From fae_gtlc_mu.cast_calculus Require Import types consistency.equivalence.closed_rec_types consistency.equivalence.listset_ext.
+From fae_gtlc_mu.backtranslation.implication_consistencies.help_lemmas Require Import listset_ext closed_rec_types.
+From fae_gtlc_mu.cast_calculus Require Export types types_lemmas.
 From stdpp Require Import base listset.
 From iris Require Import base.
 
@@ -221,7 +222,7 @@ Qed.
 (** if types is structurally larger, i.e. from i.e. τb.[μ.τb/] > μ.τ,
     then upper_bound is smaller *)
 
-Lemma upper_bound_lt_rec_star A τb (pμτb : TClosed (TRec τb)) (pn : (TRec τb, TRec TUnknown) ∉ A) :
+Lemma upper_bound_lt_rec_star A τb (pμτb : Closed (TRec τb)) (pn : (TRec τb, TRec TUnknown) ∉ A) :
   # ((TRec τb, TRec TUnknown) :: A) τb.[TRec τb/] TUnknown < # A (TRec τb) TUnknown.
 Proof.
   rewrite /upper_bound.
@@ -233,7 +234,7 @@ Proof.
     apply in_listset_prod_iff; set_solver.
 Qed.
 
-Lemma upper_bound_lt_star_rec A τb (pμτb : TClosed (TRec τb)) (pn : (TRec TUnknown, TRec τb) ∉ A) :
+Lemma upper_bound_lt_star_rec A τb (pμτb : Closed (TRec τb)) (pn : (TRec TUnknown, TRec τb) ∉ A) :
   # ((TRec TUnknown, TRec τb) :: A) TUnknown τb.[TRec τb/] < # A TUnknown (TRec τb).
 Proof.
   rewrite /upper_bound.
@@ -246,7 +247,7 @@ Proof.
     apply in_listset_prod_iff; set_solver.
 Qed.
 
-Lemma upper_bound_lt_rec_rec A τb (pμτb : TClosed (TRec τb)) τb' (pμτb' : TClosed (TRec τb')) (pn : (TRec τb, TRec τb') ∉ A) :
+Lemma upper_bound_lt_rec_rec A τb (pμτb : Closed (TRec τb)) τb' (pμτb' : Closed (TRec τb')) (pn : (TRec τb, TRec τb') ∉ A) :
   # ((TRec τb, TRec τb') :: A) τb.[TRec τb/] τb'.[TRec τb'/] < # A (TRec τb) (TRec τb').
 Proof.
   rewrite /upper_bound.

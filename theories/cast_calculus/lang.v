@@ -1,8 +1,8 @@
 From Autosubst Require Export Autosubst.
 From iris.program_logic Require Export language ectx_language ectxi_language.
-From fae_gtlc_mu.cast_calculus Require Export types.
-From fae_gtlc_mu.cast_calculus.consistency Require Export standard.
+From fae_gtlc_mu.cast_calculus Require Export types types_notations types_lemmas.
 
+(** Expressions *)
 Inductive expr :=
 | Var (x : var)
 | Lam (e : {bind 1 of expr})
@@ -22,71 +22,16 @@ Inductive expr :=
 | Unfold (e : expr)
 (* Casts! *)
 | Cast (e : expr) (τi τf : type)
-(* We are not going to ask for a proof of τi ~ τf... only in type-checking *)
 | CastError.
+
+Coercion App : expr >-> Funclass.
 
 Instance Ids_expr : Ids expr. derive. Defined.
 Instance Rename_expr : Rename expr. derive. Defined.
 Instance Subst_expr : Subst expr. derive. Defined.
 Instance SubstLemmas_expr : SubstLemmas expr. derive. Qed.
 
-Instance expr_eqdec : EqDecision expr.
-Proof.
-  unfold EqDecision.
-  intro e.
-  induction e; intros e'; destruct e'; try (by (apply right; intro abs; inversion abs)).
-  - destruct (decide (x = x0)) as [-> | neq].
-    + by apply left.
-    + apply right. intro abs. inversion abs. contradiction.
-  - destruct (IHe e0) as [-> | neq].
-    + by apply left.
-    + apply right. intro abs. inversion abs. contradiction.
-  - destruct (IHe1 e'1) as [-> | neq].
-    + destruct (IHe2 e'2) as [-> | neq].
-      * by apply left.
-      * apply right. intro abs. inversion abs. contradiction.
-    + apply right. intro abs. inversion abs. contradiction.
-  - by apply left.
-  - destruct (IHe1 e'1) as [-> | neq].
-    + destruct (IHe2 e'2) as [-> | neq].
-      * by apply left.
-      * apply right. intro abs. inversion abs. contradiction.
-    + apply right. intro abs. inversion abs. contradiction.
-  - destruct (IHe e') as [-> | neq].
-    + by apply left.
-    + apply right. intro abs. inversion abs. contradiction.
-  - destruct (IHe e') as [-> | neq].
-    + by apply left.
-    + apply right. intro abs. inversion abs. contradiction.
-  - destruct (IHe e') as [-> | neq].
-    + by apply left.
-    + apply right. intro abs. inversion abs. contradiction.
-  - destruct (IHe e') as [-> | neq].
-    + by apply left.
-    + apply right. intro abs. inversion abs. contradiction.
-  - destruct (IHe e') as [-> | neq].
-    + destruct (IHe0 e0) as [-> | neq].
-      * destruct (IHe1 e3) as [-> | neq].
-        ++ by apply left.
-        ++ apply right. intro abs. inversion abs. contradiction.
-      * apply right. intro abs. inversion abs. contradiction.
-    + apply right. intro abs. inversion abs. contradiction.
-  - destruct (IHe e') as [-> | neq].
-    + by apply left.
-    + apply right. intro abs. inversion abs. contradiction.
-  - destruct (IHe e') as [-> | neq].
-    + by apply left.
-    + apply right. intro abs. inversion abs. contradiction.
-  - destruct (IHe e') as [-> | neq].
-    + destruct (decide (τi = τi0)) as [-> | neq].
-      * destruct (decide (τf = τf0)) as [-> | neq].
-        ++ by apply left.
-        ++ apply right. intro abs. inversion abs. contradiction.
-      * apply right. intro abs. inversion abs. contradiction.
-    + apply right. intro abs. inversion abs. contradiction.
-  - by apply left.
-Qed.
-
+(** Values *)
 Inductive val :=
 | LamV (e : {bind 1 of expr})
 | UnitV
@@ -110,26 +55,6 @@ Notation "# v" := (of_val v) (at level 20).
 
 Coercion of_val : val >-> expr.
 
-Definition ICP_dec (τi τf : type) : Decision (ICP τi τf).
-destruct τf.
-  - apply right. intro aaa. inversion aaa.
-  - apply right. intro aaa. inversion aaa.
-  - apply right. intro aaa. inversion aaa.
-  - destruct τi.
-    + apply right. intro aaa. inversion aaa.
-    + apply right. intro aaa. inversion aaa.
-    + apply right. intro aaa. inversion aaa.
-    + apply left. constructor.
-    + apply right. intro aaa. inversion aaa.
-    + apply right. intro aaa. inversion aaa.
-    + apply right. intro aaa. inversion aaa.
-  - apply right. intro aaa. inversion aaa.
-  - apply right. intro aaa. inversion aaa.
-  - destruct (Ground_dec τi).
-    + apply left. by constructor.
-    + apply right. intro aaa. inversion aaa. by apply f.
-Defined.
-
 Fixpoint to_val (e : expr) : option val :=
   match e with
   | Lam e => Some (LamV e)
@@ -151,7 +76,7 @@ Fixpoint to_val (e : expr) : option val :=
   | CastError => None
   end.
 
-(** Evaluation contexts *)
+(** Evaluation contexts of depth 1 *)
 Inductive ectx_item :=
 | AppLCtx (e2 : expr)
 | AppRCtx (v1 : val)
@@ -184,6 +109,7 @@ Definition fill_item (Ki : ectx_item) (e : expr) : expr :=
 
 Definition state : Type := ().
 
+(** Head steps *)
 Inductive head_step : expr → expr → Prop :=
 (* β *)
 | BetaS e1 e2 v2:
@@ -224,7 +150,6 @@ Inductive head_step : expr → expr → Prop :=
 | Different_Ground e v τ1 τ2 (G1 : Ground τ1) (G2 : Ground τ2):
     to_val e = Some v →
     not (τ1 = τ2) →
-    (* not (Ground_equal G1 G2) → *)
     head_step (Cast (Cast e τ1 ⋆) ⋆ τ2) CastError
 (* Application of function that is casted between arrow types *)
 | AppCast e1 v1 e2 v2 τ1 τ2 τ3 τ4:
@@ -240,12 +165,6 @@ Inductive head_step : expr → expr → Prop :=
     head_step
       (Cast (Pair e1 e2) (TProd τ1 τ2) (TProd τ1' τ2'))
       (Pair (Cast e1 τ1 τ1') (Cast e2 τ2 τ2'))
-(* | ProdCast e v τ1 τ2 τ1' τ2': *)
-    (* to_val e = Some v → *)
-    (* head_step *)
-      (* (Cast e (TProd τ1 τ2) (TProd τ1' τ2')) *)
-      (* (Pair (Cast (Fst e) τ1 τ1') (Cast (Snd e) τ2 τ2')) *)
-(* Cast between two sum casts *)
 | SumCast1 e1 v1 τ1 τ2 τ1' τ2':
     to_val e1 = Some v1 →
     head_step
@@ -256,22 +175,11 @@ Inductive head_step : expr → expr → Prop :=
     head_step
       (Cast (InjR e2) (TSum τ1 τ2) (TSum τ1' τ2'))
       (InjR (Cast e2 τ2 τ2'))
-(* | SumCast e v τ1 τ2 τ1' τ2': *)
-    (* to_val e = Some v → *)
-    (* head_step *)
-      (* (Cast e (TSum τ1 τ2) (TSum τ1' τ2')) *)
-      (* (Case e (InjL (Cast (Var 0) τ1 τ1')) (InjR (Cast (Var 0) τ2 τ2'))) *)
-(* Cast between two recursive casts *)
 | RecursiveCast e v τb τb':
     to_val e = Some v →
     head_step
       (Cast (Fold e) (TRec τb) (TRec τb'))
       (Fold (Cast e (τb.[TRec τb/]) (τb'.[TRec τb'/])))
-(* | RecursiveCast e v τb τb': *)
-    (* to_val e = Some v → *)
-    (* head_step *)
-      (* (Cast e (TRec τb) (TRec τb')) *)
-      (* (Fold (Cast (Unfold e) (τb.[TRec τb/]) (τb'.[TRec τb'/]))) *)
 (* Factorisations *)
 | UpFactorization e v τ τG (G : get_shape τ = Some τG):
     to_val e = Some v →
@@ -288,7 +196,6 @@ Inductive head_step : expr → expr → Prop :=
       (Cast e ⋆ τ)
       (Cast (Cast e ⋆ τG) τG τ).
 
-(** Basic properties about the language *)
 Lemma to_of_val v : to_val (of_val v) = Some v.
 Proof.
   induction v; simplify_option_eq; try done.
@@ -363,6 +270,7 @@ Proof.
           end; auto.
 Qed.
 
+(** General evaluation contexts *)
 Notation ectx := (list ectx_item).
 
 Definition fill (K : ectx) (e : expr) : expr := foldl (flip fill_item) e K.
@@ -374,6 +282,7 @@ Qed.
 
 Notation observation := Empty_set.
 
+(** Reduction relation of our language *)
 Inductive prim_step : expr → list observation → expr → list expr → Prop :=
   | Ectx_step K e1 e1' e2 e2' :
     e1 = fill K e1' → e2 = fill K e2' →
@@ -411,6 +320,7 @@ Canonical Structure stateO := leibnizO state.
 Canonical Structure valO := leibnizO val.
 Canonical Structure exprO := leibnizO expr.
 
+(** Defines language using the Iris `Language` structure *)
 Canonical Structure lang : language := Language lang_mixin.
 
 Hint Extern 20 (PureExec _ _ _) => progress simpl : typeclass_instances.
@@ -423,5 +333,6 @@ Hint Extern 5 (AsVal _) => eexists; eapply of_to_val; fast_done : typeclass_inst
 Hint Extern 10 (AsVal _) =>
   eexists; rewrite /IntoVal; eapply of_to_val; rewrite /= !to_of_val /=; solve [ eauto ] : typeclass_instances.
 
+(** Definition of halting *)
 Definition Halts (e : expr) :=
   ∃ v, rtc erased_step ([e], tt) ([of_val v], tt).

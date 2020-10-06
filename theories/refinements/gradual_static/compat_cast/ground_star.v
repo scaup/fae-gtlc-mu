@@ -3,10 +3,10 @@ From fae_gtlc_mu.cast_calculus Require Export lang.
 From iris.algebra Require Import list.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Import lifting.
-From fae_gtlc_mu.backtranslation Require Export cast_help.general cast_help.extract cast_help.embed props.extract_embed.
+From fae_gtlc_mu.backtranslation Require Export cast_help.general_def cast_help.extract cast_help.embed props.extract_embed.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 From fae_gtlc_mu.refinements.gradual_static Require Export logical_relation resources_left resources_right compat_easy compat_cast.defs.
-From fae_gtlc_mu.cast_calculus Require Export consistency.structural types.
+From fae_gtlc_mu.cast_calculus Require Export types.
 
 Section ground_star.
   Context `{!implG Σ,!specG Σ}.
@@ -32,7 +32,7 @@ Section ground_star.
     rewrite /IntoVal; eapply of_to_val; rewrite /= !to_of_val /=; solve [ eauto ] : typeclass_instances.
 
   Lemma back_cast_ar_ground_star:
-    ∀ (A : list (type * type)) (τG : type) (G : Ground τG), back_cast_ar (consTGroundStar A τG G).
+    ∀ (A : list (type * type)) (τG : type) (G : Ground τG), back_cast_ar (atomic_Ground_Unknown A τG G).
   Proof.
     intros A τG G.
     rewrite /back_cast_ar /𝓕c /𝓕. iIntros (ei' K' v v' fs) "(#Hfs & #Hvv' & #Hei' & Hv')". rewrite embed_no_subs.
@@ -74,4 +74,3 @@ Section ground_star.
 
 
 End ground_star.
-

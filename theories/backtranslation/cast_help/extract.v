@@ -1,6 +1,6 @@
-From fae_gtlc_mu.cast_calculus Require Export types.
-From fae_gtlc_mu.stlc_mu Require Export typing lang lib.fix.
-From fae_gtlc_mu.backtranslation Require Export types cast_help.universe.
+From fae_gtlc_mu.cast_calculus Require Export types typing lang.
+From fae_gtlc_mu.stlc_mu Require Import types_notations.
+From fae_gtlc_mu.backtranslation Require Export universe types cast_help.fix.
 
 (** Extractions *)
 
@@ -10,10 +10,10 @@ Definition Ω : expr :=
       (Fold (Lam ((Unfold (Var 0)) (Var 0))))
   ).
 
-Lemma Ω_closed : EClosed Ω.
+Lemma Ω_closed : Closed Ω.
 Proof. by asimpl. Qed.
 
-Definition Ω_typed Γ τ (pτ : TClosed τ) : Γ ⊢ₛ Ω : τ.
+Definition Ω_typed Γ (τ : type) (pτ : Closed τ) : Γ ⊢ₛ Ω : τ.
 Proof.
   apply App_typed with (τ1 := (TRec (TArrow (TVar 0) τ))).
   - eapply (Lam_typed _ _ _ _).

@@ -1,42 +1,11 @@
-From Autosubst Require Export Autosubst.
-From fae_gtlc_mu Require Import prelude cast_calculus.types.
-Require Coq.Logic.JMeq.
+Require Import fae_gtlc_mu.cast_calculus.consistency.
+From fae_gtlc_mu Require Import prelude.
 
-From stdpp Require Import base list.
-From Autosubst Require Export Autosubst.
-Require Export Utf8_core.
-
-Inductive cons_stand_open : type -> type -> Type :=
-| GenSymUnit :
-    cons_stand_open TUnit TUnit
-| GenSymUnknownL τ :
-    cons_stand_open TUnknown τ
-| GenSymUnknownR τ :
-    cons_stand_open τ TUnknown
-| GenSymSum
-    (τ1 τ1' τ2 τ2' : type)
-    (s1 : cons_stand_open τ1 τ1')
-    (s2 : cons_stand_open τ2 τ2')
-  : cons_stand_open (τ1 + τ2)%type (τ1' + τ2')%type
-| GenSymProd
-    (τ1 τ1' τ2 τ2' : type)
-    (s1 : cons_stand_open τ1 τ1')
-    (s2 : cons_stand_open τ2 τ2')
-  : cons_stand_open (τ1 × τ2) (τ1' × τ2')
-| GenSymArrow τ1 τ1' τ2 τ2'
-    (s1 : cons_stand_open τ1 τ1')
-    (s2 : cons_stand_open τ2 τ2')
-  : cons_stand_open (TArrow τ1 τ2) (TArrow τ1' τ2')
-| GenSymVar i :
-    cons_stand_open (TVar i) (TVar i)
-| GenSymRec τ τ' (P : cons_stand_open τ τ') :
-    cons_stand_open (TRec τ) (TRec τ').
-
-Lemma cons_stand_open_sym {τ τ'} : cons_stand_open τ τ' → cons_stand_open τ' τ.
+Lemma consistency_open_sym {τ τ'} : consistency_open τ τ' → consistency_open τ' τ.
 Proof. induction 1; try by constructor. Qed.
 
-Lemma cons_stand_open_unfold_help τ τ' α (pα : TClosed α) α' (pα' : TClosed α') k :
-  cons_stand_open (TRec τ) (TRec τ') → cons_stand_open α α' → cons_stand_open τ.[upn k (α .: ids)] τ'.[upn k (α' .: ids)].
+Lemma consistency_open_unfold_help τ τ' α (pα : Closed α) α' (pα' : Closed α') k :
+  consistency_open (TRec τ) (TRec τ') → consistency_open α α' → consistency_open τ.[upn k (α .: ids)] τ'.[upn k (α' .: ids)].
 Proof.
   intro pC. inversion_clear pC.
   generalize dependent τ'.
@@ -71,17 +40,15 @@ Proof.
     asimpl; constructor.
 Qed.
 
-Lemma cons_stand_open_unfold τ (pτ : TClosed (TRec τ)) τ' (pτ' : TClosed (TRec τ')) : cons_stand_open (TRec τ) (TRec τ') → cons_stand_open τ.[TRec τ/] τ'.[TRec τ'/].
+Lemma consistency_open_unfold τ (pτ : Closed (TRec τ)) τ' (pτ' : Closed (TRec τ')) : consistency_open (TRec τ) (TRec τ') → consistency_open τ.[TRec τ/] τ'.[TRec τ'/].
 Proof.
   intro pC.
   assert (triv : τ.[TRec τ/] = τ.[upn 0 (TRec τ .: ids)]). by asimpl. rewrite triv. clear triv.
   assert (triv : τ'.[TRec τ'/] = τ'.[upn 0 (TRec τ' .: ids)]). by asimpl. rewrite triv. clear triv.
-  by apply cons_stand_open_unfold_help; auto.
+  by apply consistency_open_unfold_help; auto.
 Qed.
 
-Definition cons_stand τ (pτ : TClosed τ) τ' (pτ' : TClosed τ') : Type := cons_stand_open τ τ'.
-
-Definition cons_stand_open_dec τ τ' : sumor (cons_stand_open τ τ') (notT (cons_stand_open τ τ')).
+Definition consistency_open_dec τ τ' : sumor (consistency_open τ τ') (notT (consistency_open τ τ')).
 Proof.
   generalize dependent τ'.
   induction τ; intro τ'; destruct τ'; ((by (apply inleft; by constructor)) || (try by apply inright; intro abs; inversion abs)); try specialize (IHτ1 τ'1); try specialize (IHτ2 τ'2); try specialize (IHτ τ0).
