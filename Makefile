@@ -1,3 +1,15 @@
+EXTRA_DIR:=extra
+COQDOCFLAGS:= \
+  --toc --toc-depth 2 --html --interpolate \
+  --index indexpage --no-lib-name --parse-comments \
+  --with-header $(EXTRA_DIR)/header.html --with-footer $(EXTRA_DIR)/footer.html
+export COQDOCFLAGS
+
+html: Makefile.coq
+	rm -fr html
+	+make -f Makefile.coq html
+	cp $(EXTRA_DIR)/resources/* html
+
 # Forward most targets to Coq makefile (with some trick to make this phony)
 %: Makefile.coq phony
 	+@make -f Makefile.coq $@
