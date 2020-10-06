@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="coqdocjs.js"></script>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../overview.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<h1 class="libtitle">iris.heap_lang.lib.diverge</h1>
+
+<div class="code">
+<span class="id" title="keyword">From</span> <span class="id" title="var">iris.proofmode</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="iris.proofmode.tactics.html#"><span class="id" title="library">tactics</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">iris.program_logic</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="iris.program_logic.weakestpre.html#"><span class="id" title="library">weakestpre</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">iris.heap_lang</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="iris.heap_lang.lang.html#"><span class="id" title="library">lang</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">iris.heap_lang</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="iris.heap_lang.proofmode.html#"><span class="id" title="library">proofmode</span></a> <a class="idref" href="iris.heap_lang.notation.html#"><span class="id" title="library">notation</span></a>.<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Default</span> <span class="id" title="keyword">Proof</span> <span class="id" title="var">Using</span> "Type".<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This library provides a <span class="inlinecode"><a class="idref" href="iris.heap_lang.lib.diverge.html#diverge"><span class="id" title="definition">diverge</span></a></span> function that goes into an infinite loop
+when provided with an (arbitrary) argument value. This function can be used to
+let the program diverge in corner cases that one wants to omit in proofs. This
+mechanism should be used with care and communicated clearly, obviously.
+
+<div class="paragraph"> </div>
+
+Note that this mechanism only works when establishing partial correctness with
+the ordinary version of weakest preconditions, and not when establishing total
+correctness using the total version of weakest preconditions.
+
+<div class="paragraph"> </div>
+
+A typical application for <span class="inlinecode"><a class="idref" href="iris.heap_lang.lib.diverge.html#diverge"><span class="id" title="definition">diverge</span></a></span> is insertion functions for data structures
+having a fixed capacity. In such cases, we can choose divergence instead of an
+explicit error handling when the full capacity has already been reached. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="diverge"><span class="id" title="definition">diverge</span></a> : <a class="idref" href="iris.heap_lang.lang.html#heap_lang.val"><span class="id" title="inductive">val</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="iris.heap_lang.notation.html#3b4611ead68c65413f980c1d4a390696"><span class="id" title="notation">rec</span></a><a class="idref" href="iris.heap_lang.notation.html#3b4611ead68c65413f980c1d4a390696"><span class="id" title="notation">:</span></a> "diverge" "v" <a class="idref" href="iris.heap_lang.notation.html#3b4611ead68c65413f980c1d4a390696"><span class="id" title="notation">:=</span></a> "diverge" "v".<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="wp_diverge"><span class="id" title="lemma">wp_diverge</span></a> `{!<a class="idref" href="iris.heap_lang.lifting.html#heapG"><span class="id" title="class">heapG</span></a> <span class="id" title="var">Σ</span>} <span class="id" title="var">s</span> <span class="id" title="var">E</span> (<span class="id" title="var">Φ</span> : <a class="idref" href="iris.heap_lang.lang.html#heap_lang.val"><span class="id" title="inductive">val</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Unicode.Utf8_core.html#c41c566ddac4c1298b9e7dd2bae1c794"><span class="id" title="notation">→</span></a> <a class="idref" href="iris.base_logic.lib.iprop.html#iProp_solution.iProp"><span class="id" title="abbreviation">iProp</span></a> <a class="idref" href="iris.heap_lang.lib.diverge.html#e15c0eb40e61adefe95778c26e7840f6"><span class="id" title="variable">Σ</span></a>) (<span class="id" title="var">v</span> : <a class="idref" href="iris.heap_lang.lang.html#heap_lang.val"><span class="id" title="inductive">val</span></a>) :<br/>
+&nbsp;&nbsp;<a class="idref" href="iris.bi.interface.html#b7d65d242d889c3e37aca6013a51bfad"><span class="id" title="notation">⊢</span></a> <a class="idref" href="iris.bi.weakestpre.html#ca808999e0a0dfd644967e1c18004286"><span class="id" title="notation">WP</span></a> <a class="idref" href="iris.heap_lang.lib.diverge.html#diverge"><span class="id" title="definition">diverge</span></a> <a class="idref" href="iris.heap_lang.lib.diverge.html#v"><span class="id" title="variable">v</span></a> <a class="idref" href="iris.bi.weakestpre.html#ca808999e0a0dfd644967e1c18004286"><span class="id" title="notation">@</span></a> <a class="idref" href="iris.heap_lang.lib.diverge.html#s"><span class="id" title="variable">s</span></a><a class="idref" href="iris.bi.weakestpre.html#ca808999e0a0dfd644967e1c18004286"><span class="id" title="notation">;</span></a><a class="idref" href="iris.heap_lang.lib.diverge.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="iris.bi.weakestpre.html#ca808999e0a0dfd644967e1c18004286"><span class="id" title="notation">{{</span></a> <a class="idref" href="iris.heap_lang.lib.diverge.html#0a86c68449f31709b242a8cc62019df8"><span class="id" title="variable">Φ</span></a> <a class="idref" href="iris.bi.weakestpre.html#ca808999e0a0dfd644967e1c18004286"><span class="id" title="notation">}}</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">iLöb</span> <span class="id" title="keyword">as</span> "IH". <span class="id" title="var">wp_lam</span>. <span class="id" title="var">iApply</span> "IH".<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

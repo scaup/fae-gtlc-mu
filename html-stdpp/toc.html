@@ -1,0 +1,671 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="coqdocjs.js"></script>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../overview.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<div id="toc">
+<a href="stdpp.vector.html"><h2>stdpp.vector</h2></a>
+<a href="stdpp.hashset.html"><h2>stdpp.hashset</h2></a>
+<a href="stdpp.coPset.html"><h2>stdpp.coPset</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.coPset.html#lab1">The tree data structure</a>
+
+</li>
+<li><a href="stdpp.coPset.html#lab2">Packed together + set operations</a>
+
+</li>
+<li><a href="stdpp.coPset.html#lab3">Finite sets</a>
+
+</li>
+<li><a href="stdpp.coPset.html#lab4">Pick element from infinite sets</a>
+
+</li>
+<li><a href="stdpp.coPset.html#lab5">Conversion to psets</a>
+
+</li>
+<li><a href="stdpp.coPset.html#lab6">Conversion from psets</a>
+
+</li>
+<li><a href="stdpp.coPset.html#lab7">Conversion to and from gsets of positives</a>
+
+</li>
+<li><a href="stdpp.coPset.html#lab8">Domain of finite maps</a>
+
+</li>
+<li><a href="stdpp.coPset.html#lab9">Suffix sets</a>
+
+</li>
+<li><a href="stdpp.coPset.html#lab10">Splitting of infinite sets</a>
+
+</li>
+</ul>
+<a href="stdpp.pretty.html"><h2>stdpp.pretty</h2></a>
+<a href="stdpp.decidable.html"><h2>stdpp.decidable</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.decidable.html#lab11">Decidable Sigma types</a>
+
+</li>
+<li><a href="stdpp.decidable.html#lab12">Instances of <span class="inlinecode"><span class="id" title="var">Decision</span></span></a>
+
+</li>
+<li><a href="stdpp.decidable.html#lab13">Instances of <span class="inlinecode"><span class="id" title="var">RelDecision</span></span></a>
+
+</li>
+</ul>
+<a href="stdpp.strings.html"><h2>stdpp.strings</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.strings.html#lab14">Fix scopes</a>
+
+</li>
+<li><a href="stdpp.strings.html#lab15">Decision of equality</a>
+
+</li>
+<li><a href="stdpp.strings.html#lab16">Encoding and decoding</a>
+
+</li>
+</ul>
+<a href="stdpp.finite.html"><h2>stdpp.finite</h2></a>
+<a href="stdpp.listset_nodup.html"><h2>stdpp.listset_nodup</h2></a>
+<a href="stdpp.listset.html"><h2>stdpp.listset</h2></a>
+<a href="stdpp.infinite.html"><h2>stdpp.infinite</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.infinite.html#lab17">Generic constructions</a>
+
+</li>
+</ul>
+<a href="stdpp.fin.html"><h2>stdpp.fin</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.fin.html#lab18">The fin type</a>
+
+</li>
+</ul>
+<a href="stdpp.streams.html"><h2>stdpp.streams</h2></a>
+<a href="stdpp.natmap.html"><h2>stdpp.natmap</h2></a>
+<a href="stdpp.binders.html"><h2>stdpp.binders</h2></a>
+<a href="stdpp.propset.html"><h2>stdpp.propset</h2></a>
+<a href="stdpp.hlist.html"><h2>stdpp.hlist</h2></a>
+<a href="stdpp.nmap.html"><h2>stdpp.nmap</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.nmap.html#lab19">Finite sets</a>
+
+</li>
+</ul>
+<a href="stdpp.boolset.html"><h2>stdpp.boolset</h2></a>
+<a href="stdpp.fin_map_dom.html"><h2>stdpp.fin_map_dom</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.fin_map_dom.html#lab20">Set solver instances</a>
+
+</li>
+</ul>
+<a href="stdpp.base.html"><h2>stdpp.base</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.base.html#lab21">Enable implicit generalization.</a>
+
+</li>
+<li><a href="stdpp.base.html#lab22">Tweak program</a>
+
+</li>
+<li><a href="stdpp.base.html#lab23">Sealing off definitions</a>
+
+</li>
+<li><a href="stdpp.base.html#lab24">Non-backtracking type classes</a>
+
+</li>
+<li><a href="stdpp.base.html#lab25">Typeclass opaque definitions</a>
+
+</li>
+<li><a href="stdpp.base.html#lab26">Equality</a>
+<ul class="doclist">
+<li><a href="stdpp.base.html#lab27">Setoid equality</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="stdpp.base.html#lab28">Type classes</a>
+<ul class="doclist">
+<li><a href="stdpp.base.html#lab29">Decidable propositions</a>
+
+</li>
+<li><a href="stdpp.base.html#lab30">Inhabited types</a>
+
+</li>
+<li><a href="stdpp.base.html#lab31">Proof irrelevant types</a>
+
+</li>
+<li><a href="stdpp.base.html#lab32">Common properties</a>
+
+</li>
+<li><a href="stdpp.base.html#lab33">Generic orders</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="stdpp.base.html#lab34">Logic</a>
+
+</li>
+<li><a href="stdpp.base.html#lab35">Common data types</a>
+<ul class="doclist">
+<li><a href="stdpp.base.html#lab36">Functions</a>
+
+</li>
+<li><a href="stdpp.base.html#lab37">Lists</a>
+
+</li>
+<li><a href="stdpp.base.html#lab38">Booleans</a>
+
+</li>
+<li><a href="stdpp.base.html#lab39">Unit</a>
+
+</li>
+<li><a href="stdpp.base.html#lab40">Empty</a>
+
+</li>
+<li><a href="stdpp.base.html#lab41">Products</a>
+
+</li>
+<li><a href="stdpp.base.html#lab42">Sums</a>
+
+</li>
+<li><a href="stdpp.base.html#lab43">Option</a>
+
+</li>
+<li><a href="stdpp.base.html#lab44">Sigma types</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="stdpp.base.html#lab45">Operations on sets</a>
+
+</li>
+<li><a href="stdpp.base.html#lab46">Monadic operations</a>
+
+</li>
+<li><a href="stdpp.base.html#lab47">Operations on maps</a>
+
+</li>
+<li><a href="stdpp.base.html#lab48">Notations for lattices.</a>
+
+</li>
+<li><a href="stdpp.base.html#lab49">Axiomatization of sets</a>
+
+</li>
+<li><a href="stdpp.base.html#lab50">Miscellaneous</a>
+
+</li>
+</ul>
+<a href="stdpp.functions.html"><h2>stdpp.functions</h2></a>
+<a href="stdpp.pmap.html"><h2>stdpp.pmap</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.pmap.html#lab51">The tree data structure</a>
+
+</li>
+<li><a href="stdpp.pmap.html#lab52">Finite sets</a>
+
+</li>
+</ul>
+<a href="stdpp.gmultiset.html"><h2>stdpp.gmultiset</h2></a>
+<a href="stdpp.numbers.html"><h2>stdpp.numbers</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.numbers.html#lab53">Notations and properties of <span class="inlinecode"><span class="id" title="var">nat</span></span></a>
+
+</li>
+<li><a href="stdpp.numbers.html#lab54">Notations and properties of <span class="inlinecode"><span class="id" title="var">positive</span></span></a>
+
+</li>
+<li><a href="stdpp.numbers.html#lab55">Notations and properties of <span class="inlinecode"><span class="id" title="var">N</span></span></a>
+
+</li>
+<li><a href="stdpp.numbers.html#lab56">Notations and properties of <span class="inlinecode"><span class="id" title="var">Z</span></span></a>
+
+</li>
+<li><a href="stdpp.numbers.html#lab57">Injectivity of casts</a>
+
+</li>
+<li><a href="stdpp.numbers.html#lab58">Notations and properties of <span class="inlinecode"><span class="id" title="var">Qc</span></span></a>
+
+</li>
+<li><a href="stdpp.numbers.html#lab59">Positive rationals</a>
+
+</li>
+</ul>
+<a href="stdpp.lexico.html"><h2>stdpp.lexico</h2></a>
+<a href="stdpp.zmap.html"><h2>stdpp.zmap</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.zmap.html#lab60">Finite sets</a>
+
+</li>
+</ul>
+<a href="stdpp.stringmap.html"><h2>stdpp.stringmap</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.stringmap.html#lab61">Generating fresh strings</a>
+
+</li>
+</ul>
+<a href="stdpp.fin_maps.html"><h2>stdpp.fin_maps</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.fin_maps.html#lab62">Axiomatization of finite maps</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab63">Derived operations</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab64">Theorems</a>
+<ul class="doclist">
+<li><a href="stdpp.fin_maps.html#lab65">Setoids</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab66">General properties</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab67">Properties of the <span class="inlinecode"><span class="id" title="var">partial_alter</span></span> operation</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab68">Properties of the <span class="inlinecode"><span class="id" title="var">alter</span></span> operation</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab69">Properties of the <span class="inlinecode"><span class="id" title="var">delete</span></span> operation</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab70">Properties of the <span class="inlinecode"><span class="id" title="var">insert</span></span> operation</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab71">Properties of the singleton maps</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab72">Properties of the map operations</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab73">Properties of conversion to lists</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab74">Properties of the size operation</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab75">Properties of conversion from sets</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab76">Induction principles</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab77">The fold operation</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab78">The filter operation</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab79">Properties of the <span class="inlinecode"><span class="id" title="var">map_Forall</span></span> predicate</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab80">Properties of the <span class="inlinecode"><span class="id" title="var">merge</span></span> operation</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab81">Properties on the <span class="inlinecode"><span class="id" title="var">map_relation</span></span> relation</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab82">Properties on the disjoint maps</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab83">Properties of the <span class="inlinecode"><span class="id" title="var">union_with</span></span> operation</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab84">Properties of the <span class="inlinecode"><span class="id" title="var">union</span></span> operation</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab85">Properties of the <span class="inlinecode"><span class="id" title="var">union_list</span></span> operation</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab86">Properties of the folding the <span class="inlinecode"><span class="id" title="var">delete</span></span> function</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab87">Properties on disjointness of conversion to lists</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab88">Properties of the <span class="inlinecode"><span class="id" title="var">intersection_with</span></span> operation</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab89">Properties of the <span class="inlinecode"><span class="id" title="var">intersection</span></span> operation</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab90">Properties of the <span class="inlinecode"><span class="id" title="var">difference_with</span></span> operation</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab91">Properties of the <span class="inlinecode"><span class="id" title="var">difference</span></span> operation</a>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab92">The seq operation</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="stdpp.fin_maps.html#lab93">Tactics</a>
+
+</li>
+</ul>
+<a href="stdpp.sorting.html"><h2>stdpp.sorting</h2></a>
+<ul class="doclist">
+<li><ul class="doclist">
+<li><a href="stdpp.sorting.html#lab94">Properties of the <span class="inlinecode"><span class="id" title="var">Sorted</span></span> and <span class="inlinecode"><span class="id" title="var">StronglySorted</span></span> predicate</a>
+
+</li>
+<li><a href="stdpp.sorting.html#lab95">Correctness of merge sort</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<a href="stdpp.telescopes.html"><h2>stdpp.telescopes</h2></a>
+<a href="stdpp.prelude.html"><h2>stdpp.prelude</h2></a>
+<a href="stdpp.coGset.html"><h2>stdpp.coGset</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.coGset.html#lab96">Pick elements from infinite sets</a>
+
+</li>
+<li><a href="stdpp.coGset.html#lab97">Conversion to and from gset</a>
+
+</li>
+<li><a href="stdpp.coGset.html#lab98">Conversion to coPset</a>
+
+</li>
+<li><a href="stdpp.coGset.html#lab99">Inefficient conversion to arbitrary sets with a top element</a>
+
+</li>
+<li><a href="stdpp.coGset.html#lab100">Domain of finite maps</a>
+
+</li>
+</ul>
+<a href="stdpp.namespaces.html"><h2>stdpp.namespaces</h2></a>
+<a href="stdpp.option.html"><h2>stdpp.option</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.option.html#lab101">General definitions and theorems</a>
+
+</li>
+<li><a href="stdpp.option.html#lab102">Monadic operations</a>
+<ul class="doclist">
+<li><a href="stdpp.option.html#lab103">Inverses of constructors</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="stdpp.option.html#lab104">Union, intersection and difference</a>
+
+</li>
+<li><a href="stdpp.option.html#lab105">Tactics</a>
+
+</li>
+</ul>
+<a href="stdpp.mapset.html"><h2>stdpp.mapset</h2></a>
+<a href="stdpp.fin_sets.html"><h2>stdpp.fin_sets</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.fin_sets.html#lab106">The <span class="inlinecode"><span class="id" title="var">elements</span></span> operation</a>
+
+</li>
+<li><a href="stdpp.fin_sets.html#lab107">The <span class="inlinecode"><span class="id" title="var">size</span></span> operation</a>
+
+</li>
+<li><a href="stdpp.fin_sets.html#lab108">Induction principles</a>
+
+</li>
+<li><a href="stdpp.fin_sets.html#lab109">The <span class="inlinecode"><span class="id" title="var">set_fold</span></span> operation</a>
+
+</li>
+<li><a href="stdpp.fin_sets.html#lab110">Minimal elements</a>
+
+</li>
+<li><a href="stdpp.fin_sets.html#lab111">Filter</a>
+
+</li>
+<li><a href="stdpp.fin_sets.html#lab112">Map</a>
+
+</li>
+<li><a href="stdpp.fin_sets.html#lab113">Decision procedures</a>
+
+</li>
+</ul>
+<a href="stdpp.countable.html"><h2>stdpp.countable</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.countable.html#lab114">Choice principles</a>
+
+</li>
+<li><a href="stdpp.countable.html#lab115">Instances</a>
+<ul class="doclist">
+<li><a href="stdpp.countable.html#lab116">Injection</a>
+
+</li>
+<li><a href="stdpp.countable.html#lab117">Empty</a>
+
+</li>
+<li><a href="stdpp.countable.html#lab118">Unit</a>
+
+</li>
+<li><a href="stdpp.countable.html#lab119">Bool</a>
+
+</li>
+<li><a href="stdpp.countable.html#lab120">Option</a>
+
+</li>
+<li><a href="stdpp.countable.html#lab121">Sums</a>
+
+</li>
+<li><a href="stdpp.countable.html#lab122">Products</a>
+
+</li>
+<li><a href="stdpp.countable.html#lab123">Lists</a>
+
+</li>
+<li><a href="stdpp.countable.html#lab124">Numbers</a>
+
+</li>
+<li><a href="stdpp.countable.html#lab125">Generic trees</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<a href="stdpp.orders.html"><h2>stdpp.orders</h2></a>
+<a href="stdpp.tactics.html"><h2>stdpp.tactics</h2></a>
+<a href="stdpp.sets.html"><h2>stdpp.sets</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.sets.html#lab126">Setoids</a>
+
+</li>
+<li><a href="stdpp.sets.html#lab127">Setoids</a>
+
+</li>
+<li><a href="stdpp.sets.html#lab128">Tactics</a>
+
+</li>
+<li><a href="stdpp.sets.html#lab129">Sets with <span class="inlinecode">∪</span>, <span class="inlinecode">∅</span> and <span class="inlinecode">{[<span class="id" title="var">_</span>]}</span></a>
+
+</li>
+<li><a href="stdpp.sets.html#lab130">Sets with <span class="inlinecode">∪</span>, <span class="inlinecode">∩</span>, <span class="inlinecode">∖</span>, <span class="inlinecode">∅</span> and <span class="inlinecode">{[<span class="id" title="var">_</span>]}</span></a>
+
+</li>
+<li><a href="stdpp.sets.html#lab131">Sets with <span class="inlinecode">∪</span>, <span class="inlinecode">∩</span>, <span class="inlinecode">∖</span>, <span class="inlinecode">∅</span>, <span class="inlinecode">{[<span class="id" title="var">_</span>]}</span>, and <span class="inlinecode">⊤</span></a>
+
+</li>
+<li><a href="stdpp.sets.html#lab132">Conversion of option and list</a>
+
+</li>
+<li><a href="stdpp.sets.html#lab133">Guard</a>
+
+</li>
+<li><a href="stdpp.sets.html#lab134">Quantifiers</a>
+
+</li>
+<li><a href="stdpp.sets.html#lab135">Properties of implementations of sets that form a monad</a>
+
+</li>
+</ul>
+<a href="stdpp.relations.html"><h2>stdpp.relations</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.relations.html#lab136">Definitions</a>
+
+</li>
+<li><a href="stdpp.relations.html#lab137">General theorems</a>
+
+</li>
+<li><a href="stdpp.relations.html#lab138">Theorems on sub relations</a>
+
+</li>
+<li><a href="stdpp.relations.html#lab139">Theorems on well founded relations</a>
+
+</li>
+</ul>
+<a href="stdpp.list.html"><h2>stdpp.list</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.list.html#lab140">Definitions</a>
+
+</li>
+<li><a href="stdpp.list.html#lab141">Basic tactics on lists</a>
+
+</li>
+<li><a href="stdpp.list.html#lab142">General theorems</a>
+<ul class="doclist">
+<li><a href="stdpp.list.html#lab143">Properties of the <span class="inlinecode"><span class="id" title="var">elem_of</span></span> predicate</a>
+
+</li>
+<li><a href="stdpp.list.html#lab144">Properties of the <span class="inlinecode"><span class="id" title="var">NoDup</span></span> predicate</a>
+
+</li>
+<li><a href="stdpp.list.html#lab145">Set operations on lists</a>
+
+</li>
+<li><a href="stdpp.list.html#lab146">Properties of the <span class="inlinecode"><span class="id" title="var">reverse</span></span> function</a>
+
+</li>
+<li><a href="stdpp.list.html#lab147">Properties of the <span class="inlinecode"><span class="id" title="var">last</span></span> function</a>
+
+</li>
+<li><a href="stdpp.list.html#lab148">Properties of the <span class="inlinecode"><span class="id" title="var">take</span></span> function</a>
+
+</li>
+<li><a href="stdpp.list.html#lab149">Properties of the <span class="inlinecode"><span class="id" title="var">drop</span></span> function</a>
+
+</li>
+<li><a href="stdpp.list.html#lab150">Properties of the <span class="inlinecode"><span class="id" title="var">replicate</span></span> function</a>
+
+</li>
+<li><a href="stdpp.list.html#lab151">Properties of the <span class="inlinecode"><span class="id" title="var">resize</span></span> function</a>
+
+</li>
+<li><a href="stdpp.list.html#lab152">Properties of the <span class="inlinecode"><span class="id" title="var">reshape</span></span> function</a>
+
+</li>
+<li><a href="stdpp.list.html#lab153">Properties of <span class="inlinecode"><span class="id" title="var">sublist_lookup</span></span> and <span class="inlinecode"><span class="id" title="var">sublist_alter</span></span></a>
+
+</li>
+<li><a href="stdpp.list.html#lab154">Properties of the <span class="inlinecode"><span class="id" title="var">mask</span></span> function</a>
+
+</li>
+<li><a href="stdpp.list.html#lab155">Properties of the <span class="inlinecode"><span class="id" title="var">Permutation</span></span> predicate</a>
+
+</li>
+<li><a href="stdpp.list.html#lab156">Properties of the <span class="inlinecode"><span class="id" title="var">filter</span></span> function</a>
+
+</li>
+<li><a href="stdpp.list.html#lab157">Properties of the <span class="inlinecode"><span class="id" title="var">prefix</span></span> and <span class="inlinecode"><span class="id" title="var">suffix</span></span> predicates</a>
+
+</li>
+<li><a href="stdpp.list.html#lab158">Properties of the <span class="inlinecode"><span class="id" title="var">sublist</span></span> predicate</a>
+
+</li>
+<li><a href="stdpp.list.html#lab159">Properties of <span class="inlinecode"><span class="id" title="var">included</span></span></a>
+
+</li>
+<li><a href="stdpp.list.html#lab160">Properties of the <span class="inlinecode"><span class="id" title="var">Forall</span></span> and <span class="inlinecode"><span class="id" title="var">Exists</span></span> predicate</a>
+
+</li>
+<li><a href="stdpp.list.html#lab161">Properties of the <span class="inlinecode"><span class="id" title="var">Forall2</span></span> predicate</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="stdpp.list.html#lab162">Properties of the <span class="inlinecode"><span class="id" title="var">find</span></span> function</a>
+
+</li>
+<li><a href="stdpp.list.html#lab163">Properties of the monadic operations</a>
+<ul class="doclist">
+<li><a href="stdpp.list.html#lab164">Properties of the <span class="inlinecode"><span class="id" title="var">seq</span></span> function</a>
+
+</li>
+<li><a href="stdpp.list.html#lab165">Properties of the <span class="inlinecode"><span class="id" title="var">seqZ</span></span> function</a>
+
+</li>
+<li><a href="stdpp.list.html#lab166">Properties of the <span class="inlinecode"><span class="id" title="var">permutations</span></span> function</a>
+
+</li>
+<li><a href="stdpp.list.html#lab167">Properties of the folding functions</a>
+
+</li>
+<li><a href="stdpp.list.html#lab168">Properties of the <span class="inlinecode"><span class="id" title="var">zip_with</span></span> and <span class="inlinecode"><span class="id" title="var">zip</span></span> functions</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="stdpp.list.html#lab169">Relection over lists</a>
+
+</li>
+<li><a href="stdpp.list.html#lab170">Tactics</a>
+
+</li>
+</ul>
+<a href="stdpp.nat_cancel.html"><h2>stdpp.nat_cancel</h2></a>
+<a href="stdpp.gmap.html"><h2>stdpp.gmap</h2></a>
+<ul class="doclist">
+<li><a href="stdpp.gmap.html#lab171">The data structure</a>
+
+</li>
+<li><a href="stdpp.gmap.html#lab172">Operations on the data structure</a>
+
+</li>
+<li><a href="stdpp.gmap.html#lab173">Instantiation of the finite map interface</a>
+
+</li>
+<li><a href="stdpp.gmap.html#lab174">Curry and uncurry</a>
+
+</li>
+<li><a href="stdpp.gmap.html#lab175">Finite sets</a>
+
+</li>
+</ul>
+<a href="stdpp.proof_irrel.html"><h2>stdpp.proof_irrel</h2></a>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

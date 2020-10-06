@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="coqdocjs.js"></script>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../overview.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<h1 class="libtitle">iris.proofmode.modality_instances</h1>
+
+<div class="code">
+<span class="id" title="keyword">From</span> <span class="id" title="var">iris.bi</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="iris.bi.bi.html#"><span class="id" title="library">bi</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">iris.proofmode</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="iris.proofmode.classes.html#"><span class="id" title="library">classes</span></a>.<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Default</span> <span class="id" title="keyword">Proof</span> <span class="id" title="var">Using</span> "Type".<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">bi</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <a name="bi_modalities"><span class="id" title="section">bi_modalities</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">PROP</span> : <a class="idref" href="iris.bi.interface.html#bi"><span class="id" title="record">bi</span></a>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a name="modality_persistently_mixin"><span class="id" title="lemma">modality_persistently_mixin</span></a> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="iris.proofmode.modalities.html#modality_mixin"><span class="id" title="record">modality_mixin</span></a> (@<a class="idref" href="iris.bi.interface.html#bi_persistently"><span class="id" title="projection">bi_persistently</span></a> <a class="idref" href="iris.proofmode.modality_instances.html#bi_modalities.PROP"><span class="id" title="variable">PROP</span></a>) <a class="idref" href="iris.proofmode.modalities.html#MIEnvId"><span class="id" title="constructor">MIEnvId</span></a> <a class="idref" href="iris.proofmode.modalities.html#MIEnvClear"><span class="id" title="constructor">MIEnvClear</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">eauto</span> <span class="id" title="keyword">using</span> <a class="idref" href="iris.bi.derived_laws_bi.html#bi.equiv_entails_sym"><span class="id" title="lemma">equiv_entails_sym</span></a>, <a class="idref" href="iris.bi.derived_laws_bi.html#bi.persistently_intro"><span class="id" title="lemma">persistently_intro</span></a>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="iris.bi.interface.html#bi.persistently_mono"><span class="id" title="lemma">persistently_mono</span></a>, <a class="idref" href="iris.bi.derived_laws_bi.html#bi.persistently_sep_2"><span class="id" title="lemma">persistently_sep_2</span></a> <span class="id" title="keyword">with</span> <span class="id" title="var">typeclass_instances</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="modality_persistently"><span class="id" title="definition">modality_persistently</span></a> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="iris.proofmode.modalities.html#Modality"><span class="id" title="constructor">Modality</span></a> <span class="id" title="var">_</span> <a class="idref" href="iris.proofmode.modality_instances.html#modality_persistently_mixin"><span class="id" title="lemma">modality_persistently_mixin</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a name="modality_affinely_mixin"><span class="id" title="lemma">modality_affinely_mixin</span></a> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="iris.proofmode.modalities.html#modality_mixin"><span class="id" title="record">modality_mixin</span></a> (@<a class="idref" href="iris.bi.derived_connectives.html#bi_affinely"><span class="id" title="definition">bi_affinely</span></a> <a class="idref" href="iris.proofmode.modality_instances.html#bi_modalities.PROP"><span class="id" title="variable">PROP</span></a>) <a class="idref" href="iris.proofmode.modalities.html#MIEnvId"><span class="id" title="constructor">MIEnvId</span></a> (<a class="idref" href="iris.proofmode.modalities.html#MIEnvForall"><span class="id" title="constructor">MIEnvForall</span></a> <a class="idref" href="iris.bi.derived_connectives.html#Affine"><span class="id" title="class">Affine</span></a>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">eauto</span> <span class="id" title="keyword">using</span> <a class="idref" href="iris.bi.derived_laws_bi.html#bi.equiv_entails_sym"><span class="id" title="lemma">equiv_entails_sym</span></a>, <a class="idref" href="iris.bi.derived_laws_bi.html#bi.affinely_intro"><span class="id" title="lemma">affinely_intro</span></a>, <a class="idref" href="iris.bi.derived_laws_bi.html#bi.affinely_mono"><span class="id" title="lemma">affinely_mono</span></a>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="iris.bi.derived_laws_bi.html#bi.affinely_sep_2"><span class="id" title="lemma">affinely_sep_2</span></a> <span class="id" title="keyword">with</span> <span class="id" title="var">typeclass_instances</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="modality_affinely"><span class="id" title="definition">modality_affinely</span></a> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="iris.proofmode.modalities.html#Modality"><span class="id" title="constructor">Modality</span></a> <span class="id" title="var">_</span> <a class="idref" href="iris.proofmode.modality_instances.html#modality_affinely_mixin"><span class="id" title="lemma">modality_affinely_mixin</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a name="modality_intuitionistically_mixin"><span class="id" title="lemma">modality_intuitionistically_mixin</span></a> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="iris.proofmode.modalities.html#modality_mixin"><span class="id" title="record">modality_mixin</span></a> (@<a class="idref" href="iris.bi.derived_connectives.html#bi_intuitionistically"><span class="id" title="definition">bi_intuitionistically</span></a> <a class="idref" href="iris.proofmode.modality_instances.html#bi_modalities.PROP"><span class="id" title="variable">PROP</span></a>) <a class="idref" href="iris.proofmode.modalities.html#MIEnvId"><span class="id" title="constructor">MIEnvId</span></a> <a class="idref" href="iris.proofmode.modalities.html#MIEnvIsEmpty"><span class="id" title="constructor">MIEnvIsEmpty</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">eauto</span> <span class="id" title="keyword">using</span> <a class="idref" href="iris.bi.derived_laws_bi.html#bi.equiv_entails_sym"><span class="id" title="lemma">equiv_entails_sym</span></a>, <a class="idref" href="iris.bi.derived_laws_bi.html#bi.intuitionistically_emp"><span class="id" title="lemma">intuitionistically_emp</span></a>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="iris.bi.derived_laws_bi.html#bi.affinely_mono"><span class="id" title="lemma">affinely_mono</span></a>, <a class="idref" href="iris.bi.interface.html#bi.persistently_mono"><span class="id" title="lemma">persistently_mono</span></a>, <a class="idref" href="iris.bi.derived_laws_bi.html#bi.intuitionistically_idemp"><span class="id" title="lemma">intuitionistically_idemp</span></a>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="iris.bi.derived_laws_bi.html#bi.intuitionistically_sep_2"><span class="id" title="lemma">intuitionistically_sep_2</span></a> <span class="id" title="keyword">with</span> <span class="id" title="var">typeclass_instances</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="modality_intuitionistically"><span class="id" title="definition">modality_intuitionistically</span></a> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="iris.proofmode.modalities.html#Modality"><span class="id" title="constructor">Modality</span></a> <span class="id" title="var">_</span> <a class="idref" href="iris.proofmode.modality_instances.html#modality_intuitionistically_mixin"><span class="id" title="lemma">modality_intuitionistically_mixin</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a name="modality_embed_mixin"><span class="id" title="lemma">modality_embed_mixin</span></a> `{<a class="idref" href="iris.bi.embedding.html#BiEmbed"><span class="id" title="class">BiEmbed</span></a> <a class="idref" href="iris.proofmode.modality_instances.html#bi_modalities.PROP"><span class="id" title="variable">PROP</span></a> <span class="id" title="var">PROP'</span>} :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="iris.proofmode.modalities.html#modality_mixin"><span class="id" title="record">modality_mixin</span></a> (@<a class="idref" href="iris.bi.embedding.html#embed"><span class="id" title="definition">embed</span></a> <a class="idref" href="iris.proofmode.modality_instances.html#bi_modalities.PROP"><span class="id" title="variable">PROP</span></a> <a class="idref" href="iris.proofmode.modality_instances.html#PROP'"><span class="id" title="variable">PROP'</span></a> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="iris.proofmode.modalities.html#MIEnvTransform"><span class="id" title="constructor">MIEnvTransform</span></a> <a class="idref" href="iris.proofmode.classes.html#IntoEmbed"><span class="id" title="class">IntoEmbed</span></a>) (<a class="idref" href="iris.proofmode.modalities.html#MIEnvTransform"><span class="id" title="constructor">MIEnvTransform</span></a> <a class="idref" href="iris.proofmode.classes.html#IntoEmbed"><span class="id" title="class">IntoEmbed</span></a>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="var">split_and</span>?;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eauto</span> <span class="id" title="keyword">using</span> <a class="idref" href="iris.bi.derived_laws_bi.html#bi.equiv_entails_sym"><span class="id" title="lemma">equiv_entails_sym</span></a>, <a class="idref" href="iris.bi.embedding.html#embed_emp_2"><span class="id" title="lemma">embed_emp_2</span></a>, <a class="idref" href="iris.bi.embedding.html#embed_sep"><span class="id" title="lemma">embed_sep</span></a>, <a class="idref" href="iris.bi.embedding.html#embed_and"><span class="id" title="lemma">embed_and</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span>. <span class="id" title="tactic">rewrite</span> /<a class="idref" href="iris.proofmode.classes.html#IntoEmbed"><span class="id" title="class">IntoEmbed</span></a>=&gt; -&gt;. <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <a class="idref" href="iris.bi.embedding.html#embed_intuitionistically_2"><span class="id" title="lemma">embed_intuitionistically_2</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">intros</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> -&gt;.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="modality_embed"><span class="id" title="definition">modality_embed</span></a> `{<a class="idref" href="iris.bi.embedding.html#BiEmbed"><span class="id" title="class">BiEmbed</span></a> <a class="idref" href="iris.proofmode.modality_instances.html#bi_modalities.PROP"><span class="id" title="variable">PROP</span></a> <span class="id" title="var">PROP'</span>} :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="iris.proofmode.modalities.html#Modality"><span class="id" title="constructor">Modality</span></a> <span class="id" title="var">_</span> <a class="idref" href="iris.proofmode.modality_instances.html#modality_embed_mixin"><span class="id" title="lemma">modality_embed_mixin</span></a>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="iris.proofmode.modality_instances.html#bi_modalities"><span class="id" title="section">bi_modalities</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <a name="sbi_modalities"><span class="id" title="section">sbi_modalities</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">PROP</span> : <a class="idref" href="iris.bi.interface.html#sbi"><span class="id" title="record">sbi</span></a>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a name="modality_plainly_mixin"><span class="id" title="lemma">modality_plainly_mixin</span></a> `{<a class="idref" href="iris.bi.plainly.html#BiPlainly"><span class="id" title="class">BiPlainly</span></a> <a class="idref" href="iris.proofmode.modality_instances.html#sbi_modalities.PROP"><span class="id" title="variable">PROP</span></a>} :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="iris.proofmode.modalities.html#modality_mixin"><span class="id" title="record">modality_mixin</span></a> (@<a class="idref" href="iris.bi.plainly.html#plainly"><span class="id" title="definition">plainly</span></a> <a class="idref" href="iris.proofmode.modality_instances.html#sbi_modalities.PROP"><span class="id" title="variable">PROP</span></a> <span class="id" title="var">_</span>) (<a class="idref" href="iris.proofmode.modalities.html#MIEnvForall"><span class="id" title="constructor">MIEnvForall</span></a> <a class="idref" href="iris.bi.plainly.html#Plain"><span class="id" title="class">Plain</span></a>) <a class="idref" href="iris.proofmode.modalities.html#MIEnvClear"><span class="id" title="constructor">MIEnvClear</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="var">split_and</span>?; <span class="id" title="tactic">eauto</span> <span class="id" title="keyword">using</span> <a class="idref" href="iris.bi.derived_laws_bi.html#bi.equiv_entails_sym"><span class="id" title="lemma">equiv_entails_sym</span></a>, <a class="idref" href="iris.bi.plainly.html#plainly_intro"><span class="id" title="lemma">plainly_intro</span></a>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="iris.bi.plainly.html#plainly_mono"><span class="id" title="lemma">plainly_mono</span></a>, <a class="idref" href="iris.bi.plainly.html#plainly_and"><span class="id" title="lemma">plainly_and</span></a>, <a class="idref" href="iris.bi.plainly.html#plainly_sep_2"><span class="id" title="lemma">plainly_sep_2</span></a> <span class="id" title="keyword">with</span> <span class="id" title="var">typeclass_instances</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="modality_plainly"><span class="id" title="definition">modality_plainly</span></a> `{<a class="idref" href="iris.bi.plainly.html#BiPlainly"><span class="id" title="class">BiPlainly</span></a> <a class="idref" href="iris.proofmode.modality_instances.html#sbi_modalities.PROP"><span class="id" title="variable">PROP</span></a>} :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="iris.proofmode.modalities.html#Modality"><span class="id" title="constructor">Modality</span></a> <span class="id" title="var">_</span> <a class="idref" href="iris.proofmode.modality_instances.html#modality_plainly_mixin"><span class="id" title="lemma">modality_plainly_mixin</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a name="modality_laterN_mixin"><span class="id" title="lemma">modality_laterN_mixin</span></a> <span class="id" title="var">n</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="iris.proofmode.modalities.html#modality_mixin"><span class="id" title="record">modality_mixin</span></a> (@<a class="idref" href="iris.bi.derived_connectives.html#sbi_laterN"><span class="id" title="definition">sbi_laterN</span></a> <a class="idref" href="iris.proofmode.modality_instances.html#sbi_modalities.PROP"><span class="id" title="variable">PROP</span></a> <a class="idref" href="iris.proofmode.modality_instances.html#n"><span class="id" title="variable">n</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="iris.proofmode.modalities.html#MIEnvTransform"><span class="id" title="constructor">MIEnvTransform</span></a> (<a class="idref" href="iris.proofmode.classes.html#MaybeIntoLaterN"><span class="id" title="class">MaybeIntoLaterN</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Datatypes.html#false"><span class="id" title="constructor">false</span></a> <a class="idref" href="iris.proofmode.modality_instances.html#n"><span class="id" title="variable">n</span></a>)) (<a class="idref" href="iris.proofmode.modalities.html#MIEnvTransform"><span class="id" title="constructor">MIEnvTransform</span></a> (<a class="idref" href="iris.proofmode.classes.html#MaybeIntoLaterN"><span class="id" title="class">MaybeIntoLaterN</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Datatypes.html#false"><span class="id" title="constructor">false</span></a> <a class="idref" href="iris.proofmode.modality_instances.html#n"><span class="id" title="variable">n</span></a>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="var">split_and</span>?; <span class="id" title="tactic">eauto</span> <span class="id" title="keyword">using</span> <a class="idref" href="iris.bi.derived_laws_bi.html#bi.equiv_entails_sym"><span class="id" title="lemma">equiv_entails_sym</span></a>, <a class="idref" href="iris.bi.derived_laws_sbi.html#bi.laterN_intro"><span class="id" title="lemma">laterN_intro</span></a>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="iris.bi.derived_laws_sbi.html#bi.laterN_mono"><span class="id" title="lemma">laterN_mono</span></a>, <a class="idref" href="iris.bi.derived_laws_sbi.html#bi.laterN_and"><span class="id" title="lemma">laterN_and</span></a>, <a class="idref" href="iris.bi.derived_laws_sbi.html#bi.laterN_sep"><span class="id" title="lemma">laterN_sep</span></a> <span class="id" title="keyword">with</span> <span class="id" title="var">typeclass_instances</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> /<a class="idref" href="iris.proofmode.classes.html#MaybeIntoLaterN"><span class="id" title="class">MaybeIntoLaterN</span></a>=&gt; <span class="id" title="var">P</span> <span class="id" title="var">Q</span> -&gt;. <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <a class="idref" href="iris.bi.derived_laws_sbi.html#bi.laterN_intuitionistically_2"><span class="id" title="lemma">laterN_intuitionistically_2</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="modality_laterN"><span class="id" title="definition">modality_laterN</span></a> <span class="id" title="var">n</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="iris.proofmode.modalities.html#Modality"><span class="id" title="constructor">Modality</span></a> <span class="id" title="var">_</span> (<a class="idref" href="iris.proofmode.modality_instances.html#modality_laterN_mixin"><span class="id" title="lemma">modality_laterN_mixin</span></a> <a class="idref" href="iris.proofmode.modality_instances.html#n"><span class="id" title="variable">n</span></a>).<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="iris.proofmode.modality_instances.html#sbi_modalities"><span class="id" title="section">sbi_modalities</span></a>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

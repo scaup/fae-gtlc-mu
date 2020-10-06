@@ -1,0 +1,699 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="coqdocjs.js"></script>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../overview.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<div id="toc">
+<a href="iris.proofmode.modalities.html"><h2>iris.proofmode.modalities</h2></a>
+<a href="iris.proofmode.monpred.html"><h2>iris.proofmode.monpred</h2></a>
+<a href="iris.proofmode.frame_instances.html"><h2>iris.proofmode.frame_instances</h2></a>
+<a href="iris.proofmode.class_instances_sbi.html"><h2>iris.proofmode.class_instances_sbi</h2></a>
+<a href="iris.proofmode.tokens.html"><h2>iris.proofmode.tokens</h2></a>
+<a href="iris.proofmode.spec_patterns.html"><h2>iris.proofmode.spec_patterns</h2></a>
+<a href="iris.proofmode.ltac_tactics.html"><h2>iris.proofmode.ltac_tactics</h2></a>
+<ul class="doclist">
+<li><a href="iris.proofmode.ltac_tactics.html#lab1">Misc</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab2">Start a proof</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab3">Generate a fresh identifier</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab4">Context manipulation</a>
+<ul class="doclist">
+<li><a href="iris.proofmode.ltac_tactics.html#lab5">Simplification</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab6">Assumptions</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab7">False</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab8">Making hypotheses intuitionistic or pure</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab9">Basic introduction tactics</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab10">Revert</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab11">The specialize and pose proof tactics</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab12">The apply tactic</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab13">Disjunction</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab14">Conjunction and separating conjunction</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab15">Existential</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab16">Modality introduction</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab17">Later</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab18">Update modality</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab19">Basic destruct tactic</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab20">Combinining hypotheses</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab21">Introduction tactic</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab22">Destruct tactic</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab23">Induction</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab24">Löb Induction</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab25">Assert</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab26">Rewrite</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab27">Update modality</a>
+
+</li>
+<li><a href="iris.proofmode.ltac_tactics.html#lab28">Invariant</a>
+
+</li>
+</ul>
+<a href="iris.proofmode.intro_patterns.html"><h2>iris.proofmode.intro_patterns</h2></a>
+<a href="iris.proofmode.base.html"><h2>iris.proofmode.base</h2></a>
+<ul class="doclist">
+<li><a href="iris.proofmode.base.html#lab29">Utility definitions used by the proofmode</a>
+
+</li>
+</ul>
+<a href="iris.proofmode.coq_tactics.html"><h2>iris.proofmode.coq_tactics</h2></a>
+<ul class="doclist">
+<li><a href="iris.proofmode.coq_tactics.html#lab30">Starting and stopping the proof mode</a>
+
+</li>
+<li><a href="iris.proofmode.coq_tactics.html#lab31">Basic rules</a>
+
+</li>
+<li><a href="iris.proofmode.coq_tactics.html#lab32">False</a>
+
+</li>
+<li><a href="iris.proofmode.coq_tactics.html#lab33">Pure</a>
+
+</li>
+<li><a href="iris.proofmode.coq_tactics.html#lab34">Intuitionistic</a>
+
+</li>
+<li><a href="iris.proofmode.coq_tactics.html#lab35">Implication and wand</a>
+
+</li>
+<li><a href="iris.proofmode.coq_tactics.html#lab36">Conjunction splitting</a>
+
+</li>
+<li><a href="iris.proofmode.coq_tactics.html#lab37">Separating conjunction splitting</a>
+
+</li>
+<li><a href="iris.proofmode.coq_tactics.html#lab38">Combining</a>
+
+</li>
+<li><a href="iris.proofmode.coq_tactics.html#lab39">Conjunction/separating conjunction elimination</a>
+
+</li>
+<li><a href="iris.proofmode.coq_tactics.html#lab40">Framing</a>
+
+</li>
+<li><a href="iris.proofmode.coq_tactics.html#lab41">Disjunction</a>
+
+</li>
+<li><a href="iris.proofmode.coq_tactics.html#lab42">Forall</a>
+
+</li>
+<li><a href="iris.proofmode.coq_tactics.html#lab43">Existential</a>
+
+</li>
+<li><a href="iris.proofmode.coq_tactics.html#lab44">Modalities</a>
+
+</li>
+<li><a href="iris.proofmode.coq_tactics.html#lab45">Accumulate hypotheses</a>
+
+</li>
+<li><a href="iris.proofmode.coq_tactics.html#lab46">Invariants</a>
+
+</li>
+<li><a href="iris.proofmode.coq_tactics.html#lab47">Rewriting</a>
+
+</li>
+<li><a href="iris.proofmode.coq_tactics.html#lab48">Later</a>
+
+</li>
+</ul>
+<a href="iris.proofmode.classes.html"><h2>iris.proofmode.classes</h2></a>
+<a href="iris.proofmode.sel_patterns.html"><h2>iris.proofmode.sel_patterns</h2></a>
+<a href="iris.proofmode.tactics.html"><h2>iris.proofmode.tactics</h2></a>
+<a href="iris.proofmode.class_instances_bi.html"><h2>iris.proofmode.class_instances_bi</h2></a>
+<a href="iris.proofmode.reduction.html"><h2>iris.proofmode.reduction</h2></a>
+<a href="iris.proofmode.modality_instances.html"><h2>iris.proofmode.modality_instances</h2></a>
+<a href="iris.proofmode.notation.html"><h2>iris.proofmode.notation</h2></a>
+<a href="iris.proofmode.environments.html"><h2>iris.proofmode.environments</h2></a>
+<a href="iris.bi.derived_laws_bi.html"><h2>iris.bi.derived_laws_bi</h2></a>
+<a href="iris.bi.monpred.html"><h2>iris.bi.monpred</h2></a>
+<a href="iris.bi.embedding.html"><h2>iris.bi.embedding</h2></a>
+<a href="iris.bi.plainly.html"><h2>iris.bi.plainly</h2></a>
+<a href="iris.bi.big_op.html"><h2>iris.bi.big_op</h2></a>
+<ul class="doclist">
+<li><a href="iris.bi.big_op.html#lab49">Properties</a>
+<ul class="doclist">
+<li><a href="iris.bi.big_op.html#lab50">Big ops over lists</a>
+
+</li>
+<li><a href="iris.bi.big_op.html#lab51">Big ops over two lists</a>
+
+</li>
+<li><a href="iris.bi.big_op.html#lab52">Big ops over finite maps</a>
+
+</li>
+<li><a href="iris.bi.big_op.html#lab53">Big ops over two maps</a>
+
+</li>
+<li><a href="iris.bi.big_op.html#lab54">Big ops over finite sets</a>
+
+</li>
+<li><a href="iris.bi.big_op.html#lab55">Big ops over finite multisets</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="iris.bi.big_op.html#lab56">Properties for step-indexed BIs</a>
+<ul class="doclist">
+<li><a href="iris.bi.big_op.html#lab57">Big ops over lists</a>
+
+</li>
+<li><a href="iris.bi.big_op.html#lab58">Big ops over finite maps</a>
+
+</li>
+<li><a href="iris.bi.big_op.html#lab59">Big ops over finite sets</a>
+
+</li>
+<li><a href="iris.bi.big_op.html#lab60">Big ops over finite multisets</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<a href="iris.bi.ascii.html"><h2>iris.bi.ascii</h2></a>
+<a href="iris.bi.interface.html"><h2>iris.bi.interface</h2></a>
+<ul class="doclist">
+<li><a href="iris.bi.interface.html#lab61">Axioms for a general BI (logic of bunched implications)</a>
+
+</li>
+</ul>
+<a href="iris.bi.updates.html"><h2>iris.bi.updates</h2></a>
+<a href="iris.bi.telescopes.html"><h2>iris.bi.telescopes</h2></a>
+<a href="iris.bi.bi.html"><h2>iris.bi.bi</h2></a>
+<a href="iris.bi.tactics.html"><h2>iris.bi.tactics</h2></a>
+<a href="iris.bi.lib.atomic.html"><h2>iris.bi.lib.atomic</h2></a>
+<a href="iris.bi.lib.fixpoint.html"><h2>iris.bi.lib.fixpoint</h2></a>
+<a href="iris.bi.lib.core.html"><h2>iris.bi.lib.core</h2></a>
+<a href="iris.bi.lib.laterable.html"><h2>iris.bi.lib.laterable</h2></a>
+<a href="iris.bi.lib.fractional.html"><h2>iris.bi.lib.fractional</h2></a>
+<a href="iris.bi.lib.counterexamples.html"><h2>iris.bi.lib.counterexamples</h2></a>
+<a href="iris.bi.lib.relations.html"><h2>iris.bi.lib.relations</h2></a>
+<a href="iris.bi.weakestpre.html"><h2>iris.bi.weakestpre</h2></a>
+<a href="iris.bi.notation.html"><h2>iris.bi.notation</h2></a>
+<a href="iris.bi.derived_connectives.html"><h2>iris.bi.derived_connectives</h2></a>
+<a href="iris.bi.derived_laws_sbi.html"><h2>iris.bi.derived_laws_sbi</h2></a>
+<a href="iris.si_logic.siprop.html"><h2>iris.si_logic.siprop</h2></a>
+<a href="iris.si_logic.bi.html"><h2>iris.si_logic.bi</h2></a>
+<a href="iris.base_logic.proofmode.html"><h2>iris.base_logic.proofmode</h2></a>
+<a href="iris.base_logic.upred.html"><h2>iris.base_logic.upred</h2></a>
+<a href="iris.base_logic.derived.html"><h2>iris.base_logic.derived</h2></a>
+<a href="iris.base_logic.bupd_alt.html"><h2>iris.base_logic.bupd_alt</h2></a>
+<a href="iris.base_logic.bi.html"><h2>iris.base_logic.bi</h2></a>
+<a href="iris.base_logic.base_logic.html"><h2>iris.base_logic.base_logic</h2></a>
+<a href="iris.base_logic.lib.proph_map.html"><h2>iris.base_logic.lib.proph_map</h2></a>
+<a href="iris.base_logic.lib.invariants.html"><h2>iris.base_logic.lib.invariants</h2></a>
+<ul class="doclist">
+<li><a href="iris.base_logic.lib.invariants.html#lab62">Invariants</a>
+<ul class="doclist">
+<li><a href="iris.base_logic.lib.invariants.html#lab63">Internal model of invariants</a>
+
+</li>
+<li><a href="iris.base_logic.lib.invariants.html#lab64">Public API of invariants</a>
+
+</li>
+<li><a href="iris.base_logic.lib.invariants.html#lab65">Proof mode integration</a>
+
+</li>
+<li><a href="iris.base_logic.lib.invariants.html#lab66">Derived properties</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<a href="iris.base_logic.lib.gen_heap.html"><h2>iris.base_logic.lib.gen_heap</h2></a>
+<a href="iris.base_logic.lib.saved_prop.html"><h2>iris.base_logic.lib.saved_prop</h2></a>
+<a href="iris.base_logic.lib.fancy_updates.html"><h2>iris.base_logic.lib.fancy_updates</h2></a>
+<a href="iris.base_logic.lib.iprop.html"><h2>iris.base_logic.lib.iprop</h2></a>
+<ul class="doclist">
+<li><a href="iris.base_logic.lib.iprop.html#lab67">Locally contractive functors</a>
+
+</li>
+<li><a href="iris.base_logic.lib.iprop.html#lab68">Subfunctors</a>
+
+</li>
+<li><a href="iris.base_logic.lib.iprop.html#lab69">Solution of the recursive domain equation</a>
+
+</li>
+<li><a href="iris.base_logic.lib.iprop.html#lab70">Properties of the solution to the recursive domain equation</a>
+
+</li>
+</ul>
+<a href="iris.base_logic.lib.wsat.html"><h2>iris.base_logic.lib.wsat</h2></a>
+<a href="iris.base_logic.lib.cancelable_invariants.html"><h2>iris.base_logic.lib.cancelable_invariants</h2></a>
+<a href="iris.base_logic.lib.viewshifts.html"><h2>iris.base_logic.lib.viewshifts</h2></a>
+<a href="iris.base_logic.lib.sts.html"><h2>iris.base_logic.lib.sts</h2></a>
+<a href="iris.base_logic.lib.fancy_updates_from_vs.html"><h2>iris.base_logic.lib.fancy_updates_from_vs</h2></a>
+<a href="iris.base_logic.lib.auth.html"><h2>iris.base_logic.lib.auth</h2></a>
+<a href="iris.base_logic.lib.boxes.html"><h2>iris.base_logic.lib.boxes</h2></a>
+<a href="iris.base_logic.lib.na_invariants.html"><h2>iris.base_logic.lib.na_invariants</h2></a>
+<a href="iris.base_logic.lib.own.html"><h2>iris.base_logic.lib.own</h2></a>
+<ul class="doclist">
+<li><a href="iris.base_logic.lib.own.html#lab71">Definition of the connective <span class="inlinecode"><span class="id" title="var">own</span></span></a>
+
+</li>
+<li><a href="iris.base_logic.lib.own.html#lab72">Properties about ghost ownership</a>
+<ul class="doclist">
+<li><a href="iris.base_logic.lib.own.html#lab73">Properties of <span class="inlinecode"><span class="id" title="var">iRes_singleton</span></span></a>
+
+</li>
+<li><a href="iris.base_logic.lib.own.html#lab74">Properties of <span class="inlinecode"><span class="id" title="var">own</span></span></a>
+
+</li>
+<li><a href="iris.base_logic.lib.own.html#lab75">Allocation</a>
+
+</li>
+<li><a href="iris.base_logic.lib.own.html#lab76">Frame preserving updates</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<a href="iris.algebra.vector.html"><h2>iris.algebra.vector</h2></a>
+<a href="iris.algebra.proofmode_classes.html"><h2>iris.algebra.proofmode_classes</h2></a>
+<a href="iris.algebra.coPset.html"><h2>iris.algebra.coPset</h2></a>
+<a href="iris.algebra.ofe.html"><h2>iris.algebra.ofe</h2></a>
+<ul class="doclist">
+<li><a href="iris.algebra.ofe.html#lab77">Unit type</a>
+
+</li>
+<li><a href="iris.algebra.ofe.html#lab78">Empty type</a>
+
+</li>
+<li><a href="iris.algebra.ofe.html#lab79">Product type</a>
+
+</li>
+<li><a href="iris.algebra.ofe.html#lab80">COFE → OFE Functors</a>
+
+</li>
+<li><a href="iris.algebra.ofe.html#lab81">Sum type</a>
+
+</li>
+<li><a href="iris.algebra.ofe.html#lab82">Discrete OFEs</a>
+
+</li>
+<li><a href="iris.algebra.ofe.html#lab83">Basic Coq types</a>
+
+</li>
+<li><a href="iris.algebra.ofe.html#lab84">Option type</a>
+
+</li>
+<li><a href="iris.algebra.ofe.html#lab85">Later type</a>
+
+</li>
+<li><a href="iris.algebra.ofe.html#lab86">Dependently-typed functions over a discrete domain</a>
+
+</li>
+<li><a href="iris.algebra.ofe.html#lab87">Constructing isomorphic OFEs</a>
+
+</li>
+<li><a href="iris.algebra.ofe.html#lab88">Sigma type</a>
+
+</li>
+<li><a href="iris.algebra.ofe.html#lab89">SigmaT type</a>
+
+</li>
+<li><a href="iris.algebra.ofe.html#lab90">Isomorphisms between OFEs</a>
+
+</li>
+</ul>
+<a href="iris.algebra.local_updates.html"><h2>iris.algebra.local_updates</h2></a>
+<ul class="doclist">
+<li><a href="iris.algebra.local_updates.html#lab91">Local updates</a>
+
+</li>
+<li><a href="iris.algebra.local_updates.html#lab92">Product</a>
+
+</li>
+<li><a href="iris.algebra.local_updates.html#lab93">Option</a>
+
+</li>
+<li><a href="iris.algebra.local_updates.html#lab94">Natural numbers</a>
+
+</li>
+</ul>
+<a href="iris.algebra.big_op.html"><h2>iris.algebra.big_op</h2></a>
+<ul class="doclist">
+<li><a href="iris.algebra.big_op.html#lab95">Big ops over lists</a>
+
+</li>
+<li><a href="iris.algebra.big_op.html#lab96">Properties about big ops</a>
+<ul class="doclist">
+<li><a href="iris.algebra.big_op.html#lab97">Big ops over lists</a>
+
+</li>
+<li><a href="iris.algebra.big_op.html#lab98">Big ops over finite maps</a>
+
+</li>
+<li><a href="iris.algebra.big_op.html#lab99">Big ops over finite sets</a>
+
+</li>
+<li><a href="iris.algebra.big_op.html#lab100">Big ops over finite msets</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<a href="iris.algebra.base.html"><h2>iris.algebra.base</h2></a>
+<a href="iris.algebra.agree.html"><h2>iris.algebra.agree</h2></a>
+<a href="iris.algebra.functions.html"><h2>iris.algebra.functions</h2></a>
+<a href="iris.algebra.gmultiset.html"><h2>iris.algebra.gmultiset</h2></a>
+<a href="iris.algebra.cmra_big_op.html"><h2>iris.algebra.cmra_big_op</h2></a>
+<a href="iris.algebra.cofe_solver.html"><h2>iris.algebra.cofe_solver</h2></a>
+<a href="iris.algebra.monoid.html"><h2>iris.algebra.monoid</h2></a>
+<a href="iris.algebra.excl.html"><h2>iris.algebra.excl</h2></a>
+<a href="iris.algebra.dra.html"><h2>iris.algebra.dra</h2></a>
+<a href="iris.algebra.sts.html"><h2>iris.algebra.sts</h2></a>
+<ul class="doclist">
+<li><a href="iris.algebra.sts.html#lab101">Definition of STSs</a>
+
+</li>
+<li><a href="iris.algebra.sts.html#lab102">Theory and definitions</a>
+<ul class="doclist">
+<li><a href="iris.algebra.sts.html#lab103">Step relations</a>
+
+</li>
+<li><a href="iris.algebra.sts.html#lab104">Closure under frame steps</a>
+
+</li>
+<li><a href="iris.algebra.sts.html#lab105">Setoids</a>
+
+</li>
+<li><a href="iris.algebra.sts.html#lab106">Properties of closure under frame steps</a>
+
+</li>
+<li><a href="iris.algebra.sts.html#lab107">Properties of the closure operators</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="iris.algebra.sts.html#lab108">STSs form a disjoint RA</a>
+
+</li>
+<li><a href="iris.algebra.sts.html#lab109">The STS Resource Algebra</a>
+
+</li>
+</ul>
+<a href="iris.algebra.cmra.html"><h2>iris.algebra.cmra</h2></a>
+<ul class="doclist">
+<li><a href="iris.algebra.cmra.html#lab110">CoreId elements</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab111">Exclusive elements (i.e., elements that cannot have a frame).</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab112">Cancelable elements.</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab113">Identity-free elements.</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab114">CMRAs whose core is total</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab115">CMRAs with a unit element</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab116">Discrete CMRAs</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab117">Morphisms</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab118">Properties</a>
+<ul class="doclist">
+<li><a href="iris.algebra.cmra.html#lab119">Setoids</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab120">Op</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab121">Validity</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab122">Core</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab123">Exclusive elements</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab124">Order</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab125">CoreId elements</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab126">Total core</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab127">Discrete</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab128">Discrete</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab129">Properties about CMRAs with a unit element</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab130">Properties about CMRAs with Leibniz equality</a>
+<ul class="doclist">
+<li><a href="iris.algebra.cmra.html#lab131">Core</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab132">CoreId elements</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab133">Total core</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab134">Constructing a CMRA with total core</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab135">Properties about morphisms</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab136">Transporting a CMRA equality</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab137">Instances</a>
+<ul class="doclist">
+<li><a href="iris.algebra.cmra.html#lab138">Discrete CMRA</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab139">CMRA for the unit type</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab140">CMRA for the empty type</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab141">Natural numbers</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab142">Positive integers.</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab143">Product</a>
+
+</li>
+<li><a href="iris.algebra.cmra.html#lab144">CMRA for the option type</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<a href="iris.algebra.updates.html"><h2>iris.algebra.updates</h2></a>
+<ul class="doclist">
+<li><a href="iris.algebra.updates.html#lab145">Frame preserving updates</a>
+<ul class="doclist">
+<li><a href="iris.algebra.updates.html#lab146">Frame preserving updates for total CMRAs</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="iris.algebra.updates.html#lab147">Transport</a>
+
+</li>
+<li><a href="iris.algebra.updates.html#lab148">Product</a>
+
+</li>
+<li><a href="iris.algebra.updates.html#lab149">Option</a>
+
+</li>
+</ul>
+<a href="iris.algebra.csum.html"><h2>iris.algebra.csum</h2></a>
+<a href="iris.algebra.ufrac.html"><h2>iris.algebra.ufrac</h2></a>
+<a href="iris.algebra.auth.html"><h2>iris.algebra.auth</h2></a>
+<a href="iris.algebra.gset.html"><h2>iris.algebra.gset</h2></a>
+<a href="iris.algebra.namespace_map.html"><h2>iris.algebra.namespace_map</h2></a>
+<a href="iris.algebra.deprecated.html"><h2>iris.algebra.deprecated</h2></a>
+<a href="iris.algebra.list.html"><h2>iris.algebra.list</h2></a>
+<a href="iris.algebra.lib.excl_auth.html"><h2>iris.algebra.lib.excl_auth</h2></a>
+<a href="iris.algebra.lib.ufrac_auth.html"><h2>iris.algebra.lib.ufrac_auth</h2></a>
+<a href="iris.algebra.lib.frac_auth.html"><h2>iris.algebra.lib.frac_auth</h2></a>
+<a href="iris.algebra.frac.html"><h2>iris.algebra.frac</h2></a>
+<a href="iris.algebra.gmap.html"><h2>iris.algebra.gmap</h2></a>
+<a href="iris.heap_lang.locations.html"><h2>iris.heap_lang.locations</h2></a>
+<a href="iris.heap_lang.total_adequacy.html"><h2>iris.heap_lang.total_adequacy</h2></a>
+<a href="iris.heap_lang.proofmode.html"><h2>iris.heap_lang.proofmode</h2></a>
+<a href="iris.heap_lang.metatheory.html"><h2>iris.heap_lang.metatheory</h2></a>
+<a href="iris.heap_lang.lifting.html"><h2>iris.heap_lang.lifting</h2></a>
+<a href="iris.heap_lang.adequacy.html"><h2>iris.heap_lang.adequacy</h2></a>
+<a href="iris.heap_lang.proph_erasure.html"><h2>iris.heap_lang.proph_erasure</h2></a>
+<a href="iris.heap_lang.array.html"><h2>iris.heap_lang.array</h2></a>
+<ul class="doclist">
+<li><a href="iris.heap_lang.array.html#lab150">Rules for allocation</a>
+
+</li>
+<li><a href="iris.heap_lang.array.html#lab151">Rules for accessing array elements</a>
+
+</li>
+</ul>
+<a href="iris.heap_lang.lang.html"><h2>iris.heap_lang.lang</h2></a>
+<a href="iris.heap_lang.tactics.html"><h2>iris.heap_lang.tactics</h2></a>
+<a href="iris.heap_lang.lib.ticket_lock.html"><h2>iris.heap_lang.lib.ticket_lock</h2></a>
+<a href="iris.heap_lang.lib.lock.html"><h2>iris.heap_lang.lib.lock</h2></a>
+<ul class="doclist">
+<li><a href="iris.heap_lang.lib.lock.html#lab152">Operations</a>
+
+</li>
+<li><a href="iris.heap_lang.lib.lock.html#lab153">Predicates</a>
+
+</li>
+<li><a href="iris.heap_lang.lib.lock.html#lab154">General properties of the predicates</a>
+
+</li>
+<li><a href="iris.heap_lang.lib.lock.html#lab155">Program specs</a>
+
+</li>
+</ul>
+<a href="iris.heap_lang.lib.nondet_bool.html"><h2>iris.heap_lang.lib.nondet_bool</h2></a>
+<a href="iris.heap_lang.lib.par.html"><h2>iris.heap_lang.lib.par</h2></a>
+<a href="iris.heap_lang.lib.diverge.html"><h2>iris.heap_lang.lib.diverge</h2></a>
+<a href="iris.heap_lang.lib.lazy_coin.html"><h2>iris.heap_lang.lib.lazy_coin</h2></a>
+<a href="iris.heap_lang.lib.increment.html"><h2>iris.heap_lang.lib.increment</h2></a>
+<a href="iris.heap_lang.lib.spawn.html"><h2>iris.heap_lang.lib.spawn</h2></a>
+<a href="iris.heap_lang.lib.atomic_heap.html"><h2>iris.heap_lang.lib.atomic_heap</h2></a>
+<a href="iris.heap_lang.lib.assert.html"><h2>iris.heap_lang.lib.assert</h2></a>
+<a href="iris.heap_lang.lib.spin_lock.html"><h2>iris.heap_lang.lib.spin_lock</h2></a>
+<a href="iris.heap_lang.lib.clairvoyant_coin.html"><h2>iris.heap_lang.lib.clairvoyant_coin</h2></a>
+<a href="iris.heap_lang.lib.array_copy.html"><h2>iris.heap_lang.lib.array_copy</h2></a>
+<a href="iris.heap_lang.lib.counter.html"><h2>iris.heap_lang.lib.counter</h2></a>
+<a href="iris.heap_lang.lib.arith.html"><h2>iris.heap_lang.lib.arith</h2></a>
+<a href="iris.heap_lang.notation.html"><h2>iris.heap_lang.notation</h2></a>
+<a href="iris.program_logic.total_adequacy.html"><h2>iris.program_logic.total_adequacy</h2></a>
+<a href="iris.program_logic.atomic.html"><h2>iris.program_logic.atomic</h2></a>
+<a href="iris.program_logic.language.html"><h2>iris.program_logic.language</h2></a>
+<a href="iris.program_logic.lifting.html"><h2>iris.program_logic.lifting</h2></a>
+<a href="iris.program_logic.adequacy.html"><h2>iris.program_logic.adequacy</h2></a>
+<a href="iris.program_logic.ectx_lifting.html"><h2>iris.program_logic.ectx_lifting</h2></a>
+<a href="iris.program_logic.ownp.html"><h2>iris.program_logic.ownp</h2></a>
+<a href="iris.program_logic.ectx_language.html"><h2>iris.program_logic.ectx_language</h2></a>
+<a href="iris.program_logic.total_ectx_lifting.html"><h2>iris.program_logic.total_ectx_lifting</h2></a>
+<a href="iris.program_logic.ectxi_language.html"><h2>iris.program_logic.ectxi_language</h2></a>
+<a href="iris.program_logic.total_weakestpre.html"><h2>iris.program_logic.total_weakestpre</h2></a>
+<ul class="doclist">
+<li><a href="iris.program_logic.total_weakestpre.html#lab156">Derived rules</a>
+
+</li>
+</ul>
+<a href="iris.program_logic.weakestpre.html"><h2>iris.program_logic.weakestpre</h2></a>
+<ul class="doclist">
+<li><a href="iris.program_logic.weakestpre.html#lab157">Derived rules</a>
+
+</li>
+</ul>
+<a href="iris.program_logic.hoare.html"><h2>iris.program_logic.hoare</h2></a>
+<a href="iris.program_logic.total_lifting.html"><h2>iris.program_logic.total_lifting</h2></a>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

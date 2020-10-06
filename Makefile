@@ -1,5 +1,8 @@
 EXTRA_DIR:=extra
 COQDOCFLAGS:= \
+  --external '../html-iris' iris \
+  --external '../html-autosubst' Autosubst \
+  --external '../html-stdpp' stdpp \
   --toc --toc-depth 2 --html --interpolate \
   --index indexpage --no-lib-name --parse-comments \
   --with-header $(EXTRA_DIR)/header.html --with-footer $(EXTRA_DIR)/footer.html

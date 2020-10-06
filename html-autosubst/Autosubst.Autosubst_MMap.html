@@ -1,0 +1,265 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="coqdocjs.js"></script>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../overview.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<h1 class="libtitle">Autosubst.Autosubst_MMap</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+  Apply a function to all instances of a type A occuring in a type B.
+  This is used to implement term structures with containers, e.g.
+
+<div class="paragraph"> </div>
+
+  Inductive term := C (xs : list term)
+
+<div class="paragraph"> </div>
+
+  By default we provide mmap instances for option, list, pair and
+  the codomain of a function. For additional inductive types, there is
+  a derive tactic to generate new mmap instances.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Autosubst.Autosubst_Basics.html#"><span class="id" title="library">Autosubst_Basics</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Class</span> <a name="MMap"><span class="id" title="record">MMap</span></a> (<span class="id" title="var">A</span> <span class="id" title="var">B</span>: <span class="id" title="keyword">Type</span>) := <a name="mmap"><span class="id" title="projection">mmap</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#1c93e43e07fbeaeb6a625cb6614beb5d"><span class="id" title="notation">(</span></a><a class="idref" href="Autosubst.Autosubst_MMap.html#A"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#1c93e43e07fbeaeb6a625cb6614beb5d"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#A"><span class="id" title="variable">A</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#1c93e43e07fbeaeb6a625cb6614beb5d"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#1c93e43e07fbeaeb6a625cb6614beb5d"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#B"><span class="id" title="variable">B</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#1c93e43e07fbeaeb6a625cb6614beb5d"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#B"><span class="id" title="variable">B</span></a>.<br/>
+<span class="id" title="var">Arguments</span> <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">_</span>} <span class="id" title="var">f</span> !<span class="id" title="var">s</span> /.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Extensionality for mmap. This Lemma is uninteresting, as it is implied by
+  functional extensionality. However, instances of this class should be
+  transparent and take the proof of <span class="inlinecode">[<span class="id" title="keyword">forall</span></span> <span class="inlinecode"><a class="idref" href="Autosubst.Autosubst_MMap.html#t"><span class="id" title="variable">t</span></a>,</span> <span class="inlinecode"><a class="idref" href="Autosubst.Autosubst_Tactics.html#f"><span class="id" title="variable">f</span></a></span> <span class="inlinecode"><a class="idref" href="Autosubst.Autosubst_MMap.html#t"><span class="id" title="variable">t</span></a></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">gt</span>]</span> as a non-recursive
+  argument. This is sufficient to allow the fixpoint checker to lift proofs
+  over mmap.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <a name="MMapExt"><span class="id" title="record">MMapExt</span></a> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>) `{<a class="idref" href="Autosubst.Autosubst_MMap.html#MMap"><span class="id" title="class">MMap</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#A"><span class="id" title="variable">A</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#B"><span class="id" title="variable">B</span></a>} :=<br/>
+&nbsp;&nbsp;<a name="mmap_ext"><span class="id" title="projection">mmap_ext</span></a> : <span class="id" title="keyword">forall</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#1c93e43e07fbeaeb6a625cb6614beb5d"><span class="id" title="notation">(</span></a><span class="id" title="keyword">forall</span> <span class="id" title="var">t</span>, <a class="idref" href="Autosubst.Autosubst_MMap.html#f"><span class="id" title="variable">f</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#t"><span class="id" title="variable">t</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#g"><span class="id" title="variable">g</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#t"><span class="id" title="variable">t</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#1c93e43e07fbeaeb6a625cb6614beb5d"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#1c93e43e07fbeaeb6a625cb6614beb5d"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">forall</span> <span class="id" title="var">s</span>, <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#f"><span class="id" title="variable">f</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#s"><span class="id" title="variable">s</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#g"><span class="id" title="variable">g</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#s"><span class="id" title="variable">s</span></a>.<br/>
+<span class="id" title="var">Arguments</span> <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_ext"><span class="id" title="definition">mmap_ext</span></a> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">H'</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>} <span class="id" title="var">H</span> <span class="id" title="var">s</span> : <span class="id" title="tactic">rename</span>. <span class="comment">(*&nbsp;JK-TODO:&nbsp;check&nbsp;how&nbsp;this&nbsp;affects&nbsp;existing&nbsp;code?&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">Class</span> <a name="MMapLemmas"><span class="id" title="record">MMapLemmas</span></a> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>) `{<a class="idref" href="Autosubst.Autosubst_MMap.html#MMap"><span class="id" title="class">MMap</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#A"><span class="id" title="variable">A</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#B"><span class="id" title="variable">B</span></a>} := {<br/>
+&nbsp;&nbsp;<a name="mmap_id"><span class="id" title="projection">mmap_id</span></a> <span class="id" title="var">x</span> : <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> <a class="idref" href="Autosubst.Autosubst_Basics.html#id"><span class="id" title="definition">id</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#x"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#x"><span class="id" title="variable">x</span></a>;<br/>
+&nbsp;&nbsp;<a name="mmap_comp"><span class="id" title="projection">mmap_comp</span></a> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span> : <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#f"><span class="id" title="variable">f</span></a> (<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#g"><span class="id" title="variable">g</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#x"><span class="id" title="variable">x</span></a>) <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> (<a class="idref" href="Autosubst.Autosubst_MMap.html#g"><span class="id" title="variable">g</span></a> <a class="idref" href="Autosubst.Autosubst_Basics.html#fe49dd68796c809fdcf14834c5a87238"><span class="id" title="notation">&gt;&gt;&gt;</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#f"><span class="id" title="variable">f</span></a>) <a class="idref" href="Autosubst.Autosubst_MMap.html#x"><span class="id" title="variable">x</span></a><br/>
+}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+MMap Lemmas 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <a name="LemmasForMMap"><span class="id" title="section">LemmasForMMap</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>}.<br/>
+<span class="id" title="keyword">Context</span> {<span class="id" title="var">MMap_Inst</span> : <a class="idref" href="Autosubst.Autosubst_MMap.html#MMap"><span class="id" title="class">MMap</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#LemmasForMMap.A"><span class="id" title="variable">A</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#LemmasForMMap.B"><span class="id" title="variable">B</span></a>} {<span class="id" title="var">MMapLemmas_Inst</span> : <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapLemmas"><span class="id" title="class">MMapLemmas</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#LemmasForMMap.A"><span class="id" title="variable">A</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#LemmasForMMap.B"><span class="id" title="variable">B</span></a>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="mmap_idX"><span class="id" title="lemma">mmap_idX</span></a> : <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> <a class="idref" href="Autosubst.Autosubst_Basics.html#id"><span class="id" title="definition">id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="Autosubst.Autosubst_Basics.html#id"><span class="id" title="definition">id</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="var">f_ext</span>. <span class="id" title="tactic">exact</span> <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_id"><span class="id" title="method">mmap_id</span></a>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="mmap_compX"><span class="id" title="lemma">mmap_compX</span></a> <span class="id" title="var">f</span> <span class="id" title="var">g</span> : <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#f"><span class="id" title="variable">f</span></a> <a class="idref" href="Autosubst.Autosubst_Basics.html#fe49dd68796c809fdcf14834c5a87238"><span class="id" title="notation">&gt;&gt;&gt;</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#g"><span class="id" title="variable">g</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> (<a class="idref" href="Autosubst.Autosubst_MMap.html#f"><span class="id" title="variable">f</span></a> <a class="idref" href="Autosubst.Autosubst_Basics.html#fe49dd68796c809fdcf14834c5a87238"><span class="id" title="notation">&gt;&gt;&gt;</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#g"><span class="id" title="variable">g</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="var">f_ext</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_comp"><span class="id" title="method">mmap_comp</span></a>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="mmap_compR"><span class="id" title="lemma">mmap_compR</span></a> {<span class="id" title="var">C</span>} <span class="id" title="var">f</span> <span class="id" title="var">g</span> (<span class="id" title="var">h</span> : <span class="id" title="var">_</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#1c93e43e07fbeaeb6a625cb6614beb5d"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#C"><span class="id" title="variable">C</span></a>) :<br/>
+&nbsp;&nbsp;<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#f"><span class="id" title="variable">f</span></a> <a class="idref" href="Autosubst.Autosubst_Basics.html#fe49dd68796c809fdcf14834c5a87238"><span class="id" title="notation">&gt;&gt;&gt;</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#g"><span class="id" title="variable">g</span></a> <a class="idref" href="Autosubst.Autosubst_Basics.html#fe49dd68796c809fdcf14834c5a87238"><span class="id" title="notation">&gt;&gt;&gt;</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#h"><span class="id" title="variable">h</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> (<a class="idref" href="Autosubst.Autosubst_MMap.html#f"><span class="id" title="variable">f</span></a> <a class="idref" href="Autosubst.Autosubst_Basics.html#fe49dd68796c809fdcf14834c5a87238"><span class="id" title="notation">&gt;&gt;&gt;</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#g"><span class="id" title="variable">g</span></a>) <a class="idref" href="Autosubst.Autosubst_Basics.html#fe49dd68796c809fdcf14834c5a87238"><span class="id" title="notation">&gt;&gt;&gt;</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#h"><span class="id" title="variable">h</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="var">now</span> <span class="id" title="tactic">rewrite</span> &lt;- <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_compX"><span class="id" title="lemma">mmap_compX</span></a>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="Autosubst.Autosubst_MMap.html#LemmasForMMap"><span class="id" title="section">LemmasForMMap</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Identity Instance 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <a name="MMapId"><span class="id" title="section">MMapId</span></a>.<br/>
+<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}.<br/>
+<span class="id" title="keyword">Global Instance</span> <a name="MMap_refl"><span class="id" title="instance">MMap_refl</span></a> : <a class="idref" href="Autosubst.Autosubst_MMap.html#MMap"><span class="id" title="class">MMap</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapId.A"><span class="id" title="variable">A</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapId.A"><span class="id" title="variable">A</span></a> := <a class="idref" href="Autosubst.Autosubst_Basics.html#id"><span class="id" title="definition">id</span></a>.<br/>
+<span class="id" title="keyword">Global Instance</span> <a name="MMapLemmas_refl"><span class="id" title="instance">MMapLemmas_refl</span></a> : <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapLemmas"><span class="id" title="class">MMapLemmas</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapId.A"><span class="id" title="variable">A</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapId.A"><span class="id" title="variable">A</span></a>. <span class="id" title="var">now</span> <span class="id" title="tactic">constructor</span>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">Global Instance</span> <a name="MMapExt_refl"><span class="id" title="instance">MMapExt_refl</span></a> : <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapExt"><span class="id" title="class">MMapExt</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapId.A"><span class="id" title="variable">A</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapId.A"><span class="id" title="variable">A</span></a>. <span class="id" title="tactic">hnf</span>. <span class="id" title="tactic">tauto</span>. <span class="id" title="keyword">Defined</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapId"><span class="id" title="section">MMapId</span></a>.<br/>
+
+<br/>
+<span class="id" title="var">Arguments</span> <a class="idref" href="Autosubst.Autosubst_MMap.html#MMap_refl"><span class="id" title="instance">MMap_refl</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> /.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="mmap_id_instE"><span class="id" title="lemma">mmap_id_instE</span></a> {<span class="id" title="var">A</span>} <span class="id" title="var">f</span> : @<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (@<a class="idref" href="Autosubst.Autosubst_MMap.html#MMap_refl"><span class="id" title="instance">MMap_refl</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#A"><span class="id" title="variable">A</span></a>) <a class="idref" href="Autosubst.Autosubst_MMap.html#f"><span class="id" title="variable">f</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#f"><span class="id" title="variable">f</span></a>. <span class="id" title="tactic">reflexivity</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Constant Instance: mmap f x just ignores f and leaves x unchanged.
+    This instance has low priority so that it is just used if there is
+    no alternative.
+ 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <a name="MMapConst"><span class="id" title="section">MMapConst</span></a>.<br/>
+<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>: <span class="id" title="keyword">Type</span>}.<br/>
+<span class="id" title="keyword">Global Instance</span> <a name="MMap_const"><span class="id" title="instance">MMap_const</span></a> : <a class="idref" href="Autosubst.Autosubst_MMap.html#MMap"><span class="id" title="class">MMap</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapConst.A"><span class="id" title="variable">A</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapConst.B"><span class="id" title="variable">B</span></a> | 100 := <span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <a class="idref" href="Autosubst.Autosubst_Basics.html#id"><span class="id" title="definition">id</span></a>.<br/>
+<span class="id" title="keyword">Global Instance</span> <a name="MMapLemmas_const"><span class="id" title="instance">MMapLemmas_const</span></a> : <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapLemmas"><span class="id" title="class">MMapLemmas</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapConst.A"><span class="id" title="variable">A</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapConst.A"><span class="id" title="variable">A</span></a>. <span class="id" title="var">now</span> <span class="id" title="tactic">constructor</span>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">Global Instance</span> <a name="MMapExt_const"><span class="id" title="instance">MMapExt_const</span></a> : <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapExt"><span class="id" title="class">MMapExt</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapConst.A"><span class="id" title="variable">A</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapConst.A"><span class="id" title="variable">A</span></a>. <span class="id" title="tactic">hnf</span>. <span class="id" title="tactic">tauto</span>. <span class="id" title="keyword">Defined</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="Autosubst.Autosubst_MMap.html#MMapConst"><span class="id" title="section">MMapConst</span></a>.<br/>
+
+<br/>
+<span class="id" title="var">Arguments</span> <a class="idref" href="Autosubst.Autosubst_MMap.html#MMap_const"><span class="id" title="instance">MMap_const</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span> /.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="mmap_const_instE"><span class="id" title="lemma">mmap_const_instE</span></a> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} <span class="id" title="var">f</span> <span class="id" title="var">x</span> : @<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (@<a class="idref" href="Autosubst.Autosubst_MMap.html#MMap_const"><span class="id" title="instance">MMap_const</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#A"><span class="id" title="variable">A</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#B"><span class="id" title="variable">B</span></a>) <a class="idref" href="Autosubst.Autosubst_MMap.html#f"><span class="id" title="variable">f</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#x"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="Autosubst.Autosubst_MMap.html#x"><span class="id" title="variable">x</span></a>. <span class="id" title="tactic">reflexivity</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Simplify mmap expressions 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">mmap_typeclass_normalize</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| [|- <span class="id" title="keyword">context</span>[@<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> ?<span class="id" title="var">A</span> ?<span class="id" title="var">B</span> <span class="id" title="var">_</span> ?<span class="id" title="var">f</span>]] =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">s</span> := <span class="id" title="keyword">constr</span>:(@<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>) <span class="id" title="tactic">in</span> <span class="id" title="tactic">progress</span> <span class="id" title="tactic">change</span> (@<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>) <span class="id" title="keyword">with</span> <span class="id" title="var">s</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">mmap_typeclass_normalizeH</span> <span class="id" title="var">H</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="keyword">match</span> <span class="id" title="var">typeof</span> <span class="id" title="var">H</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <span class="id" title="keyword">context</span>[@<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> ?<span class="id" title="var">A</span> ?<span class="id" title="var">B</span> <span class="id" title="var">_</span> ?<span class="id" title="var">f</span>] =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">s</span> := <span class="id" title="keyword">constr</span>:(@<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>) <span class="id" title="tactic">in</span> <span class="id" title="tactic">progress</span> <span class="id" title="tactic">change</span> (@<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>) <span class="id" title="keyword">with</span> <span class="id" title="var">s</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Rewrite</span> @<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_id_instE"><span class="id" title="lemma">mmap_id_instE</span></a> @<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_const_instE"><span class="id" title="lemma">mmap_const_instE</span></a> : <span class="id" title="var">mmap</span>.<br/>
+<span class="id" title="keyword">Hint Rewrite</span> @<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_id"><span class="id" title="method">mmap_id</span></a> @<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_comp"><span class="id" title="method">mmap_comp</span></a> @<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_idX"><span class="id" title="lemma">mmap_idX</span></a> @<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_compX"><span class="id" title="lemma">mmap_compX</span></a> @<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_compR"><span class="id" title="lemma">mmap_compR</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">using</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span> : <span class="id" title="var">mmap</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Rewrite</span> @<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_id_instE"><span class="id" title="lemma">mmap_id_instE</span></a> @<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_const_instE"><span class="id" title="lemma">mmap_const_instE</span></a> : <span class="id" title="var">autosubst</span>.<br/>
+<span class="id" title="keyword">Hint Rewrite</span> @<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_id"><span class="id" title="method">mmap_id</span></a> @<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_comp"><span class="id" title="method">mmap_comp</span></a> @<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_idX"><span class="id" title="lemma">mmap_idX</span></a> @<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_compX"><span class="id" title="lemma">mmap_compX</span></a> @<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_compR"><span class="id" title="lemma">mmap_compR</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">using</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span> : <span class="id" title="var">autosubst</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">msimpl</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">mmap_typeclass_normalize</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">first</span><br/>
+&nbsp;&nbsp;[ <span class="id" title="tactic">solve</span> [<span class="id" title="tactic">trivial</span>]<br/>
+&nbsp;&nbsp;| <span class="id" title="tactic">progress</span> (<span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">autorewrite</span> <span class="id" title="keyword">with</span> <span class="id" title="var">mmap</span>)<br/>
+&nbsp;&nbsp;| <span class="id" title="var">fold_id</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">msimplH</span> <span class="id" title="var">H</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">mmap_typeclass_normalizeH</span> <span class="id" title="var">H</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">first</span><br/>
+&nbsp;&nbsp;[ <span class="id" title="tactic">solve</span> [<span class="id" title="tactic">trivial</span>]<br/>
+&nbsp;&nbsp;| <span class="id" title="tactic">progress</span> (<span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">autorewrite</span> <span class="id" title="keyword">with</span> <span class="id" title="var">mmap</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>)<br/>
+&nbsp;&nbsp;| <span class="id" title="var">fold_id</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "msimpl" "in" <span class="id" title="var">ident</span>(<span class="id" title="var">H</span>) := <span class="id" title="var">msimplH</span> <span class="id" title="var">H</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "msimpl" "in" "*" := (<span class="id" title="var">in_all</span> <span class="id" title="var">msimplH</span>); <span class="id" title="var">msimpl</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Deriving Instances 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">derive_MMap</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">map</span> := <span class="id" title="tactic">fresh</span> "dummy" <span class="id" title="tactic">in</span> <span class="comment">(*&nbsp;hack&nbsp;due&nbsp;to&nbsp;potential&nbsp;ltac&nbsp;bug&nbsp;!&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">hnf</span>; <span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span> [ |- <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#1c93e43e07fbeaeb6a625cb6614beb5d"><span class="id" title="notation">(</span></a>?<span class="id" title="var">A</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#1c93e43e07fbeaeb6a625cb6614beb5d"><span class="id" title="notation">-&gt;</span></a> ?<span class="id" title="var">A</span><a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#1c93e43e07fbeaeb6a625cb6614beb5d"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#1c93e43e07fbeaeb6a625cb6614beb5d"><span class="id" title="notation">-&gt;</span></a> ?<span class="id" title="var">B</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.11.1/stdlib//Coq.Init.Logic.html#1c93e43e07fbeaeb6a625cb6614beb5d"><span class="id" title="notation">-&gt;</span></a> ?<span class="id" title="var">B</span> ] =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span>; <span class="id" title="keyword">fix</span> <span class="id" title="var">map</span> 1; <span class="id" title="tactic">intros</span> <span class="id" title="var">xs</span>; <span class="id" title="tactic">change</span> (<a class="idref" href="Autosubst.Autosubst_Basics.html#annot"><span class="id" title="definition">annot</span></a> <span class="id" title="var">B</span> <span class="id" title="var">xs</span>); <span class="id" title="tactic">destruct</span> <span class="id" title="var">xs</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [ |- <a class="idref" href="Autosubst.Autosubst_Basics.html#annot"><span class="id" title="definition">annot</span></a> <span class="id" title="var">_</span> ?<span class="id" title="var">ys</span> ] =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="keyword">rec</span> <span class="id" title="var">tmap</span> <span class="id" title="var">xs</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">match</span> <span class="id" title="var">xs</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| ?<span class="id" title="var">s1</span> ?<span class="id" title="var">s2</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">s1</span> := <span class="id" title="var">tmap</span> <span class="id" title="var">s1</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">T</span>  := <span class="id" title="var">typeof</span> <span class="id" title="var">s2</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">s2</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">T</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">A</span> =&gt; <span class="id" title="keyword">constr</span>:(<span class="id" title="var">f</span> <span class="id" title="var">s2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">B</span> =&gt; <span class="id" title="keyword">constr</span>:(<span class="id" title="var">map</span> <span class="id" title="var">s2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">_</span> =&gt; <span class="id" title="keyword">constr</span>:(<a class="idref" href="Autosubst.Autosubst_MMap.html#mmap"><span class="id" title="definition">mmap</span></a> <span class="id" title="var">f</span> <span class="id" title="var">s2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">constr</span>:(<span class="id" title="var">s1</span> <span class="id" title="var">s2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">_</span> =&gt; <span class="id" title="var">xs</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>) <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">ys</span> := <span class="id" title="var">tmap</span> <span class="id" title="var">ys</span> <span class="id" title="tactic">in</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">ys</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+<span class="id" title="keyword">Hint Extern</span> 0 (<a class="idref" href="Autosubst.Autosubst_MMap.html#MMap"><span class="id" title="class">MMap</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) =&gt; <span class="id" title="var">derive_MMap</span> : <span class="id" title="var">derive</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">derive_MMapLemmas</span> := <span class="id" title="tactic">constructor</span>;<br/>
+&nbsp;&nbsp;[ <span class="id" title="tactic">induction</span> 0; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">f_equal</span>; <span class="id" title="tactic">trivial</span>; <span class="id" title="tactic">apply</span> <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_id"><span class="id" title="method">mmap_id</span></a><br/>
+&nbsp;&nbsp;| <span class="id" title="tactic">intros</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>; <span class="id" title="tactic">induction</span> 0; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">f_equal</span>; <span class="id" title="tactic">trivial</span>; <span class="id" title="tactic">apply</span> <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_comp"><span class="id" title="method">mmap_comp</span></a> ].<br/>
+<span class="id" title="keyword">Hint Extern</span> 0 (<a class="idref" href="Autosubst.Autosubst_MMap.html#MMapLemmas"><span class="id" title="class">MMapLemmas</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) =&gt; <span class="id" title="var">derive_MMapLemmas</span> : <span class="id" title="var">derive</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">derive_MMapExt</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> ???; <span class="id" title="keyword">fix</span> <span class="id" title="var">FIX</span> 1; <span class="id" title="tactic">destruct</span> 0; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">f_equal</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">using</span> <a class="idref" href="Autosubst.Autosubst_MMap.html#mmap_ext"><span class="id" title="definition">mmap_ext</span></a>.<br/>
+<span class="id" title="keyword">Hint Extern</span> 0 (<a class="idref" href="Autosubst.Autosubst_MMap.html#MMapExt"><span class="id" title="class">MMapExt</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) =&gt; <span class="id" title="var">derive_MMapExt</span> : <span class="id" title="var">derive</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Local&nbsp;Variables:&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;coq-load-path:&nbsp;(("."&nbsp;"Autosubst"))&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;End:&nbsp;*)</span><br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>
