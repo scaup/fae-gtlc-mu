@@ -106,45 +106,58 @@ Theorem `ctx_eq_preservation` proves preservation of equivalences, and `ctx_eq_r
 ## Proof structure (where's what?)
 
 Cool, so you're actually interested in the proof itself!
-The following files relate to the backtranslation:
-```
-theories/backtranslation/cast_help/universe.v # defines universe type
-theories/backtranslation/types.v # back-translation on types
-theories/cast_calculus/consistency/structural.v # alternative consistency relation
-theories/backtranslation/cast_help/general.v # backtranslation of casts by induction on alternative consistency (collects other files in that directory)
-theories/cast_calculus/consistency/equivalence/proof.v # proof that conventional consistency implies alternative consistency (collects other files in that directory)
-theories/backtranslation/expressions.v # backtranslation on expressions (using aforementioned proof)
-theories/backtranslation/contexts.v # backtranslation on contexts
-theories/backtranslation/well_typedness.v # well-typedness backtranslation
-```
-Files related to the (static <= gradual)-logical relations:
-```
-theories/refinements/static_gradual/resources_left.v # Iris resources for static part
-theories/refinements/static_gradual/resources_right.v # Iris resources for gradual part
-theories/refinements/static_gradual/logical_relation.v # definition (static <= gradual) logical relations
-theories/refinements/static_gradual/compat_easy.v # unexciting compat lemmas (fig 12 in paper)
-theories/refinements/static_gradual/compat_cast/defs.v # defines generalized compat lemma for casts
-theories/refinements/static_gradual/compat_cast/all.v # proof of generalized compat lemma casts (collects other files in that directory)
-theories/refinements/static_gradual/rel_ref_specs.v # collects compat lemmas for lemma 4.2 in paper
-theories/refinements/static_gradual/adequacy.v # lemma 4.3 in paper
-```
-Files related to the (gradual <= static)-logical relations:
-```
-theories/refinements/gradual_static/resources_left.v # Iris resources for the gradual part
-theories/refinements/gradual_static/resources_right.v # Iris resources for the static part
-theories/refinements/gradual_static/logical_relation.v # definition (gradual <= static) logical relations
-theories/refinements/gradual_static/compat_easy.v # unexciting compat lemmas (counterpart to fig 12 in paper)
-theories/refinements/static_gradual/compat_cast/defs.v # defines generalized compat lemma for casts
-theories/refinements/static_gradual/compat_cast/all.v # proof of generalized compat lemma casts (collects other files in that directory)
-theories/refinements/gradual_static/rel_ref_specs.v # collects compat lemmas for lemma 4.4 in paper
-theories/refinements/gradual_static/adequacy.v # lemma 4.5 in paper
-```
-The file `theories/fae.v` brings everything together.
+This section describes some of the more interesting files that make up the proof, referring to the text where possible;
+for a complete listing of all files, one can refer to the commented [_CoqProject](_CoqProject) file.
+
+### Defining backtranslation (section 4.2 in paper)
+
+- [theories/backtranslation/alternative_consistency.v](theories/backtranslation/alternative_consistency.v) defines the alternative consistency relation as in figure 9 of paper
+- [theories/backtranslation/implication_consistencies/proof.v](theories/backtranslation/implication_consistencies/proof.v) proves that the conventional relations implies the alternative one, as is claimed in the "Is this Well-Defined"-paragraph
+- [theories/backtranslation/cast_help/universe.v](theories/backtranslation/cast_help/universe.v) defines the universe (equation 1 in paper)
+- [theories/backtranslation/types.v](theories/backtranslation/types.v) defines the backtranslation on types (figure 6 and equation 1 in paper)
+- [theories/backtranslation/cast_help/embed.v](theories/backtranslation/cast_help/embed.v) defines backtranslation of casts from ground to unknown (figure 7 in paper)
+- [theories/backtranslation/cast_help/extract.v](theories/backtranslation/cast_help/extract.v) defines backtranslation of casts from unknown to ground (figure 7 in paper)
+- [theories/backtranslation/cast_help/extract.v](theories/backtranslation/cast_help/extract.v) defines backtranslation of casts from unknown to ground (figure 7 in paper)
+- [theories/backtranslation/cast_help/factorize.v](theories/backtranslation/cast_help/factorize.v): factorizing upcasts and downcasts (figure 9)
+- [theories/backtranslation/cast_help/between.v](theories/backtranslation/cast_help/between.v): casts between sum, product, recursive and arrow types
+- [theories/backtranslation/cast_help/general_def.v](theories/backtranslation/cast_help/general_def.v) brings it all together (figure 9)
+
+- [theories/backtranslation/expressions.v](theories/backtranslation/expressions.v): actual backtranslation on terms
+- [theories/backtranslation/contexts.v](theories/backtranslation/contexts.v): on contexts
+- [theories/backtranslation/well_typedness.v](theories/backtranslation/well_typedness.v): proves well-typedness of backtranslation
+
+### Defining logical relations from static to gradual (section 4.3.3)
+
+- [theories/refinements/static_gradual/resources_left.v](theories/refinements/static_gradual/resources_left.v): setting up Iris resources for static side
+- [theories/refinements/static_gradual/resources_right.v](theories/refinements/static_gradual/resources_right.v): setting up Iris resources for gradual side
+- [theories/refinements/static_gradual/logical_relation.v](theories/refinements/static_gradual/logical_relation.v): defining logical relations (section 4.3.3 in paper)
+
+### Proving specification for LR from static to gradual (section 4.3.2 and 4.3.4)
+
+- [theories/refinements/static_gradual/compat_easy.v](theories/refinements/static_gradual/compat_easy.v) proves the unexciting lemmas (fig 12 in the paper)
+- [theories/refinements/static_gradual/compat_cast/defs.v](theories/refinements/static_gradual/compat_cast/defs.v) defines the generalized compatibility lemma for casts (lemma 4.7)
+- [theories/refinements/static_gradual/compat_cast/all.v](theories/refinements/static_gradual/compat_cast/all.v) proves the compatibility lemma on casts; it brings together the different cases defined in the same folder
+- [theories/refinements/static_gradual/rel_ref_specs.v][theories/refinements/static_gradual/rel_ref_specs.v] proves that gradual contexts are related to their backtranslation and that static terms are related to their embeddings (lemma 4.2 in paper)
+- [theories/refinements/static_gradual/adequacy.v](theories/refinements/static_gradual/adequacy.v) proves adequacy of logical relations (lemma 4.3)
+
+### Defining logical relations from gradual to static (mostly analogous and not in the paper)
+
+- [theories/refinements/gradual_static/resources_left.v](theories/refinements/gradual_static/resources_left.v): setting up Iris resources for gradual side
+- [theories/refinements/gradual_static/resources_right.v](theories/refinements/gradual_static/resources_right.v): setting up Iris resources for static side
+- [theories/refinements/gradual_static/logical_relation.v](theories/refinements/gradual_static/logical_relation.v) defining logical relations
+
+### Proving specification for LR from gradual to static (mostly analogous and mostly absent in paper)
+
+- [theories/refinements/gradual_static/compat_easy.v](theories/refinements/gradual_static/compat_easy.v) proves the unexciting lemmas (not in paper)
+- [theories/refinements/gradual_static/compat_cast/defs.v](theories/refinements/gradual_static/compat_cast/defs.v) defines the generalized compatibility lemma for casts (not in paper)
+- [theories/refinements/gradual_static/compat_cast/all.v](theories/refinements/gradual_static/compat_cast/all.v) proves the compatibility lemma on casts; it brings together the different cases defined in the same folder
+- [theories/refinements/gradual_static/rel_ref_specs.v][theories/refinements/gradual_static/rel_ref_specs.v] proves that static contexts are related to their backtranslation and that gradual terms are related to their embeddings (lemma 4.4 in paper)
+- [theories/refinements/gradual_static/adequacy.v](theories/refinements/static_static/adequacy.v) proves adequacy of logical relations (lemma 4.5)
+
+### Full abstraction prove
+
+The file `theories/fae.v` brings everything together; both directions of theorem 4.1 are proven there.
 
 ## Credits
 Lots of code has its origin in the following;
 https://gitlab.mpi-sws.org/iris/examples/-/tree/master/theories/logrel/F_mu_ref_conc
-
-
-
-curl make m4 gcc git

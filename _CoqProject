@@ -89,7 +89,7 @@ theories/refinements/static_gradual/compat_cast/all.v
 # relating gradual contexts to their backtranslation; relating static terms to their embeddings (lemma 4.2) (static<gradual)
 theories/refinements/static_gradual/rel_ref_specs.v
 
-# proving adequacy of logical relations (lemma 4.2) (static<gradual)
+# proving adequacy of logical relations (lemma 4.3) (static<gradual)
 theories/refinements/static_gradual/adequacy.v
 
 # Defining logical relations (gradual<static)
