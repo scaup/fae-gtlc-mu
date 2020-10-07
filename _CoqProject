@@ -8,6 +8,7 @@ theories/stlc_mu/types.v # defining static types
 theories/stlc_mu/types_lemmas.v # boring lemmas about these types
 theories/stlc_mu/types_notations.v # some notations for types
 theories/stlc_mu/lang.v # defining expressions, values, evaluation contexts, head steps...
+theories/stlc_mu/lang_lemmas.v # boring lemmas about lang
 theories/stlc_mu/typing.v # typing rules
 theories/stlc_mu/typing_lemmas.v # boring lemmas about typing rules
 theories/stlc_mu/contexts.v # contexts
