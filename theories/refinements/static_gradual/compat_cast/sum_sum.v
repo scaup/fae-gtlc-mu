@@ -1,32 +1,10 @@
-From fae_gtlc_mu.refinements.static_gradual Require Export logical_relation resources_right compat_easy compat_cast.defs.
-From fae_gtlc_mu.cast_calculus Require Export types typing.
-From fae_gtlc_mu.stlc_mu Require Export lang.
-From iris.algebra Require Import list.
-From iris.proofmode Require Import tactics.
-From iris.program_logic Require Import lifting.
-From fae_gtlc_mu.cast_calculus Require Export consistency.
-From fae_gtlc_mu.backtranslation Require Export cast_help.general_def cast_help.extract cast_help.embed.
-From fae_gtlc_mu.cast_calculus Require Export lang types.
+From fae_gtlc_mu.refinements.static_gradual Require Export compat_cast.defs.
+From fae_gtlc_mu.cast_calculus Require Export lang.
 
 Section compat_cast_sum_sum.
   Context `{!implG Σ,!specG Σ}.
-  Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iPropO Σ).
-  (* Implicit Types e : stlc_mu.lang.expr. *)
-  (* Implicit Types e : stlc_mu.lang.expr. *)
-  Implicit Types fs : list stlc_mu.lang.val.
-  (* Implicit Types f : stlc_mu.lang.val. *)
-  Implicit Types A : list (cast_calculus.types.type * cast_calculus.types.type).
-  (* Implicit Types a : (cast_calculus.types.type * cast_calculus.types.type). *)
+
   Local Hint Resolve to_of_val : core.
-  Local Hint Resolve stlc_mu.lang.to_of_val : core.
-
-  (** Proving it *)
-
-  (* Lemma rewrite_subs_app (e1 e2 : expr) σ : *)
-  (*   (App e1 e2).[σ] = App e1.[σ] e2.[σ]. *)
-  (* Proof. *)
-  (*     by simpl. *)
-  (* Qed. *)
 
   Lemma back_cast_ar_sum_sum:
     ∀ (A : list (type * type)) (τ1 τ1' τ2 τ2' : type) (pC1 : alternative_consistency A τ1 τ1') (pC2 : alternative_consistency A τ2 τ2')
@@ -42,7 +20,7 @@ Section compat_cast_sum_sum.
     rewrite interp_rw_TSum.
     iDestruct "Hvv'" as "[H1 | H2]".
     + iDestruct "H1" as ((v1 , v1')) "[% Hv1v1']". inversion H0. clear H0 H2 H3 v v'.
-      iMod (step_pure _ ei' K' _ (InjL (Cast v1' τ1 τ1')) with "[Hv']") as "Hv'". by eapply SumCast1; eauto. eauto. eauto.
+      iMod (step_pure _ ei' K' _ (InjL (Cast v1' τ1 τ1')) with "[Hv']") as "Hv'". eapply SumCast1. eauto. eauto. eauto.
       wp_head. asimpl. fold (stlc_mu.lang.of_val v1).
       iApply (wp_bind (stlc_mu.lang.fill_item stlc_mu.lang.InjLCtx)).
       iApply (wp_wand with "[-]").
@@ -68,6 +46,5 @@ Section compat_cast_sum_sum.
       rewrite interp_rw_TSum.
       iRight. iExists (v1f , v1f'). eauto.
   Qed.
-
 
 End compat_cast_sum_sum.

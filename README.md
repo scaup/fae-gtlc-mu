@@ -3,12 +3,9 @@
 This repo contains a Coq/Iris proof of the fact that the embedding of STLCmu (the simply typed lambda calculus with equirecursive types) into GTLCmu (its gradualization) is fully abstract.
 It accompanies the paper  "Fully abstract from Static to Gradual".
 
-## VM-Image for artifact evaluation
+## How to compile Coq code
 
-For the purpose of artifact evaluation, a vm-image was created and can be found at ...
-It contains the compiled Coq code of this repository, some tools to interact with the Coq code (e.g. CoqIDE), and extra documentation.
-
-## Requirements for compiling coq code
+### Requirements
 
 - Coq: 8.11.1
 - Coq libraries
@@ -16,11 +13,11 @@ It contains the compiled Coq code of this repository, some tools to interact wit
   * IRIS: dev.2020-04-07.7.64bed0ca
   * coq-autosubs: dev.coq86
 
-## Getting started quickly with opam
+### Instructions to quickly get started with opam
 
 An easy way to get the correct version of Coq and the required libraries is by using opam.
 
-Get [http://opam.ocaml.org/doc/Install.html](opam), by fetching and running the install script.
+Get [opam](http://opam.ocaml.org/doc/Install.html), by fetching and running the install script.
 You need curl for this (e.g. `apt install curl`).
 ```
 sh <(curl -sL https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh)
@@ -63,6 +60,7 @@ Compile by running `make` in the root of this project.
 ```
 $ make
 ```
+
 ## Verifying the full abstraction claim
 
 This section describes the files necessary to go through in order to verify that full abstraction is indeed proven for the embedding from STLCmu to GTLCmu.
@@ -70,26 +68,26 @@ This section describes the files necessary to go through in order to verify that
 ### Verifying definition of the simply typed lambda calculus with iso-recursive types
 
 - [theories/stlc_mu/lang.v](theories/stlc_mu/lang.v) starts by defining the expressions and values;
-for this we use De Bruijn indices, utilizing [https://www.ps.uni-saarland.de/autosubst/doc/manual.pdf](Autosubst) to do so (detailed knowledge is not required).
+for this we use De Bruijn indices, utilizing [Autosubst](https://www.ps.uni-saarland.de/autosubst/doc/manual.pdf) to do so (detailed knowledge is not required).
 Afterwards, it defines evaluation contexts (of depth 1) and head step reductions.
 The final language is defined using the `EctxiLanguage` construct from the Iris library; essentially, it naturally defines the general evaluation contexts and the total reduction relation.
 Lastly, we define the `Halts` predicative for expressions.
 - [theories/stlc_mu/types.v](theories/stlc_mu/types.v) defines the static types (again using Autosubst).
 - [theories/stlc_mu/typing.v](theories/stlc_mu/typing.v) defines the typing rules for expressions.
-We restrict our typing derivations so that they only treat meaningful types; the closed types (types with no free variables) (see [theories/prelude.v] for the formal definition of closedness).
+We restrict our typing derivations so that they only treat meaningful types; the closed types (types with no free variables) (see [theories/prelude.v](theories/prelude.v) for the formal definition of closedness).
 - [theories/stlc_mu/contexts.v](theories/stlc_mu/contexts.v) defines general contexts (not evaluation contexts) together with their typing rules.
 - [theories/stlc_mu/ctx_equiv.v](theories/stlc_mu/ctx_equiv.v) defines contextual equivalence.
 
 ### Verifying definition of the cast calculus of GTLCmu
 
-- [theories/cast_calculus/types.v](theories/cast_calculus/types.v) defines the gradual types, ground types, the shape operator (S in figure 2 of paper) and type `ICP` to encode inert pairs (two function types or a ground and unknown type) which is used in [theories/cast_calculus/lang.v](lang.v) to define which expressions are values.
-- [theories/cast_calculus/types_notations.v] defines some handy notations for types.
+- [theories/cast_calculus/types.v](theories/cast_calculus/types.v) defines the gradual types, ground types, the shape operator (S in figure 2 of paper) and type `ICP` to encode inert pairs (two function types or a ground and unknown type) which is used in [theories/cast_calculus/lang.v](theories/cast_calculus/lang.v) to define which expressions are values.
+- [theories/cast_calculus/types_notations.v](theories/cast_calculus/types_notations.v) defines some handy notations for types.
 - [theories/cast_calculus/lang.v](theories/cast_calculus/lang.v) defines expressions, values, evaluation contexts, head reductions, total reduction, and a `Halts` predicate on expressions.
 - [theories/cast_calculus/consistency.v](theories/cast_calculus/consistency.v) defines the conventional consistency relation (figure 1 in paper)
 - [theories/cast_calculus/typing.v](theories/cast_calculus/typing.v) defines the typing rules for expressions.
 We restrict our typing derivations so that they only treat meaningful types; the closed types (types with no free variables) (see [theories/prelude.v] for the formal definition of closedness).
 - [theories/cast_calculus/contexts.v](theories/cast_calculus/contexts.v) defines general contexts (not evaluation contexts) together with their typing rules.
-- [theories/cast_calculus/ctx_equiv.v](theories/cast_calculus/ctx_equiv.v) Defines contextual equivalence.
+- [theories/cast_calculus/ctx_equiv.v](theories/cast_calculus/ctx_equiv.v) defines contextual equivalence.
 
 ### Verifying the embedding from STLCmu into the cast calculus
 
@@ -106,7 +104,7 @@ Theorem `ctx_eq_preservation` proves preservation of equivalences, and `ctx_eq_r
 ## Proof structure (where's what?)
 
 Cool, so you're actually interested in the proof itself!
-This section describes some of the more interesting files that make up the proof, referring to the text where possible;
+This section describes some of the more interesting files that make up the proof, referring to the paper where possible;
 for a complete listing of all files, one can refer to the commented [_CoqProject](_CoqProject) file.
 
 ### Defining backtranslation (section 4.2 in paper)

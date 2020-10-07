@@ -1,32 +1,11 @@
-From fae_gtlc_mu.stlc_mu Require Export types typing.
-From fae_gtlc_mu.cast_calculus Require Export lang.
-From iris.algebra Require Import list.
-From iris.proofmode Require Import tactics.
-From iris.program_logic Require Import lifting.
-From fae_gtlc_mu.backtranslation Require Export cast_help.general_def_lemmas cast_help.extract cast_help.embed.
-From fae_gtlc_mu.stlc_mu Require Export lang.
-From fae_gtlc_mu.refinements.gradual_static Require Export logical_relation resources_left resources_right compat_easy compat_cast.defs.
+From fae_gtlc_mu.refinements.gradual_static Require Export compat_cast.defs.
+From fae_gtlc_mu.backtranslation Require Export general_def_lemmas.
 From fae_gtlc_mu.cast_calculus Require Export types.
+From fae_gtlc_mu.stlc_mu Require Export lang.
 
 Section compat_cast_arrow_arrow.
   Context `{!implG Σ,!specG Σ}.
-  Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iPropO Σ).
-  (* Implicit Types e : stlc_mu.lang.expr. *)
-  (* Implicit Types e : stlc_mu.lang.expr. *)
-  Implicit Types fs : list stlc_mu.lang.val.
-  (* Implicit Types f : stlc_mu.lang.val. *)
-  Implicit Types A : list (cast_calculus.types.type * cast_calculus.types.type).
-  (* Implicit Types a : (cast_calculus.types.type * cast_calculus.types.type). *)
-  Local Hint Resolve to_of_val : core.
-  Local Hint Resolve stlc_mu.lang.to_of_val : core.
 
-  (** Proving it *)
-
-  (* Lemma rewrite_subs_app (e1 e2 : expr) σ : *)
-  (*   (App e1 e2).[σ] = App e1.[σ] e2.[σ]. *)
-  (* Proof. *)
-  (*     by simpl. *)
-  (* Qed. *)
   Hint Extern 5 (AsVal _) => eexists; simpl; try done; eapply cast_calculus.lang.of_to_val; fast_done : typeclass_instances.
 
   Lemma back_cast_ar_arrow_arrow:

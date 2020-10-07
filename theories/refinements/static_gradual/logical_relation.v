@@ -1,32 +1,14 @@
-From iris.proofmode Require Import tactics.
-From iris.program_logic Require Export weakestpre.
-From iris.base_logic Require Export invariants.
 From fae_gtlc_mu.backtranslation.cast_help Require Export embed.
 From fae_gtlc_mu.refinements.static_gradual Require Export resources_left resources_right.
 From fae_gtlc_mu.cast_calculus Require Export types.
-From iris.algebra Require Import list ofe.
+From iris.algebra Require Import list.
 From stdpp Require Import tactics.
 Import uPred.
 
 Canonical Structure typeO := leibnizO type.
 
-(* HACK: move somewhere else *)
-Ltac auto_equiv :=
-  (* Deal with "pointwise_relation" *)
-  repeat lazymatch goal with
-  | |- pointwise_relation _ _ _ _ => intros ?
-  end;
-  (* Normalize away equalities. *)
-  repeat match goal with
-  | H : _ ≡{_}≡ _ |-  _ => apply (discrete_iff _ _) in H
-  | _ => progress simplify_eq
-  end;
-  (* repeatedly apply congruence lemmas and use the equalities in the hypotheses. *)
-  try (f_equiv; fast_done || auto_equiv).
-
 Definition logN : namespace := nroot .@ "logN".
 
-(** interp : is a binary logical relation. *)
 Section logrel.
   Context `{!implG Σ, !specG Σ}.
   Notation P := (prodO stlc_mu.lang.valO cast_calculus.lang.valO).
@@ -56,8 +38,7 @@ Section logrel.
 
   Definition Closed (τ : type) : Prop := forall σ, τ.[σ] = τ.
 
-  (** only to be used with closed types *)
-
+  (** Definition of logical relations on values (given relation on terms) *)
   Fixpoint interp_gen (Ψ : typeO -n> D) (τ : typeO) (ww : P) : iPropO Σ := (
     match τ with
     | TUnit => ⌜ww.1 = stlc_mu.lang.UnitV⌝ ∧ ⌜ww.2 = cast_calculus.lang.UnitV⌝
@@ -76,11 +57,24 @@ Section logrel.
                              ∨ (⌜ ww = (embedV_Ground_TSum v , castupV_TSum v') ⌝              ∧ ▷ Ψ (TSum TUnknown TUnknown) (v , v'))
                              ∨ (⌜ ww = (embedV_Ground_TArrow v , castupV_TArrow v') ⌝          ∧ ▷ Ψ (TArrow TUnknown TUnknown) (v , v'))
                              ∨ (⌜ ww = (embedV_TUnknown v, castupV_TRec (FoldV v')) ⌝ ∧ ▷ Ψ TUnknown (v , v')
-                             (* ∨ (∃ u u', ⌜ ww = (embedV_TUnknown u, castupV_TRec (FoldV u')) ⌝ ∧ ▷ Ψ TUnknown (u , u') *)
                                )
       )
-    | TVar x => False (** exfaslo ... *)
+    | TVar x => False
     end)%I.
+
+  (* HACK: move somewhere else *)
+  Ltac auto_equiv :=
+    (* Deal with "pointwise_relation" *)
+    repeat lazymatch goal with
+    | |- pointwise_relation _ _ _ _ => intros ?
+    end;
+    (* Normalize away equalities. *)
+    repeat match goal with
+    | H : _ ≡{_}≡ _ |-  _ => apply (discrete_iff _ _) in H
+    | _ => progress simplify_eq
+    end;
+    (* repeatedly apply congruence lemmas and use the equalities in the hypotheses. *)
+    try (f_equiv; fast_done || auto_equiv).
 
   Program Definition interp_gen_ne (Ψ : typeO -n> D) : typeO -n> D := λne τ p, interp_gen Ψ τ p.
   Solve Obligations with repeat intros ?; simpl; auto_equiv.
@@ -106,11 +100,10 @@ Section logrel.
     - solve_contractive.
   Qed.
 
+  (** The actual relations on values *)
   Definition interp : typeO -n> D := fixpoint interp_gen_ne.
 
-  Notation "⟦ τ ⟧" := (interp τ). (** the actual relations on values *)
-
-  (* boring lemma's related to foldings {{{ *)
+  Notation "⟦ τ ⟧" := (interp τ).
 
   Lemma unfold_interp : interp ≡ interp_gen_ne interp.
   Proof. apply fixpoint_unfold. Qed.
@@ -162,8 +155,6 @@ Section logrel.
                                )))%I.
   Proof. rewrite (unfold_interp_type_pair). by simpl. Qed.
 
-  (* }}} *)
-
   Global Instance interp_persistent τ vv :
     Persistent (⟦ τ ⟧ vv).
   Proof.
@@ -172,7 +163,6 @@ Section logrel.
       do 2 rewrite -unfold_interp_type_pair. apply _.
     - apply or_persistent; apply exist_persistent; intro q; rewrite -unfold_interp_type_pair; apply _.
   Qed.
-
 
   Definition interp_env (Γ : list type)
       (vvs : list (stlc_mu.lang.val * cast_calculus.lang.val)) : iProp Σ :=
@@ -229,6 +219,7 @@ End logrel.
 
 Typeclasses Opaque interp_env.
 Notation "⟦ τ ⟧" := (interp τ).
+(** Logical relation on closed terms *)
 Notation "⟦ τ ⟧ₑ" := (interp_expr (interp τ)).
 Notation "⟦ Γ ⟧*" := (interp_env Γ).
 
@@ -238,6 +229,7 @@ Section bin_log_def.
   Context `{!implG Σ, !specG Σ}.
   Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iProp Σ).
 
+  (** Logical relation extended to open terms *)
   Definition bin_log_related
   (Γ : list cast_calculus.types.type) (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : cast_calculus.types.type) :=
     ∀ vvs (ei' : cast_calculus.lang.expr),

@@ -178,3 +178,6 @@ Proof.
     assert (efs = []) as ->; first by inversion H. assert (κ = []) as ->; first by inversion H.
     erewrite (prim_step_det e e' e2'); eauto.
 Qed.
+
+Instance expr_eqdec : EqDecision expr.
+Proof. solve_decision. Qed.

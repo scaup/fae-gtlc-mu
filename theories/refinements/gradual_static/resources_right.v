@@ -1,19 +1,15 @@
-From iris.algebra Require Import cmra excl auth frac agree gmap list.
-From iris.program_logic Require Import lifting.
+From iris.base_logic Require Export invariants.
+From iris.algebra Require Import agree frac.
 From iris.proofmode Require Import tactics.
-From fae_gtlc_mu.refinements.gradual_static Require Export resources_left.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 Import uPred.
 
 Definition specN := nroot .@ "gradual".
 
-(** The CMRA for the heap of the specification. *)
-
 Canonical Structure exprO := leibnizO expr.
 
 Definition specR := prodR fracR (agreeR exprO).
 
-(** The CMRA for the thread pool. *)
 Class specG Σ := SpecG { specR_inG :> inG Σ specR; spec_name : gname }.
 
 Definition currently `{specG Σ} (e : expr) : iProp Σ :=
@@ -34,20 +30,17 @@ Section cfg.
   Context `{!invG Σ}.
   Implicit Types P Q : iProp Σ.
   Implicit Types Φ : val → iProp Σ.
-  (* Implicit Types σ : state. *)
   Implicit Types e : expr.
   Implicit Types v : val.
 
   Local Hint Resolve to_of_val : core.
 
-  (** Conversion to tpools and back *)
   Lemma step_insert_no_fork K e σ e' σ' :
     head_step e σ [] e' σ' [] → erased_step ([fill K e], σ) ([fill K e'], σ').
   Proof. intros Hst. exists []. eapply (step_atomic _ _ _ _ _ _ _ [] [] []); eauto.
          by apply: Ectx_step.
   Qed.
 
-  Local Set Warnings "-notation-overridden".
   Lemma step_pure E ei' K e1' e2' σ :
     (head_step e1' σ [] e2' σ []) →
     nclose specN ⊆ E →
@@ -181,4 +174,5 @@ Section cfg.
     initially_inv ei' ∗ currently_half (fill K (Case (InjR e0') e1' e2'))
       ={E}=∗ currently_half (fill K (e2'.[e0'/])).
   Proof. intros [? <-]; apply step_pure with (σ := tt); econstructor; eauto. Qed.
+
 End cfg.

@@ -6,6 +6,7 @@ From fae_gtlc_mu.cast_calculus Require Export types consistency_lemmas.
 Section relation_for_specification_lemma.
   Context `{!implG Σ, !specG Σ}.
 
+  (** Static terms are related to their embeddings *)
   Theorem embedding_relates (Γ : list stlc_mu.types.type) (e : stlc_mu.lang.expr) (τ : stlc_mu.types.type) :
     Γ ⊢ₛ e : τ → map embed_type Γ ⊨ [[e]] ≤log≤ e : [| τ |].
   Proof.
@@ -27,6 +28,7 @@ Section relation_for_specification_lemma.
   From fae_gtlc_mu.refinements.gradual_static Require Import compat_cast.all.
   From fae_gtlc_mu.backtranslation Require Import expressions well_typedness.
 
+  (** Gradual terms are related to their backtranslation *)
   Theorem back_relates (Γ : list cast_calculus.types.type) (e : cast_calculus.lang.expr) (τ : cast_calculus.types.type) :
     Γ ⊢ₜ e : τ → Γ ⊨ e ≤log≤ <<e>> : τ.
   Proof.
@@ -82,6 +84,7 @@ Section relation_for_specification_lemma.
       by apply bin_log_related_back_cast.
   Qed.
 
+  (** Gradual contexts are related to their backtranslation *)
   Lemma back_ctx_relates (Γ : list cast_calculus.types.type) (e : cast_calculus.lang.expr) (e' : stlc_mu.lang.expr) (τ : cast_calculus.types.type) (pτ : Closed τ)
         (Γ' : list cast_calculus.types.type) (τ' : cast_calculus.types.type) (C : cast_calculus.contexts.ctx) :
       cast_calculus.contexts.typed_ctx C Γ τ Γ' τ' →
@@ -134,6 +137,7 @@ Section relation_for_specification_lemma.
     - rewrite embd_unfold_comm. by apply bin_log_related_unfold.
   Qed.
 
+  (** Static contexts are related to their embeddings *)
   Lemma embed_ctx_relates (Γ : list stlc_mu.types.type) (e : cast_calculus.lang.expr) (e' : stlc_mu.lang.expr) (τ : stlc_mu.types.type) (pτ : Closed τ)
         (Γ' : list stlc_mu.types.type) (τ' : stlc_mu.types.type) (C : stlc_mu.contexts.ctx) :
       stlc_mu.contexts.typed_ctx C Γ τ Γ' τ' →

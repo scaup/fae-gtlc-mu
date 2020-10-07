@@ -1,15 +1,8 @@
-From iris.program_logic Require Import lifting.
 From iris.program_logic Require Export weakestpre.
-From iris.base_logic Require Export invariants.
-From iris.algebra Require Import auth frac agree gmap.
-From iris.proofmode Require Import tactics.
-From iris.base_logic Require Export gen_heap.
-From iris.program_logic Require Import language.
-From fae_gtlc_mu.cast_calculus Require Export lang lang_lemmas.
-Import uPred.
+From fae_gtlc_mu.cast_calculus Require Export lang.
 
-Class implG Σ := ImplG { (* resources for the implementation side *)
-  implG_invG : invG Σ; (* for fancy updates, invariants... *)
+Class implG Σ := ImplG {
+  implG_invG : invG Σ;
 }.
 
 Instance implG_irisG `{implG Σ} : irisG lang Σ := {
@@ -19,51 +12,16 @@ Instance implG_irisG `{implG Σ} : irisG lang Σ := {
 }.
 Global Opaque iris_invG.
 
-Instance expr_eq (e e' : expr) : Decision (e = e').
-Proof. solve_decision. Qed.
+From iris.program_logic Require Export ectx_lifting.
+From iris.proofmode Require Export tactics.
+From fae_gtlc_mu.cast_calculus Require Export lang_lemmas.
 
-Section lang_rules.
+Section wps.
   Context `{implG Σ}.
-  Implicit Types P Q : iProp Σ.
-  Implicit Types Φ : cast_calculus.lang.val → iProp Σ.
-  (* Implicit Types σ : state. *)
-  Implicit Types e : cast_calculus.lang.expr.
-
-  (** The tactic [inv_head_step] performs inversion on hypotheses of the shape
-      [head_step]. The tactic will discharge head-reductions starting from values, and
-      simplifies hypothesis related to conversions from and to values, and finite map
-      operations. This tactic is slightly ad-hoc and tuned for proving our lifting
-      lemmas. *)
-  Ltac inv_head_step :=
-    repeat match goal with
-    | _ => progress simplify_map_eq/= (* simplify memory stuff *)
-    | H : to_val _ = Some _ |- _ => apply of_to_val in H
-    | H : head_step ?e _ _ _ _ _ |- _ =>
-       try (is_var e; fail 1); (* inversion yields many goals if [e] is a variable
-       and can thus better be avoided. *)
-       inversion H; subst; clear H
-    end.
-
   Local Hint Extern 0 (head_reducible _ _) => eexists _, _, _, _; simpl : core.
 
   Local Hint Constructors head_step : core.
-  (* Local Hint Resolve alloc_fresh : core. *)
   Local Hint Resolve to_of_val : core.
-
-  Local Ltac solve_exec_safe := intros; subst; do 3 eexists; econstructor; eauto.
-  Local Ltac solve_exec_puredet := simpl; intros; by inv_head_step.
-  Local Ltac solve_pure_exec :=
-    unfold IntoVal in *;
-    repeat match goal with H : AsVal _ |- _ => destruct H as [??] end; subst;
-    intros ?; apply nsteps_once, pure_head_step_pure_step;
-      constructor; [solve_exec_safe | solve_exec_puredet].
-
-
-
-
-  (** We want to have another bind operator.
-      Why? Our contexts are not evaluation contexts anymore *)
-
 
   Lemma wp_CastError' E Φ :
     ⊢ WP CastError @ MaybeStuck; E {{Φ}}.
@@ -123,9 +81,6 @@ Section lang_rules.
     eapply (Ectx_step []); eauto.
   Qed.
 
-  (* Global Instance pure_tlam e : PureExec True 1 (TApp (TLam e)) e. *)
-  (* Proof. solve_pure_exec. Qed. *)
-
   Global Instance pure_fold e `{!AsVal e}:
     PureExec True 1 (Unfold (Fold e)) e.
   Proof.
@@ -143,7 +98,6 @@ Section lang_rules.
     eapply (Ectx_step []); eauto.
   Qed.
   Proof.
-  (* Proof. solve_pure_exec. Qed. *)
 
   Global Instance pure_snd e1 e2 `{!AsVal e1, !AsVal e2} :
     PureExec True 1 (Snd (Pair e1 e2)) e2.
@@ -185,14 +139,6 @@ Section lang_rules.
     destruct AsVal0 as [??];subst.
     eapply (Ectx_step []); eauto.
   Qed.
-
-  (* Global Instance pure_cast_between_sum e τ1 τ2 τ1' τ2' `{!AsVal e}: *)
-  (*   PureExec True 1 (Cast e (TSum τ1 τ2) (TSum τ1' τ2')) (Case e (InjL (Cast (Var 0) τ1 τ1')) (InjR (Cast (Var 0) τ2 τ2'))). *)
-  (* Proof. *)
-  (*   intros _. apply nsteps_once. apply prim_step_pure. *)
-  (*   destruct AsVal0 as [??];subst. *)
-  (*   eapply (Ectx_step []); eauto. *)
-  (* Qed. *)
 
   Global Instance pure_cast_between_rec e τl τr `{!AsVal e}:
     PureExec True 1 (Cast (Fold e) (TRec τl) (TRec τr))
@@ -269,7 +215,7 @@ Section lang_rules.
     eapply (Ectx_step []); eauto.
   Qed.
 
-End lang_rules.
+End wps.
 
 Ltac wp_head := iApply wp_pure_step_later; auto; iNext.
 Ltac wp_value := iApply wp_value.

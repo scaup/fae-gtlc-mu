@@ -1,17 +1,11 @@
 From fae_gtlc_mu.stlc_mu Require Export lang.
 From fae_gtlc_mu.backtranslation.cast_help Require Export extract embed.
 
-(* from resourcers_left {{{ *)
-
-(* From fae_gtlc_mu.refinements.static_gradual Require Export resources_left. *)
-
 Ltac inv_head_step :=
   repeat match goal with
-  (* | _ => progress simplify_map_eq/= (* simplify memory stuff *) *)
   | H : to_val _ = Some _ |- _ => apply of_to_val in H
   | H : head_step ?e _ _ _ _ _ |- _ =>
-      try (is_var e; fail 1); (* inversion yields many goals if [e] is a variable
-      and can thus better be avoided. *)
+      try (is_var e; fail 1);
       inversion H; subst; clear H
   end.
 
@@ -22,8 +16,6 @@ Local Ltac solve_pure_exec :=
   repeat match goal with H : AsVal _ |- _ => destruct H as [??] end; subst;
   intros ?; apply nsteps_once, pure_head_step_pure_step;
     constructor; [solve_exec_safe | solve_exec_puredet].
-
-(* }}} *)
 
 Ltac ps_head_step := apply pure_head_step_pure_step;
     constructor; [solve_exec_safe | solve_exec_puredet]; try (by rewrite /= to_of_val /=).

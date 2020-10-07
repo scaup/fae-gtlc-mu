@@ -1,24 +1,8 @@
-From fae_gtlc_mu.refinements.static_gradual Require Export logical_relation resources_right compat_easy compat_cast.defs.
-From fae_gtlc_mu.stlc_mu Require Export lang.
+From fae_gtlc_mu.refinements.static_gradual Require Export compat_cast.defs.
 From fae_gtlc_mu.cast_calculus Require Export lang.
-From iris.algebra Require Import list.
-From iris.proofmode Require Import tactics.
-From iris.program_logic Require Import lifting.
-From fae_gtlc_mu.cast_calculus Require Export types.
-From fae_gtlc_mu.backtranslation Require Export cast_help.general_def cast_help.extract cast_help.embed.
-From fae_gtlc_mu.cast_calculus Require Export types typing.
 
 Section ground_star.
   Context `{!implG Σ,!specG Σ}.
-  Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iPropO Σ).
-  (* Implicit Types e : stlc_mu.lang.expr. *)
-  (* Implicit Types e : stlc_mu.lang.expr. *)
-  Implicit Types fs : list stlc_mu.lang.val.
-  (* Implicit Types f : stlc_mu.lang.val. *)
-  Implicit Types A : list (cast_calculus.types.type * cast_calculus.types.type).
-  (* Implicit Types a : (cast_calculus.types.type * cast_calculus.types.type). *)
-  Local Hint Resolve to_of_val : core.
-  Local Hint Resolve stlc_mu.lang.to_of_val : core.
 
   Lemma back_cast_ar_ground_star:
     ∀ (A : list (type * type)) (τG : type) (G : Ground τG), back_cast_ar (atomic_Ground_Unknown A τG G).
@@ -63,4 +47,3 @@ Section ground_star.
 
 
 End ground_star.
-

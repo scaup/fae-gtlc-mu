@@ -1,17 +1,10 @@
-From fae_gtlc_mu.stlc_mu Require Export types typing.
+From fae_gtlc_mu.refinements.gradual_static Require Export logical_relation.
+From fae_gtlc_mu.cast_calculus Require Export types typing.
 From fae_gtlc_mu.cast_calculus Require Export lang.
-From fae_gtlc_mu.stlc_mu Require Export lang.
-From fae_gtlc_mu.stlc_mu Require Export lang.
-From iris.algebra Require Import list.
-From iris.proofmode Require Import tactics.
-From iris.program_logic Require Import lifting.
-From fae_gtlc_mu.refinements.gradual_static Require Export resources_right logical_relation.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 
 Section fundamental.
   Context `{!implG Σ,!specG Σ}.
-  Notation D := (prodO cast_calculus.lang.valO stlc_mu.lang.valO -n> iPropO Σ).
-  (* Implicit Types e : cast_calculus.lang.expr. *)
   Local Hint Resolve to_of_val : core.
 
   Local Tactic Notation "smart_wp_bind" uconstr(ctx) ident(v) ident(w)

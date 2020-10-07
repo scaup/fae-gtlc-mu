@@ -1,26 +1,9 @@
-From fae_gtlc_mu.stlc_mu Require Export types typing.
-From fae_gtlc_mu.cast_calculus Require Export lang.
-From iris.algebra Require Import list.
-From iris.proofmode Require Import tactics.
-From iris.program_logic Require Import lifting.
-From fae_gtlc_mu.backtranslation Require Export cast_help.general_def cast_help.general_def_lemmas cast_help.extract cast_help.embed cast_help.props.between_rec_fix.
+From fae_gtlc_mu.refinements.gradual_static Require Export compat_cast.defs.
+From fae_gtlc_mu.backtranslation.cast_help Require Export between_rec_fix.
 From fae_gtlc_mu.stlc_mu Require Export lang.
-From fae_gtlc_mu.refinements.gradual_static Require Export logical_relation resources_left resources_right compat_easy compat_cast.defs.
-From fae_gtlc_mu.cast_calculus Require Export types.
 
 Section between_rec.
   Context `{!implG Σ,!specG Σ}.
-  Notation D := (prodO cast_calculus.lang.valO stlc_mu.lang.valO -n> iPropO Σ).
-  (* Implicit Types e : cast_calculus.lang.expr. *)
-  Implicit Types fs : list stlc_mu.lang.val.
-  (* Implicit Types f : cast_calculus.lang.val. *)
-  Implicit Types A : list (cast_calculus.types.type * cast_calculus.types.type).
-  (* Implicit Types a : (stlc_mu.types.type * stlc_mu.types.type). *)
-  Local Hint Resolve to_of_val : core.
-
-  Hint Extern 5 (AsVal _) => eexists; simpl; try done; eapply cast_calculus.lang.of_to_val; fast_done : typeclass_instances.
-
-  (** Proving it *)
 
   Lemma back_cast_ar_trec_trec_use:
     ∀ (A : list (type * type)) (τl τr : {bind type}) (i : nat) (pμτlμtrinA : A !! i = Some (TRec τl, TRec τr)),

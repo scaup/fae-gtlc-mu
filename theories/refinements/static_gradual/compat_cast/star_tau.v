@@ -1,26 +1,10 @@
-From fae_gtlc_mu.refinements.static_gradual Require Export logical_relation resources_right compat_easy compat_cast.defs.
-From fae_gtlc_mu.cast_calculus Require Export types typing.
-From fae_gtlc_mu.stlc_mu Require Export lang.
+From fae_gtlc_mu.refinements.static_gradual Require Export compat_cast.defs.
+From fae_gtlc_mu.backtranslation Require Export general_def_lemmas.
 From fae_gtlc_mu.cast_calculus Require Export lang.
-From iris.algebra Require Import list.
-From iris.proofmode Require Import tactics.
-From iris.program_logic Require Import lifting.
-From fae_gtlc_mu.backtranslation.cast_help Require Export general_def general_def_lemmas extract embed.
-From fae_gtlc_mu.cast_calculus Require Export types lang.
 
 Section compat_cast_star_tau.
   Context `{!implG Σ,!specG Σ}.
-  Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iPropO Σ).
-  (* Implicit Types e : stlc_mu.lang.expr. *)
-  (* Implicit Types e : stlc_mu.lang.expr. *)
-  Implicit Types fs : list stlc_mu.lang.val.
-  (* Implicit Types f : stlc_mu.lang.val. *)
-  Implicit Types A : list (cast_calculus.types.type * cast_calculus.types.type).
-  (* Implicit Types a : (cast_calculus.types.type * cast_calculus.types.type). *)
   Local Hint Resolve to_of_val : core.
-  Local Hint Resolve stlc_mu.lang.to_of_val : core.
-
-  (** Proving it *)
 
   Lemma back_cast_ar_star_tau:
     ∀ (A : list (type * type)) (τ τG : type) (pτnG : Ground τ → False) (pτnStar : τ ≠ ⋆) (pτSτG : get_shape τ = Some τG) (pC1 : alternative_consistency A ⋆ τG) (pC2 : alternative_consistency A τG τ),

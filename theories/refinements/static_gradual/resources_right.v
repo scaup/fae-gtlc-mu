@@ -1,19 +1,14 @@
-From iris.algebra Require Import cmra excl auth frac agree gmap list.
-From iris.program_logic Require Import lifting.
+From iris.base_logic Require Export invariants.
+From iris.algebra Require Import agree frac.
 From iris.proofmode Require Import tactics.
-From fae_gtlc_mu.refinements.static_gradual Require Export resources_left.
 From fae_gtlc_mu.cast_calculus Require Export lang.
 Import uPred.
 
 Definition specN := nroot .@ "gradual".
 
-(** The CMRA for the heap of the specification. *)
-
 Canonical Structure exprO := leibnizO expr.
-
 Definition specR := prodR fracR (agreeR exprO).
 
-(** The CMRA for the thread pool. *)
 Class specG Σ := SpecG { specR_inG :> inG Σ specR; spec_name : gname }.
 
 Definition currently `{specG Σ} (e : expr) : iProp Σ :=
@@ -29,45 +24,22 @@ Definition initially_body `{specG Σ} (ei' : expr) : iProp Σ :=
 Definition initially_inv `{specG Σ} `{invG Σ} (ei' : expr) : iProp Σ :=
   inv specN (initially_body ei').
 
-(* Section definitionsS. *)
-  (* Context `{specG Σ}. *)
-
-  (* Definition heapS_mapsto (l : loc) (q : Qp) (v: val) : iProp Σ := *)
-    (* own cfg_name (◯ (ε, {[ l := (q, to_agree v) ]})). *)
-
-  (* Definition tpool_mapsto (e: expr) : iProp Σ := *)
-    (* own cfg_name (◯ (Excl' e, ∅)). *)
-
-  (* Global Instance heapS_mapsto_timeless l q v : Timeless (heapS_mapsto l q v). *)
-  (* Proof. apply _. Qed. *)
-(* End definitionsS. *)
-
-(* Typeclasses Opaque heapS_mapsto tpool_mapsto. *)
-
-(* Notation "l ↦ₛ{ q } v" := (heapS_mapsto l q v) *)
-  (* (at level 20, q at level 50, format "l  ↦ₛ{ q }  v") : bi_scope. *)
-(* Notation "l ↦ₛ v" := (heapS_mapsto l 1 v) (at level 20) : bi_scope. *)
-(* Notation "⤇ e" := (tpool_mapsto e) (at level 20) : bi_scope. *)
-
 Section cfg.
   Context `{!specG Σ}.
   Context `{!invG Σ}.
   Implicit Types P Q : iProp Σ.
   Implicit Types Φ : val → iProp Σ.
-  (* Implicit Types σ : state. *)
   Implicit Types e : expr.
   Implicit Types v : val.
 
   Local Hint Resolve to_of_val : core.
 
-  (** Conversion to tpools and back *)
   Lemma step_insert_no_fork K e σ e' σ' :
     head_step e e' → erased_step ([fill K e], σ) ([fill K e'], σ').
   Proof. intros Hst. exists []. eapply (step_atomic _ _ _ _ _ _ _ [] [] []); eauto.
          by apply: Ectx_step.
   Qed.
 
-  Local Set Warnings "-notation-overridden".
   Lemma step_pure E ei' K e1' e2' :
     (head_step e1' e2') →
     nclose specN ⊆ E →
@@ -135,4 +107,5 @@ Section cfg.
     initially_inv ei' ∗ currently_half (fill K (Case (InjR e0') e1' e2'))
       ={E}=∗ currently_half (fill K (e2'.[e0'/])).
   Proof. intros [? <-]; apply step_pure; econstructor; eauto. Qed.
+
 End cfg.

@@ -1,16 +1,10 @@
-From fae_gtlc_mu.refinements.static_gradual Require Export resources_right logical_relation.
+From fae_gtlc_mu.refinements.static_gradual Require Export logical_relation.
 From fae_gtlc_mu.cast_calculus Require Export types typing.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 From fae_gtlc_mu.cast_calculus Require Export lang.
-From fae_gtlc_mu.cast_calculus Require Export lang.
-From iris.algebra Require Import list.
-From iris.proofmode Require Import tactics.
-From iris.program_logic Require Import lifting.
 
 Section fundamental.
   Context `{!implG Σ,!specG Σ}.
-  Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iPropO Σ).
-  (* Implicit Types e : stlc_mu.lang.expr. *)
   Local Hint Resolve to_of_val : core.
 
   Local Tactic Notation "smart_wp_bind" uconstr(ctx) ident(v) ident(w)
@@ -57,7 +51,6 @@ Section fundamental.
     iIntros (vvs ei') "#[Hρ HΓ]"; iIntros (K) "Hj /=".
     smart_wp_bind (stlc_mu.lang.PairLCtx e2.[stlc_mu.typing_lemmas.env_subst _]) v v' "[Hv #Hiv]"
       ('`IHHtyped1 _ _ ((cast_calculus.lang.PairLCtx e2'.[env_subst _]) :: K)).
-      (* ('`IHHtyped1 _ _ ((PairLCtx e2'.[env_subst _]) :: K)). *)
     smart_wp_bind (stlc_mu.lang.PairRCtx v) w w' "[Hw #Hiw]"
       ('`IHHtyped2 _ _ ((PairRCtx v') :: K)).
     iApply wp_value.
@@ -201,6 +194,5 @@ Section fundamental.
     iApply wp_pure_step_later; cbn; auto.
     iNext. iApply wp_value; auto.
   Qed.
-
 
 End fundamental.

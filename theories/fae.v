@@ -69,6 +69,7 @@ End gradual_static.
 Definition retract τ : backtranslate_type (embed_type τ) = τ.
 Proof. induction τ; simpl; try done; try by rewrite IHτ1 IHτ2. by rewrite IHτ. Qed.
 
+(** Preservation of equivalences *)
 Theorem ctx_eq_preservation Γ e1 e2 τ (Hctx : Γ ⊨ e1 =ctx-stat= e2 : τ) :
   map embed_type Γ ⊨ [[e1]] =ctx-grad= [[e2]] : embed_type τ.
 Proof.
@@ -100,6 +101,7 @@ Qed.
 
 From fae_gtlc_mu.embedding Require Export well_typedness.
 
+(** Reflection of equivalences *)
 Theorem ctx_eq_reflection Γ e1 e2 τ (de1 : Γ ⊢ₛ e1 : τ) (de2 : Γ ⊢ₛ e2 : τ)
   (Hctx : map embed_type Γ ⊨ [[e1]] =ctx-grad= [[e2]] : embed_type τ) :
   Γ ⊨ e1 =ctx-stat= e2 : τ.
