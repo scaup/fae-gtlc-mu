@@ -1,18 +1,3 @@
-EXTRA_DIR:=extra
-COQDOCFLAGS:= \
-  --external '../html-iris' iris \
-  --external '../html-autosubst' Autosubst \
-  --external '../html-stdpp' stdpp \
-  --toc --toc-depth 2 --html --interpolate \
-  --index indexpage --no-lib-name --parse-comments \
-  --with-header $(EXTRA_DIR)/header.html --with-footer $(EXTRA_DIR)/footer.html
-export COQDOCFLAGS
-
-html: Makefile.coq
-	rm -fr html
-	+make -f Makefile.coq html
-	cp $(EXTRA_DIR)/resources/* html
-
 # Forward most targets to Coq makefile (with some trick to make this phony)
 %: Makefile.coq phony
 	+@make -f Makefile.coq $@
