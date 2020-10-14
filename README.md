@@ -13,7 +13,13 @@ It accompanies the paper  "Fully abstract from Static to Gradual".
   * IRIS: dev.2020-04-07.7.64bed0ca
   * coq-autosubs: dev.coq86
 
-### Instructions to quickly get started with opam
+### Getting started quickly with opam
+
+#### Free disk space
+
+Please note that fetching and compiling the requirements by following the instruction described below calls for roughly 1.4GB of free disk space.
+
+#### Fetching and compiling requirements
 
 An easy way to get the correct version of Coq and the required libraries is by using opam.
 
@@ -48,6 +54,7 @@ Optionally, you can also install coqide, a GUI to interact with the Coq code.
 ```
 $ opam install coqide.8.11.1 # will likely ask you to install missing dependencies
 ```
+#### Some optional sanity checks
 Verify that installation went OK
 ```
 $ opam list # output should list the required packages with the right versions
@@ -56,10 +63,13 @@ $ coqc --version # should return 8.11.1, and "compiled on" should be realistic
 $ coqc --config # check the COQLIB=~/.opam/fae/lib/coq/ variable
 $ ls ~/.opam/fae/lib/coq/user-contrib # should return the Autosubst, iris, Ltac2 and stdpp directories
 ```
-Compile by running `make` in the root of this project.
+#### Compiling the fae proof
+
+Compile by running `make` in the root of this folder.
 ```
 $ make
 ```
+Run `make clean` in the root of this folder to remove all but the source files.
 
 ## Verifying the full abstraction claim
 
