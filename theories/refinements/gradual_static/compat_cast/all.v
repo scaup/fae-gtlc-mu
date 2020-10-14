@@ -7,7 +7,18 @@ Section compat_cast_all.
 
   Lemma back_cast_ar_all {A} {τi τf} (pC : alternative_consistency A τi τf) : back_cast_ar pC.
   Proof.
-    induction pC; eauto using back_cast_ar_star_ground, back_cast_ar_ground_star, back_cast_ar_tau_star, back_cast_ar_star_tau, back_cast_ar_base_base, back_cast_ar_star_star, back_cast_ar_sum_sum, back_cast_ar_prod_prod, back_cast_ar_arrow_arrow, back_cast_ar_trec_trec_expose, back_cast_ar_trec_trec_use.
+    induction pC.
+    - by eapply back_cast_ar_star_ground.
+    - by eapply back_cast_ar_ground_star.
+    - by eapply back_cast_ar_tau_star.
+    - by eapply back_cast_ar_star_tau.
+    - by eapply back_cast_ar_base_base.
+    - by eapply back_cast_ar_star_star.
+    - by eapply back_cast_ar_sum_sum.
+    - by eapply back_cast_ar_prod_prod.
+    - by eapply back_cast_ar_arrow_arrow.
+    - by eapply back_cast_ar_trec_trec_expose.
+    - by eapply back_cast_ar_trec_trec_use.
   Qed.
 
   Notation "'` H" := (bin_log_related_alt H) (at level 8).

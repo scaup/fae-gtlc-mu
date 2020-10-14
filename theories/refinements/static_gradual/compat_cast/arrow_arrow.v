@@ -39,8 +39,8 @@ Section compat_cast_arrow_arrow.
     wp_head. asimpl.
     (** specification *)
     iMod (step_pure _ ei' K'
-                    (App (Cast (# f') (TArrow τ1 τ2) (TArrow τ1' τ2')) (# a'))
-                    (Cast (App (# f') (Cast (# a') τ1' τ1)) τ2 τ2') with "[Hf']") as "Hf'".
+                    (App (Cast f' (TArrow τ1 τ2) (TArrow τ1' τ2')) a')
+                    (Cast (App f' (Cast a' τ1' τ1)) τ2 τ2') with "[Hf']") as "Hf'".
     intros. eapply AppCast; try by rewrite -to_of_val. auto. by iFrame.
     (** first IH for the arguments *)
     iApply (wp_bind (ectx_language.fill $ [stlc_mu.lang.AppRCtx _ ; stlc_mu.lang.AppRCtx _])).

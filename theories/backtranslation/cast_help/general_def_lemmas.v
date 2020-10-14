@@ -12,7 +12,7 @@ Definition 𝓕cV {A} {τi τf} (pC : alternative_consistency A τi τf) fs (H :
   | None => UnitV
   end.
 
-Lemma 𝓕c_rewrite {A} {τi τf} (pC : alternative_consistency A τi τf) fs (H : length A = length fs) : 𝓕c pC fs = # (𝓕cV pC fs H).
+Lemma 𝓕c_rewrite {A} {τi τf} (pC : alternative_consistency A τi τf) fs (H : length A = length fs) : 𝓕c pC fs = of_val (𝓕cV pC fs H).
 Proof.
   unfold 𝓕cV.
   destruct pC.
@@ -51,7 +51,7 @@ From fae_gtlc_mu.stlc_mu Require Export lang.
 Lemma expr_double_subst (e : expr) σ1 σ2 : e.[σ1].[σ2] = e.[σ1 >> σ2].
 Proof. by asimpl. Qed.
 
-Definition VClosed (v : val) := Closed (# v).
+Definition VClosed (v : val) := Closed (of_val v).
 
 Lemma 𝓕c_closed_gen {A} {τi τf} (pC : alternative_consistency A τi τf) fs (Hfsc : Forall VClosed fs) :
   forall n, (length A = n + length fs) → forall σ, (𝓕 pC).[upn n (env_subst fs)].[upn n σ] = (𝓕 pC).[upn n (env_subst fs)].
@@ -84,7 +84,7 @@ Proof.
     rewrite IHpC1; auto. rewrite IHpC2; auto.
   - fold (𝓕 pC). intro σ.
     rewrite expr_double_subst. do 2 rewrite between_TRec_subst_rewrite.
-    cut (# between_TRec (𝓕 pC).[upn (S n) (env_subst fs)].[upn (S n) σ] = # between_TRec (𝓕 pC).[upn (S n) (env_subst fs)]). by asimpl.
+    cut (of_val $ between_TRec (𝓕 pC).[upn (S n) (env_subst fs)].[upn (S n) σ] = of_val $ between_TRec (𝓕 pC).[upn (S n) (env_subst fs)]). by asimpl.
     rewrite IHpC; auto. simpl. lia.
   - intro σ. asimpl.
     destruct (iter_up_cases i n (env_subst fs)) as [[-> eq] | [j [-> ->]]].

@@ -29,8 +29,8 @@ Section compat_cast_prod_prod.
     iApply (wp_bind (ectx_language.fill $ [stlc_mu.lang.PairLCtx _])).
     (** boring steps specification side *)
     iMod (step_pure _ ei' K'
-                    (Cast (Pair (# v1') (# v2')) (τ1 × τ2) (τ1' × τ2'))
-                    (Pair (Cast (# v1') τ1 τ1') (Cast (# v2') τ2 τ2')) with "[Hv']") as "Hv'".
+                    (Cast (Pair (of_val v1') (of_val v2')) (τ1 × τ2)%types (τ1' × τ2')%types)
+                    (Pair (Cast (of_val v1') τ1 τ1') (Cast (v2') τ2 τ2')) with "[Hv']") as "Hv'".
     intros. eapply ProdCast. by simplify_option_eq. auto. auto. eauto.
     (** first IH *)
     iApply (wp_wand with "[Hv' Hfs]").

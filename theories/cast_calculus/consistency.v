@@ -1,5 +1,6 @@
 From Autosubst Require Export Autosubst.
-From fae_gtlc_mu.cast_calculus Require Export types types_lemmas types_notations.
+From fae_gtlc_mu.cast_calculus Require Export types types_lemmas.
+From fae_gtlc_mu.cast_calculus Require Import types_notations.
 From fae_gtlc_mu Require Import prelude.
 
 Inductive consistency_open : type -> type -> Type :=
@@ -13,12 +14,12 @@ Inductive consistency_open : type -> type -> Type :=
     (τ1 τ1' τ2 τ2' : type)
     (s1 : consistency_open τ1 τ1')
     (s2 : consistency_open τ2 τ2')
-  : consistency_open (τ1 + τ2)%type (τ1' + τ2')%type
+  : consistency_open (τ1 + τ2)%types (τ1' + τ2')%types
 | GenSymProd
     (τ1 τ1' τ2 τ2' : type)
     (s1 : consistency_open τ1 τ1')
     (s2 : consistency_open τ2 τ2')
-  : consistency_open (τ1 × τ2) (τ1' × τ2')
+  : consistency_open (τ1 × τ2)%types (τ1' × τ2')%types
 | GenSymArrow τ1 τ1' τ2 τ2'
     (s1 : consistency_open τ1 τ1')
     (s2 : consistency_open τ2 τ2')

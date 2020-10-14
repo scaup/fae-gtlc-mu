@@ -18,7 +18,7 @@ Definition between_TSum (c1 c2 : expr) : val :=
   LamV (Case (Var 0) (InjL ((c1.[ren (+2)]) (Var 0))) (InjR ((c2.[ren (+2)]) (Var 0)))).
 
 Lemma between_TSum_subst_rewrite σ f1 f2 :
-  (# (between_TSum f1 f2)).[σ] =
+  (of_val (between_TSum f1 f2)).[σ] =
   between_TSum f1.[σ] f2.[σ].
 Proof.
   rewrite /between_TSum.
@@ -28,7 +28,7 @@ Qed.
 Lemma between_TSum_typed Γ (τ1 τ2 τ1' τ2' : type) (f1 f2 : expr)
       (d1 : Γ ⊢ₛ f1 : (TArrow τ1 τ1'))
       (d2 : Γ ⊢ₛ f2 : (TArrow τ2 τ2')) :
-  Γ ⊢ₛ between_TSum f1 f2 : (TArrow (τ1 + τ2) (τ1' + τ2'))%type.
+  Γ ⊢ₛ between_TSum f1 f2 : (TArrow (τ1 + τ2) (τ1' + τ2'))%types.
 Proof.
   assert (pτ1 : Closed τ1). by apply (TArrow_closed1 (typed_closed d1)).
   assert (pτ2 : Closed τ2). by apply (TArrow_closed1 (typed_closed d2)).
@@ -50,7 +50,7 @@ Definition between_TProd (f1 f2 : expr) : val :=
   LamV (Pair (f1.[ren (+1)] (Fst (Var 0))) (f2.[ren (+1)] (Snd (Var 0)))).
 
 Lemma between_TProd_subst_rewrite σ f1 f2 :
-  (# (between_TProd f1 f2)).[σ] =
+  (of_val (between_TProd f1 f2)).[σ] =
   between_TProd f1.[σ] f2.[σ].
 Proof.
   rewrite /between_TProd.
@@ -58,7 +58,7 @@ Proof.
 Qed.
 
 Lemma between_TProd_typed Γ (τ1 τ2 τ1' τ2' : type) (f1 f2 : expr) (d1 : Γ ⊢ₛ f1 : (TArrow τ1 τ1')) (d2 : Γ ⊢ₛ f2 : (TArrow τ2 τ2')) :
-  Γ ⊢ₛ between_TProd f1 f2 : (TArrow (τ1 × τ2) (τ1' × τ2'))%type.
+  Γ ⊢ₛ between_TProd f1 f2 : (TArrow (τ1 × τ2) (τ1' × τ2'))%types.
 Proof.
   assert (pτ1 : Closed τ1). by apply (TArrow_closed1 (typed_closed d1)).
   assert (pτ2 : Closed τ2). by apply (TArrow_closed1 (typed_closed d2)).
@@ -81,7 +81,7 @@ Definition between_TArrow (ca cr : expr) : val :=
     ).
 
 Lemma between_TArrow_subst_rewrite σ ca cr :
-  (# (between_TArrow ca cr)).[σ] =
+  (of_val (between_TArrow ca cr)).[σ] =
   between_TArrow ca.[σ] cr.[σ].
 Proof.
   rewrite /between_TArrow.
@@ -91,7 +91,7 @@ Qed.
 Lemma between_TArrow_typed Γ (τ1 τ2 τ3 τ4 : type) (ca cr : expr)
       (da : Γ ⊢ₛ ca : (TArrow τ3 τ1))
       (dr : Γ ⊢ₛ cr : (TArrow τ2 τ4)) :
-  Γ ⊢ₛ between_TArrow ca cr : (TArrow (TArrow τ1 τ2) (TArrow τ3 τ4))%type.
+  Γ ⊢ₛ between_TArrow ca cr : (TArrow (TArrow τ1 τ2) (TArrow τ3 τ4))%types.
 Proof.
   assert (pτ1 : Closed τ1). by apply (TArrow_closed2 (typed_closed da)).
   assert (pτ2 : Closed τ2). by apply (TArrow_closed1 (typed_closed dr)).
@@ -116,7 +116,7 @@ Definition between_TRec (f : expr) : val :=
     ).
 
 Lemma between_TRec_subst_rewrite σ f :
-  (# (between_TRec f)).[σ] =
+  (of_val (between_TRec f)).[σ] =
   between_TRec f.[up σ].
 Proof.
   rewrite /between_TRec.
@@ -135,7 +135,7 @@ Qed.
 
 Lemma between_TRec_typed Γ (τi τf : type) (f : expr)
       (d : (TArrow (TRec τi) (TRec τf):: Γ) ⊢ₛ f : TArrow τi.[TRec τi/] τf.[TRec τf/]) :
-  Γ ⊢ₛ between_TRec f : TArrow (TRec τi) (TRec τf)%type.
+  Γ ⊢ₛ between_TRec f : TArrow (TRec τi) (TRec τf)%types.
 Proof.
   assert (Hi : Closed (TRec τi)). apply (closed_Fold_typed_help _ (TArrow_closed1 (typed_closed d))).
   assert (Hf : Closed (TRec τf)). apply (closed_Fold_typed_help _ (TArrow_closed2 (typed_closed d))).

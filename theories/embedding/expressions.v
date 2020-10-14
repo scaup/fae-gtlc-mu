@@ -1,4 +1,4 @@
-From fae_gtlc_mu.stlc_mu Require Import lang.
+From fae_gtlc_mu.stlc_mu Require lang.
 From fae_gtlc_mu.cast_calculus Require Import lang.
 
 Reserved Notation "[[ e ]]" (at level 4, e at next level).

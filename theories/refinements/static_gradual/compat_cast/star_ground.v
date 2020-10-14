@@ -15,7 +15,7 @@ Section star_ground.
       iApply (wp_pure_step_later _ _ _ (stlc_mu.lang.of_val w) True); auto.
       intros _. apply extract_TUnit_embed_TUnit. repeat iModIntro.
       iMod (step_pure _ ei' K'
-                      (Cast (# castupV_TUnit w') ⋆ TUnit)
+                      (Cast (castupV_TUnit w') ⋆ TUnit)
                       w' with "[Hv']") as "Hv'".
       eapply Same_Ground. auto. constructor. auto. auto. wp_value.
       iExists _. auto.
@@ -24,7 +24,7 @@ Section star_ground.
       iApply (wp_pure_step_later _ _ _ (stlc_mu.lang.of_val w) True); auto.
       intros _. apply extract_TProd_embed_TProd. repeat iModIntro.
       iMod (step_pure _ ei' K'
-                      (Cast (# castupV_TProd w') ⋆ (TProd ⋆ ⋆))
+                      (Cast (castupV_TProd w') ⋆ (TProd ⋆ ⋆))
                       w' with "[Hv']") as "Hv'".
       eapply Same_Ground. auto. constructor. auto. auto. wp_value.
       iExists _. auto.
@@ -33,7 +33,7 @@ Section star_ground.
       iApply (wp_pure_step_later _ _ _ (stlc_mu.lang.of_val w) True); auto.
       intros _. apply extract_TSum_embed_TSum. repeat iModIntro.
       iMod (step_pure _ ei' K'
-                      (Cast (# castupV_TSum w') ⋆ (TSum ⋆ ⋆))
+                      (Cast (castupV_TSum w') ⋆ (TSum ⋆ ⋆))
                       w' with "[Hv']") as "Hv'".
       eapply Same_Ground. auto. constructor. auto. auto. wp_value.
       iExists _. auto.
@@ -42,7 +42,7 @@ Section star_ground.
       iApply (wp_pure_step_later _ _ _ (stlc_mu.lang.of_val w) True); auto.
       intros _. apply extract_TArrow_embed_TArrow. repeat iModIntro.
       iMod (step_pure _ ei' K'
-                      (Cast (# castupV_TArrow w') ⋆ (TArrow ⋆ ⋆))
+                      (Cast (castupV_TArrow w') ⋆ (TArrow ⋆ ⋆))
                       w' with "[Hv']") as "Hv'".
       eapply Same_Ground. auto. constructor. auto. auto. wp_value.
       iExists _. auto.
@@ -52,7 +52,7 @@ Section star_ground.
       iApply (wp_pure_step_later _ _ _ (stlc_mu.lang.Fold (stlc_mu.lang.of_val w)) True); auto.
       intros _. apply extract_TRec_embed_TUnknown. repeat iModIntro.
       iMod (step_pure _ ei' K'
-                      (Cast (# castupV_TRec (FoldV w')) ⋆ (TRec ⋆))
+                      (Cast (castupV_TRec (FoldV w')) ⋆ (TRec ⋆))
                       (FoldV w') with "[Hv']") as "Hv'".
       eapply Same_Ground. auto. constructor. auto. auto. wp_value.
       iExists _. rewrite interp_rw_TRec. asimpl. iSplit; auto. by simpl.

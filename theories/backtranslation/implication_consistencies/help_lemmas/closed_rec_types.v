@@ -6,16 +6,6 @@ Require Import Coq.Arith.Minus.
 From fae_gtlc_mu.backtranslation Require Import implication_consistencies.help_lemmas.listset_ext.
 From fae_gtlc_mu.cast_calculus Require Export types types_lemmas.
 
-(* Lemma scomp_comp (σ1 σ2 : var → type) τ : (subst σ1 ∘ subst σ2) τ = subst (σ2 >> σ1) τ. *)
-(* Proof. by asimpl. Qed. *)
-
-(* Lemma scomp_assoc (σ1 σ2 σ3 : var → type) : (σ1 >> σ2) >> σ3 = σ1 >> (σ2 >> σ3). *)
-(* Proof. by asimpl. Qed. *)
-
-(* Lemma subst_commut (τ : type) (σ : var → type) : up σ >> scons (τ.[σ]) ids = scons τ ids >> σ. *)
-(* Proof. by asimpl. Qed. *)
-
-
 Fixpoint closed_rec_types (τ : type) : listset type :=
   match τ with
   | TUnit => ∅
@@ -230,7 +220,7 @@ Proof.
   intro.
   apply (@rtc_ind_l _ p_le_pre (fun τ' : type => (τ' = TArrow τ1 τ2 ∨ p_le τ' τ1 ∨ p_le τ' τ2)) (TArrow τ1 τ2)).
   - by left.
-  - intros. destruct H2 as [-> | [p1 | p2] ].
+  - intros. destruct H2 as [ | [p1 | p2] ].
     + inversion H0; simplify_eq.
       * right. left. by constructor.
       * right. right. by constructor.
@@ -284,7 +274,7 @@ Proof.
       * set_solver.
       * set_solver.
     + clear IHτ.
-      simpl. destruct (le_TRec (TRec αb) τ p) as [->]. set_solver.
+      simpl. destruct (le_TRec (TRec αb) τ p). set_solver.
     + assert (abs : TRec αb = TVar x). by apply le_TVar. inversion abs.
     + assert (abs : TRec αb = TUnknown). by apply le_TUnknown. inversion abs.
   - induction τ; intros.
@@ -312,7 +302,7 @@ Proof.
       destruct (chain_off_last ls _ _ n Hls pch) as [ks [δ [-> [pchn pμδτ]]]].
       rewrite app_length in Hls. simpl in Hls.
       specialize (IHn δ αb ks ltac:(lia) pchn).
-      destruct (le_TRec (TRec δ) τ pμδτ) as [->].
+      destruct (le_TRec (TRec δ) τ pμδτ).
       rewrite subst_chain_app. simpl (subst_chain [δ]). simpl (closed_rec_types (TRec δ)).
       cut (subst (TRec δ .: ids) <$> {[(TRec αb).[subst_chain ks]]} ⊆ subst (TRec δ .: ids) <$> closed_rec_types δ ).
       { rewrite map_singleton. asimpl. set_solver. }
@@ -369,7 +359,7 @@ Proof.
   apply (nat_total_induction (fun n => forall (α : type) (k : nat) (pk : list type) (Hpk : length pk = k) (αk : type) (pchk : Chain α αk pk)
                                       (pn : list type) (Hpn : length pn = n) (pchn : Chain αk τ pn),
                                   fmap (subst (subst_chains_fmap pk pn)) (closed_rec_types α.[upn k (subst_chain pn)]) ⊆ closed_rec_types τ)).
-  - intro α. induction α as [_ | β1 IHβ1 β2 IHβ2 | β1 IHβ1 β2 IHβ2 | β1 IHβ1 β2 IHβ2 | αb IHαb | x | _];
+  - intro α. induction α as [ | β1 IHβ1 β2 IHβ2 | β1 IHβ1 β2 IHβ2 | β1 IHβ1 β2 IHβ2 | αb IHαb | x | ];
       intros k pk Hpk αk pchk nil p0 pchnil; try by set_solver.
     + specialize (IHβ1 k pk Hpk αk (chain_diff_prefix _ _ _ _ pchk (rtc_once _ _ (prod_l_p_le_pre β1 β2))) nil p0 pchnil).
       specialize (IHβ2 k pk Hpk αk (chain_diff_prefix _ _ _ _ pchk (rtc_once _ _ (prod_r_p_le_pre β1 β2))) nil p0 pchnil).
@@ -392,7 +382,7 @@ Proof.
         rewrite scomp_comp. rewrite -Hpk. simpl. reflexivity.
     + destruct nil; simpl in p0; try by (exfalso; lia). simpl (subst_chain []). rewrite up_id_n. asimpl. set_solver.
   - intros n Hni α.
-    induction α as [_ | β1 IHβ1 β2 IHβ2 | β1 IHβ1 β2 IHβ2 | β1 IHβ1 β2 IHβ2 | αb IHαb | x | _];
+    induction α as [ | β1 IHβ1 β2 IHβ2 | β1 IHβ1 β2 IHβ2 | β1 IHβ1 β2 IHβ2 | αb IHαb | x | ];
       intros k pk Hpk αk pchk pSn HpSn pchSn.
     + clear Hni. simpl. set_solver.
     + clear Hni. simpl.
@@ -422,7 +412,7 @@ Proof.
         rewrite subst_over_rec.
         intro.
         rewrite scomp_comp. rewrite -Hpk. simpl. reflexivity.
-    + destruct pSn as [_ | τ0' pn]; first by (simpl in HpSn; exfalso; lia).
+    + destruct pSn as [ | τ0' pn]; first by (simpl in HpSn; exfalso; lia).
       inversion HpSn as [Hpn]. inversion pchSn.
       clear H3 ls H2 τ0 τn H0 α H.
       destruct (subst_fv_upn_cases x k (subst_chain (τ0' :: pn))) as [[-> plt] | [j [eq ->]] ].

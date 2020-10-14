@@ -40,7 +40,7 @@ Section adequacy.
       rewrite -pair_op frac_op' Qp_half_half in Hvalid.
       move: Hvalid=> /pair_valid [_ /agree_op_inv' b]. apply leibniz_equiv in b. subst.
       iMod ("Hclose" with "[-]") as "_".
-      + iExists (#v2). auto.
+      + iExists v2. auto.
       + iIntros "!> !%". eauto.
   Qed.
 

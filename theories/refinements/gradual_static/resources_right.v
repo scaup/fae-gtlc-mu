@@ -82,7 +82,6 @@ Section cfg.
     induction n.
     - intros e1 e2 H. inversion H. simplify_eq. constructor.
     - intros e1 e2 H. inversion H. econstructor.
-      SearchAbout pure_step.
       apply (pure_step_ctx (fill K)).
       apply H1. by apply IHn.
   Qed.
@@ -99,7 +98,6 @@ Section cfg.
   Lemma nsteps_pure_step_prim_step n e e' : nsteps pure_step n e e' → nsteps erased_step n ([e], ()) ([e'], ()).
   Proof.
     intros.
-    SearchAbout nsteps.
     cut (nsteps erased_step n ((fun e => ([e], ())) e) ((fun e => ([e], ())) e')). by simpl.
     eapply nsteps_congruence; eauto.
     intros. by apply pure_step_erased_step.
@@ -134,9 +132,8 @@ Section cfg.
     (** close invariant *)
     iApply fupd_wand_r. iSplitL "Hclose Hown1". iApply ("Hclose" with "[Hown1]").
     iNext. iExists (fill K e2'). iFrame.
-    iPureIntro. SearchAbout rtc. eapply rtc_transitive. apply H1.
-    apply (nsteps_rtc n). SearchAbout erased_step.
-    SearchAbout nsteps.
+    iPureIntro. eapply rtc_transitive. apply H1.
+    apply (nsteps_rtc n).
     apply nsteps_pure_step_prim_step. by apply nsteps_pure_step_ctx.
     iFrame "Hown2". done.
   Qed.

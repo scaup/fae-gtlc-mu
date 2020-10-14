@@ -1,6 +1,7 @@
 From fae_gtlc_mu.refinements.gradual_static Require Export compat_cast.defs.
 From fae_gtlc_mu.backtranslation Require Export general_def_lemmas.
 From fae_gtlc_mu.stlc_mu Require Export lang.
+From fae_gtlc_mu.cast_calculus Require Import types_notations.
 From fae_gtlc_mu.cast_calculus Require Export types.
 
 Section compat_cast_star_tau.

@@ -14,7 +14,7 @@ Section between_rec.
     rewrite /𝓕c /𝓕. asimpl.
     (** getting the information about the length of the list *)
     iDestruct "Hfs" as "[% Hfs']".
-    destruct (fs !! i) as [f | abs] eqn:Hf.
+    destruct (fs !! i) as [f | ] eqn:Hf.
     rewrite (stlc_mu.typing_lemmas.env_subst_lookup _ i f); try done.
     {
       iDestruct (big_sepL2_lookup with "Hfs'") as "#Hf". exact pμτlμtr. exact Hf.

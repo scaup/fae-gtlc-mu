@@ -15,7 +15,7 @@ Qed.
 Fixpoint env_subst (vs : list val) : var → expr :=
   match vs with
   | [] => ids
-  | v :: vs' => #v .: env_subst vs'
+  | v :: vs' => of_val v .: env_subst vs'
   end.
 
 Lemma env_subst_lookup vs x v :
@@ -102,10 +102,6 @@ Qed.
 Lemma context_weakening ξ Γ e τ :
   Γ ⊢ₜ e : τ → ξ ++ Γ ⊢ₜ e.[(ren (+ (length ξ)))] : τ.
 Proof. eapply (context_gen_weakening _ []). Qed.
-
-(* Lemma context_gen_reorder Γ'' Γ' Γ τ1 τ2 τe τ : *)
-  (* Γ'' ++ [τ1] ++ Γ' ++ [τ2] ++ Γ ⊢ₜ e : τ → *)
-  (* Γ'' ++ [τ2] ++ Γ' ++ [τ1] ++ Γ' ⊢ₜ e.[upn (length Γ') (ren (+ (length ξ)))] : τ. *)
 
 Lemma closed_context_weakening ξ Γ e τ :
   (∀ f, e.[f] = e) → Γ ⊢ₜ e : τ → ξ ++ Γ ⊢ₜ e : τ.

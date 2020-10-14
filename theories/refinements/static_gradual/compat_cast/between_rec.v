@@ -13,7 +13,7 @@ Section between_rec.
     rewrite /𝓕c /𝓕 /back_cast_ar; iIntros (ei' K' v v' fs) "(#Hfs & #Hvv' & #Hei' & Hv')".
     rewrite /𝓕c /𝓕. asimpl.
     iDestruct "Hfs" as "[% Hfs']".
-    destruct (fs !! i) as [f | abs] eqn:Hf.
+    destruct (fs !! i) as [f | ] eqn:Hf.
     rewrite (stlc_mu.typing_lemmas.env_subst_lookup _ i f); try done.
     {
       iDestruct (big_sepL2_lookup with "Hfs'") as "#Hf". exact pμτlμtr. exact Hf.

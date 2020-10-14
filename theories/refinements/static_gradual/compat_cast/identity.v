@@ -26,8 +26,8 @@ Section compat_cast_identity.
     rewrite /back_cast_ar. iIntros (ei' K' v v' fs) "(#Hfs & #Hvv' & #Hei' & Hv')".
     asimpl. wp_head.
     iMod (step_pure _ ei' K'
-                    (Cast (# v') ⋆ ⋆)
-                    (# v') with "[Hv']") as "Hv'". intros. eapply IdStar. by simpl. auto.
+                    (Cast v' ⋆ ⋆)
+                    v' with "[Hv']") as "Hv'". intros. eapply IdStar. by simpl. auto.
     iSplitR. done. done. asimpl. wp_value. iExists v'. iSplitL. done. done.
   Qed.
 

@@ -45,7 +45,7 @@ Fixpoint of_val (v : val) : expr :=
   | InjRV v => InjR (of_val v)
   | FoldV v => Fold (of_val v)
   end.
-Notation "# v" := (of_val v) (at level 20).
+(* Notation "# v" := (of_val v) (at level 20). *)
 
 Coercion of_val : val >-> expr.
 

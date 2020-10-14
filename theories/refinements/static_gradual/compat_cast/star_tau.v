@@ -19,8 +19,8 @@ Section compat_cast_star_tau.
     iApply (wp_bind (ectx_language.fill $ [stlc_mu.lang.AppRCtx _])).
     iApply (wp_wand with "[-]").
     iMod (step_pure _ ei' K'
-                    (Cast (# v') ⋆ τ)
-                    (Cast (Cast (# v') ⋆ τG) τG τ) with "[Hv']") as "Hv'"; auto.
+                    (Cast v' ⋆ τ)
+                    (Cast (Cast v' ⋆ τG) τG τ) with "[Hv']") as "Hv'"; auto.
     { eapply DownFactorization; auto. }
     rewrite -𝓕c_rewrite.
     iApply (IHpC1 ei' (CastCtx τG τ :: K') with "[Hv']"); auto.

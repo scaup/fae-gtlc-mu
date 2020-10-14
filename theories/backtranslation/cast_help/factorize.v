@@ -20,7 +20,7 @@ Definition factorization (f g : expr) : val :=
       g.[ren (+1)] (f.[ren (+1)] (Var 0))
     ).
 
-Lemma factorization_subst_rewrite (f g : expr) σ : (# (factorization f g)).[σ] = factorization f.[σ] g.[σ].
+Lemma factorization_subst_rewrite (f g : expr) σ : (of_val (factorization f g)).[σ] = factorization f.[σ] g.[σ].
 Proof. by asimpl. Qed.
 
 Lemma factorization_typed Γ {f g : expr} τ1 τ2 τ3

@@ -1,6 +1,6 @@
 From Autosubst Require Export Autosubst.
 From iris.program_logic Require Export language ectx_language ectxi_language.
-From fae_gtlc_mu.cast_calculus Require Export types types_notations types_lemmas.
+From fae_gtlc_mu.cast_calculus Require Export types types_lemmas.
 
 (** Expressions *)
 Inductive expr :=
@@ -51,7 +51,7 @@ Fixpoint of_val (v : val) : expr :=
   | FoldV v => Fold (of_val v)
   | CastV v τi τf Ip => Cast (of_val v) τi τf
   end.
-Notation "# v" := (of_val v) (at level 20).
+(* Notation "# v" := (of_val v) (at level 20). *)
 
 Coercion of_val : val >-> expr.
 
@@ -141,16 +141,16 @@ Inductive head_step : expr → expr → Prop :=
 (* Between two times star *)
 | IdStar e v:
     to_val e = Some v →
-    head_step (Cast e ⋆ ⋆) e
+    head_step (Cast e TUnknown TUnknown) e
 (* Between two ground types *)
 | Same_Ground e v τ :
     to_val e = Some v →
     Ground τ →
-    head_step (Cast (Cast e τ ⋆) ⋆ τ) e
+    head_step (Cast (Cast e τ TUnknown) TUnknown τ) e
 | Different_Ground e v τ1 τ2 (G1 : Ground τ1) (G2 : Ground τ2):
     to_val e = Some v →
     not (τ1 = τ2) →
-    head_step (Cast (Cast e τ1 ⋆) ⋆ τ2) CastError
+    head_step (Cast (Cast e τ1 TUnknown) TUnknown τ2) CastError
 (* Application of function that is casted between arrow types *)
 | AppCast e1 v1 e2 v2 τ1 τ2 τ3 τ4:
     to_val e1 = Some v1 →
@@ -184,17 +184,17 @@ Inductive head_step : expr → expr → Prop :=
 | UpFactorization e v τ τG (G : get_shape τ = Some τG):
     to_val e = Some v →
     ((Ground τ) -> False) →
-    (¬ (τ = ⋆)) →
+    (¬ (τ = TUnknown)) →
     head_step
-      (Cast e τ ⋆)
-      (Cast (Cast e τ τG) τG ⋆)
+      (Cast e τ TUnknown)
+      (Cast (Cast e τ τG) τG TUnknown)
 | DownFactorization e v τ τG (G : get_shape τ = Some τG):
     to_val e = Some v →
     (notT (Ground τ)) →
-    (¬ (τ = ⋆)) →
+    (¬ (τ = TUnknown)) →
     head_step
-      (Cast e ⋆ τ)
-      (Cast (Cast e ⋆ τG) τG τ).
+      (Cast e TUnknown τ)
+      (Cast (Cast e TUnknown τG) τG τ).
 
 Lemma to_of_val v : to_val (of_val v) = Some v.
 Proof.
@@ -218,19 +218,19 @@ Lemma val_head_stuck e1 e2 :
 Proof.
   destruct 1; try naive_solver.
   - simpl.
-    destruct (ICP_dec ⋆ τ).
+    destruct (ICP_dec TUnknown τ).
     destruct (Ground_dec τ); simplify_option_eq.
     inversion i. inversion G. done. done.
   - simpl.
-    destruct (ICP_dec ⋆ τ2).
+    destruct (ICP_dec TUnknown τ2).
     destruct (Ground_dec τ1); simplify_option_eq.
     inversion i. inversion G. auto.
   - simpl.
     by destruct (Ground_dec τ); simplify_option_eq.
   - simpl.
-    destruct (ICP_dec τ ⋆).
+    destruct (ICP_dec τ TUnknown).
     inversion i; by exfalso.
-    destruct (ICP_dec ⋆ τ).
+    destruct (ICP_dec TUnknown τ).
     inversion i. by exfalso.
     done.
 Qed.

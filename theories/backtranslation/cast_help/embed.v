@@ -1,4 +1,5 @@
 From fae_gtlc_mu.cast_calculus Require Export types typing lang.
+(* From fae_gtlc_mu.cast_calculus Require Export types typing lang. *)
 From fae_gtlc_mu.stlc_mu Require Import types_notations.
 From fae_gtlc_mu.backtranslation Require Export universe types cast_help.fix.
 
@@ -26,7 +27,7 @@ Definition embed_Ground_TSum : val :=
   LamV (Fold ((InjL (InjL (InjL (InjR (Var 0))))))).
 
 Definition embed_Ground_TSum_typed Γ :
-  Γ ⊢ₛ embed_Ground_TSum : (TArrow (Universe + Universe) Universe)%type.
+  Γ ⊢ₛ embed_Ground_TSum : (TArrow (Universe + Universe) Universe)%types.
 Proof.
   eapply (Lam_typed _ _ _ _).
   apply Fold_typed.
@@ -43,7 +44,7 @@ Definition embed_Ground_TProd : val :=
   LamV (Fold (InjL (InjL (InjR (Var 0))))).
 
 Definition embed_Ground_TProd_typed Γ :
-  Γ ⊢ₛ embed_Ground_TProd : (TArrow (Universe × Universe) Universe).
+  Γ ⊢ₛ embed_Ground_TProd : ((TArrow (Universe × Universe) Universe))%types.
 Proof.
   apply Lam_typed, Fold_typed; try closed_solver.
   repeat apply InjL_typed; try closed_solver.
@@ -102,7 +103,7 @@ Proof.
     + apply embed_Ground_TRec_typed.
 Qed.
 
-Lemma embed_no_subs {τ : cast_calculus.types.type} {G : Ground τ} σ : (# (embed τ G)).[σ] = embed τ G.
+Lemma embed_no_subs {τ : cast_calculus.types.type} {G : Ground τ} σ : (of_val (embed τ G)).[σ] = embed τ G.
 Proof.
   destruct G; by asimpl.
 Qed.

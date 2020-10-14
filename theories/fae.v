@@ -3,9 +3,12 @@ From fae_gtlc_mu.cast_calculus Require Export contexts typing ctx_equiv.
 From fae_gtlc_mu.embedding Require Export expressions types types_lemmas well_typedness.
 From fae_gtlc_mu.backtranslation Require Export contexts well_typedness.
 
+From fae_gtlc_mu.refinements.static_gradual Require Export adequacy.
+From fae_gtlc_mu.refinements.static_gradual Require Export rel_ref_specs.
+From fae_gtlc_mu.embedding Require Export contexts.
+From fae_gtlc_mu.refinements.static_gradual Require Export adequacy.
+
 Section static_gradual.
-  From fae_gtlc_mu.refinements.static_gradual Require Export adequacy.
-  From fae_gtlc_mu.refinements.static_gradual Require Export rel_ref_specs.
 
   (** left to right in theorem 4.1 *)
   Lemma static_ctx_refines_gradual (Γ : list stlc_mu.types.type) (e : stlc_mu.lang.expr) (τ : stlc_mu.types.type) (de : Γ ⊢ₛ e : τ) :
@@ -18,9 +21,6 @@ Section static_gradual.
     apply (back_ctx_relates (map embed_type Γ) _ _ (embed_type τ)); auto. apply (embd_closed (stlc_mu.typing.typed_closed de)).
     by apply embedding_relates.
   Qed.
-
-  From fae_gtlc_mu.embedding Require Export contexts.
-  From fae_gtlc_mu.refinements.static_gradual Require Export adequacy.
 
   Lemma static_ctx_refines_gradual_easy (Γ : list stlc_mu.types.type) (e : stlc_mu.lang.expr) (τ : stlc_mu.types.type) (de : Γ ⊢ₛ e : τ) :
     ∀ (C : stlc_mu.contexts.ctx), stlc_mu.contexts.typed_ctx C Γ τ [] stlc_mu.types.TUnit →
@@ -36,9 +36,10 @@ Section static_gradual.
 
 End static_gradual.
 
+From fae_gtlc_mu.refinements.gradual_static Require Export adequacy.
+From fae_gtlc_mu.refinements.gradual_static Require rel_ref_specs.
+
 Section gradual_static.
-  From fae_gtlc_mu.refinements.gradual_static Require Export adequacy.
-  From fae_gtlc_mu.refinements.gradual_static Require Export rel_ref_specs.
 
   (** right to left in theorem 4.1 *)
   Lemma gradual_ctx_refines_static (Γ : list stlc_mu.types.type) (e : stlc_mu.lang.expr) (τ : stlc_mu.types.type) (de : Γ ⊢ₛ e : τ ):
@@ -47,9 +48,9 @@ Section gradual_static.
        stlc_mu.lang.Halts (stlc_mu.contexts.fill_ctx (backtranslate_ctx K) e).
   Proof.
     intros Cₜ dCₜ Hs.
-    apply (@adequacy actualΣ _ _ (fill_ctx Cₜ [[e]]) (stlc_mu.contexts.fill_ctx (backtranslate_ctx Cₜ) e) TUnit); auto. intros.
-    apply (back_ctx_relates (map embed_type Γ) _ _ (embed_type τ)); auto. apply (embd_closed (stlc_mu.typing.typed_closed de)).
-    by apply embedding_relates.
+    apply (@gradual_static.adequacy.adequacy actualΣ _ _ (fill_ctx Cₜ [[e]]) (stlc_mu.contexts.fill_ctx (backtranslate_ctx Cₜ) e) TUnit); auto. intros.
+    apply (gradual_static.rel_ref_specs.back_ctx_relates (map embed_type Γ) _ _ (embed_type τ)); auto. apply (embd_closed (stlc_mu.typing.typed_closed de)).
+    by apply gradual_static.rel_ref_specs.embedding_relates.
   Qed.
 
   Lemma gradual_ctx_refines_static_easy (Γ : list stlc_mu.types.type) (e : stlc_mu.lang.expr) (τ : stlc_mu.types.type) (de : Γ ⊢ₛ e : τ) :
@@ -60,8 +61,8 @@ Section gradual_static.
     intros C dC Hs.
     apply (@adequacy actualΣ _ _ (fill_ctx (embed_ctx C) [[e]]) (stlc_mu.contexts.fill_ctx C e) (embed_type stlc_mu.types.TUnit)); auto. intros.
     assert ([] = map embed_type []) as ->. done.
-    apply (embed_ctx_relates Γ _ _ τ); auto. by eapply stlc_mu.typing.typed_closed.
-    by apply embedding_relates.
+    apply (gradual_static.rel_ref_specs.embed_ctx_relates Γ _ _ τ); auto. by eapply stlc_mu.typing.typed_closed.
+    by apply gradual_static.rel_ref_specs.embedding_relates.
   Qed.
 
 End gradual_static.

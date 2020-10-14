@@ -64,7 +64,7 @@ Proof.
 Qed.
 
 
-Lemma extract_TRec_embed_TUnknown v : nsteps pure_step 3 (extract_Ground_TRec (# embedV_TUnknown v)) (Fold (# v)).
+Lemma extract_TRec_embed_TUnknown v : nsteps pure_step 3 (extract_Ground_TRec (of_val $ embedV_TUnknown v)) (Fold (of_val v)).
 Proof.
   new_step. ps_head_step.
   new_step. apply (pure_step_ctx (fill_item (CaseCtx _ _))). ps_head_step. simpl.

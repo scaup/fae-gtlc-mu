@@ -1,5 +1,9 @@
 From fae_gtlc_mu.cast_calculus Require Export types.
 
-Notation "⋆" := TUnknown : type_scope.
-Infix "×" := TProd (at level 150) : type_scope.
-Infix "+" := TSum : type_scope.
+Declare Scope types_scope.
+
+Notation "⋆" := TUnknown.
+Infix "×" := TProd (at level 150) : types_scope.
+Infix "+" := TSum : types_scope.
+
+Delimit Scope types_scope with types.

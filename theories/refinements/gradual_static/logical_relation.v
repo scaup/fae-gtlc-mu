@@ -1,9 +1,27 @@
 From fae_gtlc_mu.backtranslation.cast_help Require Export embed.
 From fae_gtlc_mu.refinements.gradual_static Require Export resources_left resources_right.
 From fae_gtlc_mu.cast_calculus Require Export lang types.
+From fae_gtlc_mu.cast_calculus Require Import types_notations.
 From iris.algebra Require Import list.
 From stdpp Require Import tactics.
 Import uPred.
+
+Definition castupV_TUnit (v : val) : val :=
+  (CastV v TUnit ⋆ (TGround_TUnknown_icp Ground_TUnit)).
+
+Definition castupV_TSum (v : val) : val :=
+  (CastV v (TSum ⋆ ⋆) ⋆ (TGround_TUnknown_icp Ground_TSum)).
+
+Definition castupV_TProd (v : val) : val :=
+  (CastV v (TProd ⋆ ⋆) ⋆ (TGround_TUnknown_icp Ground_TProd)).
+
+Definition castupV_TArrow (v : val) : val :=
+  (CastV v (TArrow ⋆ ⋆) ⋆ (TGround_TUnknown_icp Ground_TArrow)).
+
+Definition castupV_TRec (v : val) : val :=
+  (CastV v (TRec ⋆) ⋆ (TGround_TUnknown_icp Ground_TRec)).
+
+From fae_gtlc_mu.stlc_mu Require Export lang.
 
 Canonical Structure typeO := leibnizO type.
 
@@ -16,22 +34,7 @@ Section logrel.
   Implicit Types τi : D.
   Implicit Types Δ : listO D.
 
-  Definition castupV_TUnit (v : val) : val :=
-    (CastV v TUnit ⋆ (TGround_TUnknown_icp Ground_TUnit)).
 
-  Definition castupV_TSum (v : val) : val :=
-    (CastV v (TSum ⋆ ⋆) ⋆ (TGround_TUnknown_icp Ground_TSum)).
-
-  Definition castupV_TProd (v : val) : val :=
-    (CastV v (TProd ⋆ ⋆) ⋆ (TGround_TUnknown_icp Ground_TProd)).
-
-  Definition castupV_TArrow (v : val) : val :=
-    (CastV v (TArrow ⋆ ⋆) ⋆ (TGround_TUnknown_icp Ground_TArrow)).
-
-  Definition castupV_TRec (v : val) : val :=
-    (CastV v (TRec ⋆) ⋆ (TGround_TUnknown_icp Ground_TRec)).
-
-  From fae_gtlc_mu.stlc_mu Require Export lang.
 
   Definition interp_expr (interp_cor_val : P → iPropO Σ)
       (ee : cast_calculus.lang.expr * stlc_mu.lang.expr) : iProp Σ := (∀ K',

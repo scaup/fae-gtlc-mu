@@ -73,7 +73,7 @@ Lemma between_TRec_steps {A} {τl τr} (pC : alternative_consistency ((TRec τl,
 Proof.
   new_step. apply nsteps_once_inv. rewrite between_TRec_subst_rewrite. apply between_TRec_steps_help.
   cut (nsteps pure_step 5 (Fix (LamV (LamV (Fold ((𝓕 pC).[up (env_subst fs)].[ren (+1)] (Unfold (Var 0)))))) (of_val (FoldV v)))
-    (Fold ((𝓕 pC).[env_subst (𝓕cV (exposeRecursiveCAll A τl τr pμτlμτrnotA pC) fs H :: fs)] (# v)))). by simpl.
+    (Fold ((𝓕 pC).[env_subst (𝓕cV (exposeRecursiveCAll A τl τr pμτlμτrnotA pC) fs H :: fs)] (of_val v)))). by simpl.
   eapply (nsteps_trans 4 1).
   apply Fix_steps2. simpl. asimpl.
   assert (triv : (𝓕 pC).[Lam

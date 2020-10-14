@@ -1,7 +1,8 @@
+From fae_gtlc_mu.embedding Require types types_lemmas expressions contexts.
+From fae_gtlc_mu.stlc_mu Require typing.
 From fae_gtlc_mu.embedding Require Import types types_lemmas expressions contexts.
-From fae_gtlc_mu.stlc_mu Require Export typing contexts.
+From fae_gtlc_mu.stlc_mu Require Import typing.
 From fae_gtlc_mu.cast_calculus Require Export typing contexts.
-
 
 Lemma well_typedness_expr Γ e τ : (Γ ⊢ₛ e : τ) →
     map embed_type Γ ⊢ₜ embed_expr e : embed_type τ.

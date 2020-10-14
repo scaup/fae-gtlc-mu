@@ -1,6 +1,6 @@
 From fae_gtlc_mu.backtranslation.cast_help Require Export embed.
 From fae_gtlc_mu.refinements.static_gradual Require Export resources_left resources_right.
-From fae_gtlc_mu.cast_calculus Require Export types.
+From fae_gtlc_mu.cast_calculus Require Export types types_notations.
 From iris.algebra Require Import list.
 From stdpp Require Import tactics.
 Import uPred.

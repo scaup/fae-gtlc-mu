@@ -1,5 +1,6 @@
 From iris.program_logic Require Export weakestpre.
 From fae_gtlc_mu.cast_calculus Require Export lang.
+From fae_gtlc_mu.cast_calculus Require Import types_notations.
 
 Class implG Σ := ImplG {
   implG_invG : invG Σ;
@@ -219,4 +220,3 @@ End wps.
 
 Ltac wp_head := iApply wp_pure_step_later; auto; iNext.
 Ltac wp_value := iApply wp_value.
-

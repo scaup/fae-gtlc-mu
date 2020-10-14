@@ -1,4 +1,4 @@
-From fae_gtlc_mu.stlc_mu Require Import lang contexts.
+From fae_gtlc_mu.stlc_mu Require lang contexts.
 From fae_gtlc_mu.cast_calculus Require Import lang contexts.
 From fae_gtlc_mu.embedding Require Import expressions.
 
