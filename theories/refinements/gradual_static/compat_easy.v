@@ -51,7 +51,6 @@ Section fundamental.
     iIntros (vvs ei') "#[Hρ HΓ]"; iIntros (K) "Hj /=".
     smart_wp_bind (cast_calculus.lang.PairLCtx e2.[cast_calculus.typing_lemmas.env_subst _]) v v' "[Hv #Hiv]"
       ('`IHHtyped1 _ _ ((stlc_mu.lang.PairLCtx e2'.[stlc_mu.typing_lemmas.env_subst _]) :: K)).
-      (* ('`IHHtyped1 _ _ ((PairLCtx e2'.[env_subst _]) :: K)). *)
     smart_wp_bind (cast_calculus.lang.PairRCtx v) w w' "[Hw #Hiw]"
       ('`IHHtyped2 _ _ ((stlc_mu.lang.PairRCtx v') :: K)).
     iApply wp_value.

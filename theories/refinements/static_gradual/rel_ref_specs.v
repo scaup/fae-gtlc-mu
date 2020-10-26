@@ -14,6 +14,7 @@ Section relation_for_specification_lemma.
   Context `{!implG Σ, !specG Σ}.
 
   (** Static terms are related to their embeddings *)
+  (** Proof by induction on the type derivation of expression and application of boring compatibility lemmas. *)
   Theorem embedding_relates (Γ : list stlc_mu.types.type) (e : stlc_mu.lang.expr) (τ : stlc_mu.types.type) :
     Γ ⊢ₛ e : τ → map embed_type Γ ⊨ e ≤log≤ [[e]] : [| τ |].
   Proof.
@@ -33,6 +34,7 @@ Section relation_for_specification_lemma.
   Qed.
 
   (** Gradual terms are related to their backtranslation *)
+  (** Proof by induction on the type derivation of expression and application of all compatibility lemmas (including compatibility lemma for casts now). *)
   Theorem back_relates (Γ : list cast_calculus.types.type) (e : cast_calculus.lang.expr) (τ : cast_calculus.types.type) :
     Γ ⊢ₜ e : τ → Γ ⊨ <<<e>>> ≤log≤ e : τ.
   Proof.
@@ -57,6 +59,7 @@ Section relation_for_specification_lemma.
     - apply bin_log_related_omega.
   Qed.
 
+  (** Gradual contexts (of depth 1) are related to their backtranslations *)
   Lemma back_ctx_item_relates (Γ : list cast_calculus.types.type) (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : cast_calculus.types.type) (pτ : Closed τ)
         (Γ' : list cast_calculus.types.type) (τ' : cast_calculus.types.type) (C : cast_calculus.contexts.ctx_item) :
       cast_calculus.contexts.typed_ctx_item C Γ τ Γ' τ' →
@@ -98,6 +101,7 @@ Section relation_for_specification_lemma.
       apply back_ctx_item_relates with (Γ := Γ2) (τ := τ2). by eapply typed_ctx_closedness. auto. by eapply IHC.
   Qed.
 
+  (** Static contexts (of depth 1) are related to their embeddings *)
   Lemma embed_ctx_item_relates (Γ : list stlc_mu.types.type) (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : stlc_mu.types.type) (pτ : Closed τ)
         (Γ' : list stlc_mu.types.type) (τ' : stlc_mu.types.type) (C : stlc_mu.contexts.ctx_item) :
       stlc_mu.contexts.typed_ctx_item C Γ τ Γ' τ' →

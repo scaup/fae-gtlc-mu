@@ -5,6 +5,7 @@ From fae_gtlc_mu.cast_calculus Require Export lang.
 Section between_rec.
   Context `{!implG Σ,!specG Σ}.
 
+  (** The case `atomic_UseRecursion` in our proof by induction on the alternative consistency relation. *)
   Lemma back_cast_ar_trec_trec_use:
     ∀ (A : list (type * type)) (τl τr : {bind type}) (i : nat) (pμτlμtrinA : A !! i = Some (TRec τl, TRec τr)),
       back_cast_ar (atomic_UseRecursion A τl τr i pμτlμtrinA).
@@ -25,6 +26,7 @@ Section between_rec.
     }
   Qed.
 
+  (** The case `exposeRecursiveCall` in our proof by induction on the alternative consistency relation. *)
   Lemma back_cast_ar_trec_trec_expose:
     ∀ (A : list (type * type)) (τl τr : {bind type}) (pμτlμτrnotA : (TRec τl, TRec τr) ∉ A)
       (pC : alternative_consistency ((TRec τl, TRec τr) :: A) τl.[TRec τl/] τr.[TRec τr/]) (IHpC : back_cast_ar pC),
@@ -52,7 +54,6 @@ Section between_rec.
                     (Fold (Cast w' (τl.[TRec τl/]) (τr.[TRec τr/]))) with "[Hv']") as "Hv'".
     intros. apply (RecursiveCast _ w'). rewrite -to_of_val. auto. auto. by iFrame.
     (** apply IH *)
-
     iApply (wp_wand with "[-]").
     iApply (IHpC ei' (FoldCtx :: K') w w' (𝓕cV (exposeRecursiveCAll A τl τr pμτlμτrnotA pC) fs H :: fs)). iSplitL "Hfs". iSplitR. simpl. by rewrite H.
     (** applying IHlob and Hfs *)

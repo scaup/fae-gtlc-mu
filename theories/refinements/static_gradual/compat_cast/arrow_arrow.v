@@ -5,6 +5,7 @@ From fae_gtlc_mu.cast_calculus Require Export lang.
 Section compat_cast_arrow_arrow.
   Context `{!implG Σ,!specG Σ}.
 
+  (** The case `throughArrow` in our proof by induction on the alternative consistency relation. *)
   Lemma back_cast_ar_arrow_arrow:
     ∀ (A : list (type * type)) (τ1 τ1' τ2 τ2' : type) (pC1 : alternative_consistency A τ1' τ1) (pC2 : alternative_consistency A τ2 τ2')
       (IHpC1 : back_cast_ar pC1) (IHpC2 : back_cast_ar pC2),
@@ -12,17 +13,18 @@ Section compat_cast_arrow_arrow.
   Proof.
     intros A τ1 τ1' τ2 τ2' pC1 pC2 IHpC1 IHpC2.
     rewrite /back_cast_ar. iIntros (ei' K' v v' fs) "(#Hfs & #Hvv' & #Hei' & Hv')".
-    fold interp.
+    (* extract small lemma about length fs *)
     iDestruct "Hfs" as "[% Hfs']"; iAssert (rel_cast_functions A fs) with "[Hfs']" as "Hfs". iSplit; done. iClear "Hfs'".
+    (* rewriting stuff *)
     rewrite /𝓕c /𝓕. fold (𝓕 pC1) (𝓕 pC2). rewrite between_TArrow_subst_rewrite.
     rename v into f. rename v' into f'. iDestruct "Hv'" as "Hf'". iDestruct "Hvv'" as "Hff'".
-    (* iClear "Hvv'". *)
     fold (𝓕c pC1 fs) (𝓕c pC2 fs).
-    iDestruct "Hfs" as "[% Hfs']"; iAssert (rel_cast_functions A fs) with "[Hfs']" as "Hfs". iSplit; done. iClear "Hfs'".
     do 2 rewrite 𝓕c_rewrite.
+    (* 1 step in WP *)
     unfold between_TArrow.
     wp_head.
     asimpl.
+    (* prove postcondition because value *)
     iApply wp_value.
     iExists (CastV f' (TArrow τ1 τ2) (TArrow τ1' τ2') (TArrow_TArrow_icp τ1 τ2 τ1' τ2')).
     rewrite interp_rw_TArrow.
@@ -35,28 +37,23 @@ Section compat_cast_arrow_arrow.
     simpl. clear K'.
     iIntros (K') "Hf'".
     simpl in *.
-    (** implementation *)
+    (* step in wp *)
     wp_head. asimpl.
-    (** specification *)
+    (* step in gradual side *)
     iMod (step_pure _ ei' K'
                     (App (Cast f' (TArrow τ1 τ2) (TArrow τ1' τ2')) a')
                     (Cast (App f' (Cast a' τ1' τ1)) τ2 τ2') with "[Hf']") as "Hf'".
     intros. eapply AppCast; try by rewrite -to_of_val. auto. by iFrame.
-    (** first IH for the arguments *)
+    (* first IH for the arguments *)
     iApply (wp_bind (ectx_language.fill $ [stlc_mu.lang.AppRCtx _ ; stlc_mu.lang.AppRCtx _])).
     iApply (wp_wand with "[-]").
     rewrite -𝓕c_rewrite.
-    iApply (IHpC1 ei' (AppRCtx f' :: CastCtx τ2 τ2' :: K') with "[Hf']").
-    (* iApply (IHpC1 ei' (CastCtx τ2 τ4 :: AppRCtx f' :: K') with "[Hf']"). *)
-    iSplitR. done.
-    iSplitR. done.
-    iSplitR. done.
-    simpl. done.
+    iApply (IHpC1 ei' (AppRCtx f' :: CastCtx τ2 τ2' :: K') with "[Hf']"). auto.
     iIntros (b) "HHH".
     iDestruct "HHH" as (b') "[Hb' #Hbb']".
     simpl.
     iClear "Haa'". clear a a'.
-    (** using the relatedness of functions *)
+    (* using the relatedness of functions *)
     iApply (wp_bind (ectx_language.fill $ [stlc_mu.lang.AppRCtx _ ])).
     iApply (wp_wand with "[-]").
     iDestruct ("Hff'" with "Hbb'") as "Hfbf'b' /=".

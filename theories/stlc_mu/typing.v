@@ -25,6 +25,7 @@ where "Γ ⊢ₛ e : τ" := (typed Γ e τ).
 
 From fae_gtlc_mu.stlc_mu Require Export types_lemmas.
 
+(* Our typing derivations are defined such that for any τ, if something is well-typed of type τ, τ is closed (i.e. τ does not contain free variables). *)
 Lemma typed_closed {Γ} {e} {τ} : Γ ⊢ₛ e : τ → Closed τ.
 Proof.
   intro d. induction d.

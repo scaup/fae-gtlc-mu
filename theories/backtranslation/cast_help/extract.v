@@ -2,8 +2,9 @@ From fae_gtlc_mu.cast_calculus Require Export types typing lang.
 From fae_gtlc_mu.stlc_mu Require Import types_notations.
 From fae_gtlc_mu.backtranslation Require Export universe types cast_help.fix.
 
-(** Extractions *)
+(* This file defines the extraction functions (figure 7) *)
 
+(* We first define a diverging term Ω *)
 Definition Ω : expr :=
   (
     (Lam ((Unfold (Var 0)) (Var 0)))
@@ -30,6 +31,7 @@ Proof.
     Unshelve. all:intro σ; asimpl; by repeat rewrite pτ.
 Qed.
 
+(* Universe → TUnit *)
 Definition extract_TUnit : val :=
   LamV (Case (Unfold (Var 0))
             (Case (Var 0)
@@ -67,6 +69,7 @@ Proof.
     Unshelve. all: intro σ; by asimpl.
 Qed.
 
+(* Universe → (Universe + Universe) *)
 Definition extract_Ground_TSum : val :=
   LamV (Case (Unfold (Var 0))
             (Case (Var 0)
@@ -101,6 +104,7 @@ Proof.
     Unshelve. all: intro σ; by asimpl.
 Qed.
 
+(* Universe → (Universe × Universe) *)
 Definition extract_Ground_TProd : val :=
   LamV (Case (Unfold (Var 0))
             (Case (Var 0)
@@ -129,6 +133,7 @@ Proof.
     Unshelve. all: intro σ; by asimpl.
 Qed.
 
+(* Universe → (Universe → Universe) *)
 Definition extract_Ground_TArrow : val :=
   LamV (Case (Unfold (Var 0))
             (Case (Var 0)
@@ -151,6 +156,7 @@ Proof.
     Unshelve. all: intro σ; by asimpl.
 Qed.
 
+(* Universe → (μ_.Universe) *)
 Definition extract_Ground_TRec : val :=
   LamV (Case (Unfold (Var 0))
             (Ω)
@@ -168,6 +174,7 @@ Proof.
   Unshelve. apply Universe_closed.
 Qed.
 
+(* Defines extraction function of type Universe → <<G>> for arbitrary ground type *)
 Definition extract (τ : cast_calculus.types.type) (G : Ground τ) : val :=
   match G with
   | Ground_TUnit => extract_TUnit

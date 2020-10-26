@@ -15,33 +15,39 @@ Section adequacy.
     (cast_calculus.lang.Halts e').
   Proof.
     intros Hlog Hsteps.
+    (** Using Iris' adequacy result for weakest preconditions to prove that e' Halts (assuming that the right WP holds) *)
     cut (adequate NotStuck e tt (λ _ _, ∃ v', rtc erased_step ([e'], tt) (of_val v' :: [], tt))).
     { rewrite /stlc_mu.lang.Halts in Hsteps. destruct 1. naive_solver. }
     eapply (wp_adequacy Σ); first by apply _.
+    (** Actually prove that the right WP holds *)
     iIntros (Hinv ?).
+    (* Allocate two halfs at e' to specify gradual part *)
     iMod (own_alloc ((((1/2)%Qp , to_agree e') ⋅ ((1/2)%Qp , to_agree e')) : specR)) as (spec_name) "[Hs1 Hs2]".
     { rewrite -pair_op frac_op' Qp_half_half agree_idemp.
       apply pair_valid; split; try done; try by apply frac_valid'. }
     set (SpecΣ := SpecG Σ inG0 spec_name).
     set (ImplΣ := ImplG Σ Hinv).
+    (* Allocate invariant with e' using one of the halfs *)
     iMod (inv_alloc specN _ (initially_body e') with "[Hs1]") as "#Hinitially".
     { iNext. iExists e'. iSplit; eauto. }
     iExists (λ _ _, True%I), (λ _, True%I); iSplitR; first done.
+    (* Proving goal by obtaining the WP in the conclusion of Hlog *)
     iApply wp_fupd. iApply (wp_wand with "[-]").
-    - iPoseProof (Hlog ImplΣ SpecΣ [] e' with "[]") as "Hrel".
+    - (* Using conclusion in Hlog *) iPoseProof (Hlog ImplΣ SpecΣ [] e' with "[]") as "Hrel".
       { iSplit; auto. iApply interp_env_nil. }
       replace e with (e.[stlc_mu.typing_lemmas.env_subst [] ]) at 2 by by asimpl.
       iApply ("Hrel" $! []). asimpl; iFrame.
-    - iModIntro. simpl. iIntros (v'). iDestruct 1 as (v2) "[Hj #Hinterp]".
+    - (* Given postcondition in WP of Hlog and invariant, we continue proving the goal *)
+      iModIntro. simpl. iIntros (v'). iDestruct 1 as (v2) "[Hj #Hinterp]".
       iExists v2.
-      iInv specN as ">Hinv" "Hclose".
-      iDestruct "Hinv" as (e'') "[He'' %]".
+      (* open invariant to get contents *)
+      iInv specN as ">Hinv" "Hclose". iDestruct "Hinv" as (e'') "[He'' %]".
+      (* prove that e'' must correspond to v2 *)
       iDestruct (own_valid_2 with "He'' Hj") as %Hvalid.
       rewrite -pair_op frac_op' Qp_half_half in Hvalid.
       move: Hvalid=> /pair_valid [_ /agree_op_inv' b]. apply leibniz_equiv in b. subst.
-      iMod ("Hclose" with "[-]") as "_".
-      + iExists v2. auto.
-      + iIntros "!> !%". eauto.
+      (* close invariant *) iMod ("Hclose" with "[-]") as "_". iExists v2. auto.
+      iIntros "!> !%". eauto.
   Qed.
 
 End adequacy.

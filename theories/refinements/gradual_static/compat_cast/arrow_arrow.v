@@ -8,6 +8,7 @@ Section compat_cast_arrow_arrow.
 
   Hint Extern 5 (AsVal _) => eexists; simpl; try done; eapply cast_calculus.lang.of_to_val; fast_done : typeclass_instances.
 
+  (** The case `throughArrow` in our proof by induction on the alternative consistency relation. *)
   Lemma back_cast_ar_arrow_arrow:
     ∀ (A : list (type * type)) (τ1 τ1' τ2 τ2' : type) (pC1 : alternative_consistency A τ1' τ1) (pC2 : alternative_consistency A τ2 τ2')
       (IHpC1 : back_cast_ar pC1) (IHpC2 : back_cast_ar pC2),

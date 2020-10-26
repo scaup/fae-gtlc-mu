@@ -3,9 +3,12 @@ From fae_gtlc_mu.backtranslation Require Export alternative_consistency.
 From fae_gtlc_mu.backtranslation Require Export cast_help.general_def.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 
+(* This file defines what needs to be proven for the compatibility lemma for casts. *)
 
 Section defs.
   Context `{!implG Σ,!specG Σ}.
+
+  (* Defines relatedness for a list of static values with respect A, a list of pairs of gradual types. *)
 
   Definition rel_cast_functions A (fs : list stlc_mu.lang.val) : iProp Σ :=
     ⌜length A = length fs⌝ ∗
@@ -23,11 +26,17 @@ Section defs.
     apply bi.intuitionistically_persistent.
   Qed.
 
-  (** The statement that the -- closed up -- back-translated casts behave appropriately.
-      (We redefine it here to a new statement, making it a bit more amenable for proving.) *)
+  (** The (to-be-proven) statement that the -- closed up -- back-translated casts behave appropriately;
+      it's a slightly adjusted version of the compatibility lemma for casts such that the proof is more ergonomic. *)
 
   Definition back_cast_ar {A} {τi τf} (pC : alternative_consistency A τi τf) :=
-    ∀ ei' K' v v' fs, (rel_cast_functions A fs ∧ ⟦ τi ⟧ (v, v') ∧ initially_inv ei' ∧ currently_half (fill K' (𝓕c pC fs (stlc_mu.lang.of_val v'))))
-                     ⊢ (WP Cast (cast_calculus.lang.of_val v) τi τf ?{{ w, ∃ w', currently_half (fill K' (stlc_mu.lang.of_val w')) ∧ ⟦ τf ⟧ (w, w') }})%I.
+    ∀ ei' K' v v' fs,
+      ( rel_cast_functions A fs ∧
+        ⟦ τi ⟧ (v, v') ∧
+        initially_inv ei' ∧
+        currently_half (fill K' (𝓕c pC fs (stlc_mu.lang.of_val v')))
+      )
+        ⊢ (WP
+             Cast v τi τf ?{{ w, ∃ w', currently_half (fill K' (stlc_mu.lang.of_val w')) ∧ ⟦ τf ⟧ (w, w') }})%I.
 
 End defs.

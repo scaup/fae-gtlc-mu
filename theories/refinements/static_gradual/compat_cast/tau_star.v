@@ -13,20 +13,25 @@ Section compat_cast_tau_star.
     intros A τ τG pτnG pτnStar pτSτG pC1 pC2 IHpC1 IHpC2.
     rewrite /back_cast_ar /𝓕c /𝓕. fold (𝓕 pC1). fold (𝓕 pC2).
     iIntros (ei' K' v v' fs) "(#Hfs & #Hvv' & #Hei' & Hv')".
+    (* get small lemma about length fs *)
     iDestruct "Hfs" as "[% Hfs']"; iAssert (rel_cast_functions A fs) with "[Hfs']" as "Hfs". iSplit; done. iClear "Hfs'".
+    (* step in wp *)
     wp_head. asimpl.
     fold (𝓕c pC1 fs). fold (𝓕c pC2 fs). do 2 rewrite 𝓕c_rewrite.
+    (* step in gradual side *)
     iApply (wp_bind (ectx_language.fill $ [stlc_mu.lang.AppRCtx _])).
     iApply (wp_wand with "[-]").
     iMod (step_pure _ ei' K'
                     (Cast v' τ ⋆)
                     (Cast (Cast v' τ τG) τG ⋆) with "[Hv']") as "Hv'"; auto.
     { eapply UpFactorization; auto. }
+    (* apply first IH *)
     rewrite -𝓕c_rewrite.
     iApply (IHpC1 ei' (CastCtx τG ⋆ :: K') with "[Hv']"); auto.
     iIntros (w) "blaa".  iDestruct "blaa" as (w') "[Hw' #Hww']".
     simpl.
     rewrite -𝓕c_rewrite.
+    (* apply second IH *)
     iApply (IHpC2 ei' K' with "[Hw']"); auto.
   Qed.
 

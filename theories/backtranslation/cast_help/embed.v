@@ -3,11 +3,9 @@ From fae_gtlc_mu.cast_calculus Require Export types typing lang.
 From fae_gtlc_mu.stlc_mu Require Import types_notations.
 From fae_gtlc_mu.backtranslation Require Export universe types cast_help.fix.
 
-(** Embeddings *)
+(* This file defines the embedding functions (figure 7) *)
 
-Definition embedV_TUnit (v : val) : val :=
-  (FoldV (InjLV (InjLV (InjLV (InjLV v))))).
-
+(* TUnit → Universe *)
 Definition embed_TUnit : val :=
   LamV (Fold (InjL (InjL (InjL (InjL (Var 0)))))).
 
@@ -20,9 +18,7 @@ Proof.
   by apply Var_typed.
 Qed.
 
-Definition embedV_Ground_TSum (s : val) : val :=
-  (FoldV ((InjLV (InjLV (InjLV (InjRV s)))))).
-
+(* Universe + Universe → Universe *)
 Definition embed_Ground_TSum : val :=
   LamV (Fold ((InjL (InjL (InjL (InjR (Var 0))))))).
 
@@ -37,9 +33,7 @@ Proof.
   Unshelve. all:try (intro σ; by asimpl).
 Qed.
 
-Definition embedV_Ground_TProd (p : val) : val :=
-  (FoldV (InjLV (InjLV (InjRV p)))).
-
+(* Universe × Universe → Universe *)
 Definition embed_Ground_TProd : val :=
   LamV (Fold (InjL (InjL (InjR (Var 0))))).
 
@@ -52,9 +46,7 @@ Proof.
   by eapply Var_typed; try closed_solver.
 Qed.
 
-Definition embedV_Ground_TArrow (v : val) : val :=
-  FoldV (InjLV (InjRV v)).
-
+(* (Universe → Universe) → Universe *)
 Definition embed_Ground_TArrow : val :=
   LamV (Fold (InjL (InjR (Var 0)))).
 
@@ -66,8 +58,8 @@ Proof.
   by apply Var_typed.
 Qed.
 
-(* Takes something of μ.Universe, unfolds it so it is in Universe, and then puts in the last branch of the universe *)
-
+(* (μ_.Universe) → Universe *)
+(* Takes something of μ_.Universe, unfolds it so it is in Universe, and then puts in the last branch of the universe, after which folding again takes place *)
 Definition embed_Ground_TRec : val :=
   LamV (Fold (InjR (Unfold (Var 0)))).
 
@@ -80,9 +72,7 @@ Proof.
   by apply Var_typed.
 Qed.
 
-Definition embedV_TUnknown (u : val) : val := (** a bit different from the other ones... u : Universe instead of u : μX.Universe *)
-  (FoldV (InjRV u)).
-
+(* Defines embedding function of type <<G>> → Universe for arbitrary ground type *)
 Definition embed (τ : cast_calculus.types.type) (G : Ground τ) : val :=
   match G with
   | Ground_TUnit => embed_TUnit
@@ -107,3 +97,25 @@ Lemma embed_no_subs {τ : cast_calculus.types.type} {G : Ground τ} σ : (of_val
 Proof.
   destruct G; by asimpl.
 Qed.
+
+(* Below some derived functions which come in handy when defining the logical relations *)
+
+(* (embed_TUnit v) evaluates to the value (embedV_TUnit v) *)
+Definition embedV_TUnit (v : val) : val :=
+  (FoldV (InjLV (InjLV (InjLV (InjLV v))))).
+
+(* (embed_Ground_TSum v) evaluates to the value (embedV_Ground_TSum v) *)
+Definition embedV_Ground_TSum (s : val) : val :=
+  (FoldV ((InjLV (InjLV (InjLV (InjRV s)))))).
+
+(* (embed_Ground_TProd v) evaluates to the value (embedV_Ground_TProd v) *)
+Definition embedV_Ground_TProd (p : val) : val :=
+  (FoldV (InjLV (InjLV (InjRV p)))).
+
+(* (embed_Ground_TArrow v) evaluates to the value (embedV_Ground_TArrow v) *)
+Definition embedV_Ground_TArrow (v : val) : val :=
+  FoldV (InjLV (InjRV v)).
+
+(** a bit different from the other ones... u : Universe instead of u : μX.Universe *)
+Definition embedV_TUnknown (u : val) : val :=
+  (FoldV (InjRV u)).

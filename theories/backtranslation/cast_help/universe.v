@@ -1,6 +1,8 @@
 From fae_gtlc_mu.stlc_mu Require Import types types_notations.
 Require Import fae_gtlc_mu.prelude.
 
+(* This file defines the static type duped Universe (eq. 1 in paper) into which values of the unknown type will be backtranslated. *)
+
 Definition Universe_body : type :=
   (
     TUnit +
@@ -10,13 +12,8 @@ Definition Universe_body : type :=
     (TVar 0)
   )%types.
 
-(* + is left associative; (a + b + c) = ((a + b) + c) *)
-
 Definition Universe : type :=
   TRec Universe_body.
-
-Definition Universe_unfolded : type :=
-  Universe_body.[Universe/]%types.
 
 Lemma Universe_closed : Closed Universe.
 Proof. intro σ. by asimpl. Qed.

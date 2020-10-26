@@ -3,6 +3,9 @@ From fae_gtlc_mu.cast_calculus Require Export types.
 From fae_gtlc_mu Require Import prelude.
 Require Coq.Logic.JMeq.
 
+(* This file defines the alternative consistency relation (fig 9 in paper).
+   The relation is inspired by the way in which casts are decomposed in terms of each other, and shall be used to define the backtranslation of casts between two consistent types. *)
+
 Inductive alternative_consistency (A : list (type * type)) : type → type -> Type :=
   (** ground and star *)
   (* downcasting from star to ground *)
@@ -32,7 +35,7 @@ Inductive alternative_consistency (A : list (type * type)) : type → type -> Ty
   (** identiy casts between Base and TUnknown *)
   | atomic_Base :
       alternative_consistency A TUnit TUnit
-  | consStarStar :
+  | atomic_Unknown :
       alternative_consistency A TUnknown TUnknown
   (** between types of same structure *)
   (* Sum *)
@@ -59,5 +62,3 @@ Inductive alternative_consistency (A : list (type * type)) : type → type -> Ty
   | atomic_UseRecursion τl τr i
       (pμτlμtrinA : A !! i = Some (TRec τl, TRec τr)) :
       alternative_consistency A (TRec τl) (TRec τr).
-
-(* Notation "A ⊢ τ ~ τ'" := (alternative_consistency A τ τ') (at level 4, τ, τ' at next level). *)

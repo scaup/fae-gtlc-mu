@@ -4,8 +4,10 @@ From iris.proofmode Require Import tactics.
 From fae_gtlc_mu.cast_calculus Require Export lang.
 Import uPred.
 
+(* Name for invariant that supervises the gradual side *)
 Definition specN := nroot .@ "gradual".
 
+(* Iris resources for keeping track of gradual side *)
 Canonical Structure exprO := leibnizO expr.
 Definition specR := prodR fracR (agreeR exprO).
 
@@ -17,10 +19,12 @@ Definition currently `{specG Σ} (e : expr) : iProp Σ :=
 Definition currently_half `{specG Σ} (e : expr) : iProp Σ :=
   own spec_name (((1 / 2)%Qp , to_agree e) : specR).
 
+(* Invariant body to keep track of gradual side *)
 Definition initially_body `{specG Σ} (ei' : expr) : iProp Σ :=
   (∃ e', (currently_half e')
             ∗ ⌜rtc erased_step ([ei'] , tt) ([e'] , tt)⌝)%I.
 
+(* Invariant to keep track of gradual side *)
 Definition initially_inv `{specG Σ} `{invG Σ} (ei' : expr) : iProp Σ :=
   inv specN (initially_body ei').
 
@@ -34,12 +38,14 @@ Section cfg.
 
   Local Hint Resolve to_of_val : core.
 
+  (* uninteresting technical lemma *)
   Lemma step_insert_no_fork K e σ e' σ' :
     head_step e e' → erased_step ([fill K e], σ) ([fill K e'], σ').
   Proof. intros Hst. exists []. eapply (step_atomic _ _ _ _ _ _ _ [] [] []); eauto.
          by apply: Ectx_step.
   Qed.
 
+  (* Updating the gradual side with a head step under an evaluation context *)
   Lemma step_pure E ei' K e1' e2' :
     (head_step e1' e2') →
     nclose specN ⊆ E →
@@ -47,9 +53,9 @@ Section cfg.
   Proof.
     iIntros (??) "[Hinv Hj]".
     rewrite /initially_inv /initially_body.
+    (* opening invariant *)
     iInv specN as ">Hinit" "Hclose".
     iDestruct "Hinit" as (ef') "[Hown %]".
-    (** fill K e1' = ef' *)
     rewrite /currently_half.
     iDestruct (own_valid_2 with "Hown Hj") as "#eee".
     rewrite -pair_op frac_op' Qp_half_half.
@@ -74,6 +80,7 @@ Section cfg.
     iIntros (_). done.
   Qed.
 
+  (* Different instantiations of step_pure *)
   Lemma step_fst E ei' K e1' e2' :
     AsVal e1' → AsVal e2' →
     nclose specN ⊆ E →

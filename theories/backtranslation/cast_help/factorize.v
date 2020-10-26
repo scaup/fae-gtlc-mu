@@ -1,17 +1,4 @@
-From fae_gtlc_mu.cast_calculus Require Export types typing lang.
-From fae_gtlc_mu.stlc_mu Require Import types_notations.
-From fae_gtlc_mu.backtranslation Require Export universe types cast_help.fix.
-
-(** Trivial stuff *)
-
-Definition identity : val :=
-  LamV (Var 0).
-
-Lemma identity_typed Γ (τ : type) (pτ : Closed τ) : Γ ⊢ₛ identity : (TArrow τ τ).
-Proof.
-  intros.
-  eapply Lam_typed; auto. by apply Var_typed.
-Qed.
+From fae_gtlc_mu.stlc_mu Require Import lang typing typing_lemmas types_notations.
 
 (** Factorisations *)
 

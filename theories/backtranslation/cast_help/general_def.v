@@ -1,11 +1,11 @@
 From fae_gtlc_mu.stlc_mu Require Export typing lang types_lemmas.
 From fae_gtlc_mu.cast_calculus Require Export types types_lemmas.
 From fae_gtlc_mu.backtranslation Require Export alternative_consistency types_lemmas.
-From fae_gtlc_mu.backtranslation.cast_help Require Export universe embed extract between factorize.
+From fae_gtlc_mu.backtranslation.cast_help Require Export universe embed extract between factorize identity.
 From Coq Require Export List.
 
-(** emulation of a cast between an arbitrary pair of consistent types *)
-(* recursively defined on the alternative consistency relation *)
+(** This file brings together the static functions (defined in embed.v, extract.v, between.v, factorize.v and identity.v),
+    to define the backtranslation of a cast (between an arbitrary pair of two consistent types) by recursion on the alternative consistency relation. (figure 9 in paper) *)
 
 Fixpoint 𝓕 {A : list (types.type * types.type)} {τi τf : cast_calculus.types.type} (P : alternative_consistency A τi τf) : expr :=
   match P with
@@ -16,7 +16,7 @@ Fixpoint 𝓕 {A : list (types.type * types.type)} {τi τf : cast_calculus.type
   | factorDown_Ground _ τ τG pτnG pτnStar pτSτG pStarConsτG pτGConsτ =>
     factorization (𝓕 pStarConsτG) (𝓕 pτGConsτ)
   | atomic_Base _ => identity
-  | consStarStar _ => identity
+  | atomic_Unknown _ => identity
   | throughSum _ τ1 τ1' τ2 τ2' pCons1 pCons2 =>
     between_TSum
       (𝓕 pCons1)
@@ -35,13 +35,13 @@ Fixpoint 𝓕 {A : list (types.type * types.type)} {τi τf : cast_calculus.type
   | atomic_UseRecursion _ τl τr i pμτlμtrinA => Var i
   end.
 
+(* A pair in our list A, say (τ1, τ2), will correspond in the backtranslation to a static type <<τ1>> → <<τ2>> *)
+
 Definition back_pair (p : cast_calculus.types.type * cast_calculus.types.type) : stlc_mu.types.type :=
   stlc_mu.types.TArrow <<p.1>> <<p.2>>.
 
-Lemma Forall_fmap_impl {A B : Type} (f : A → B) (X : list A) (P : A → Prop) (Q : B → Prop)
-      (Himpl : forall a : A, P a → Q (f a)) (HP : Forall P X) : Forall Q (f <$> X).
-Proof. induction X. apply Forall_nil. inversion HP. apply Forall_cons. auto. by apply IHX. Qed.
-
+(* Proving well-typedness of our backtranslation function *)
+(* We restrict ourselves to the meaningful (i.e. closed) types here *)
 Lemma 𝓕_typed (A : list (cast_calculus.types.type * cast_calculus.types.type)) (pA : Forall (fun p => Closed p.1 ∧ Closed p.2) A)
       (τi τf : cast_calculus.types.type) (pτi : Closed τi) (pτf : Closed τf) (pτiConsτf : alternative_consistency A τi τf) :
   (map back_pair A) ⊢ₛ (𝓕 pτiConsτf) : (stlc_mu.types.TArrow <<τi>> <<τf>>).
@@ -76,11 +76,6 @@ Proof.
     rewrite list_lookup_fmap. by rewrite pμτlμtrinA.
 Qed.
 
-Definition 𝓕c {A} {τi τf} (pC : alternative_consistency A τi τf) fs : stlc_mu.lang.expr :=
+(* A shorthand notation to substitute out the open variables by a list of values fs *)
+Definition 𝓕c {A} {τi τf} (pC : alternative_consistency A τi τf) (fs : list val) : stlc_mu.lang.expr :=
   (𝓕 pC).[stlc_mu.typing_lemmas.env_subst fs].
-
-Definition 𝓕cV {A} {τi τf} (pC : alternative_consistency A τi τf) fs (H : length A = length fs) : stlc_mu.lang.val :=
-  match to_val (𝓕c pC fs) with
-  | Some x => x
-  | None => UnitV
-  end.

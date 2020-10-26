@@ -4,8 +4,10 @@ From iris.proofmode Require Import tactics.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 Import uPred.
 
+(* Name for invariant that supervises the static side *)
 Definition specN := nroot .@ "gradual".
 
+(* Iris resources for keeping track of static side *)
 Canonical Structure exprO := leibnizO expr.
 
 Definition specR := prodR fracR (agreeR exprO).
@@ -18,10 +20,12 @@ Definition currently `{specG Σ} (e : expr) : iProp Σ :=
 Definition currently_half `{specG Σ} (e : expr) : iProp Σ :=
   own spec_name (((1 / 2)%Qp , to_agree e) : specR).
 
+(* Invariant body to keep track of static side *)
 Definition initially_body `{specG Σ} (ei' : expr) : iProp Σ :=
   (∃ e', (currently_half e')
             ∗ ⌜rtc erased_step ([ei'] , tt) ([e'] , tt)⌝)%I.
 
+(* Invariant to keep track of static side *)
 Definition initially_inv `{specG Σ} `{invG Σ} (ei' : expr) : iProp Σ :=
   inv specN (initially_body ei').
 
@@ -35,12 +39,14 @@ Section cfg.
 
   Local Hint Resolve to_of_val : core.
 
+  (* uninteresting technical lemma *)
   Lemma step_insert_no_fork K e σ e' σ' :
     head_step e σ [] e' σ' [] → erased_step ([fill K e], σ) ([fill K e'], σ').
   Proof. intros Hst. exists []. eapply (step_atomic _ _ _ _ _ _ _ [] [] []); eauto.
          by apply: Ectx_step.
   Qed.
 
+  (* Updating the static side with a head step under an evaluation context *)
   Lemma step_pure E ei' K e1' e2' σ :
     (head_step e1' σ [] e2' σ []) →
     nclose specN ⊆ E →
@@ -75,6 +81,7 @@ Section cfg.
     destruct σ. by simpl in H. iFrame "Hown2". done.
   Qed.
 
+  (* uninteresting technical lemmas *)
   Lemma nsteps_pure_step_ctx n e1' e2' K :
     nsteps pure_step n e1' e2' → nsteps pure_step n (fill K e1') (fill K e2').
   Proof.
@@ -103,6 +110,7 @@ Section cfg.
     intros. by apply pure_step_erased_step.
   Qed.
 
+  (* Update static side with arbitrary amount of steps under an evaluation context *)
   Lemma steps_pure E ei' K e1' e2' n :
     (nsteps pure_step n e1' e2') →
     nclose specN ⊆ E →
@@ -138,6 +146,7 @@ Section cfg.
     iFrame "Hown2". done.
   Qed.
 
+  (* Different instantiations of step_pure *)
   Lemma step_fst E ei' K e1' e2' :
     AsVal e1' → AsVal e2' →
     nclose specN ⊆ E →

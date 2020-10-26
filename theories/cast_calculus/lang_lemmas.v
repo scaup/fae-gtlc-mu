@@ -181,3 +181,150 @@ Qed.
 
 Instance expr_eqdec : EqDecision expr.
 Proof. solve_decision. Qed.
+
+
+Local Hint Extern 0 (head_reducible _ _) => eexists _, _, _, _; simpl : core.
+
+Local Hint Constructors head_step : core.
+Local Hint Resolve to_of_val : core.
+Global Instance pure_lam e1 e2 `{!AsVal e2} :
+  PureExec True 1 (App (Lam e1) e2) e1.[e2 /].
+Proof.
+  intros _. apply nsteps_once. apply prim_step_pure.
+  destruct AsVal0 as [??];subst.
+  eapply (Ectx_step []); eauto.
+Qed.
+
+Global Instance pure_fold e `{!AsVal e}:
+  PureExec True 1 (Unfold (Fold e)) e.
+Proof.
+  intros _. apply nsteps_once. apply prim_step_pure.
+  destruct AsVal0 as [??];subst.
+  eapply (Ectx_step []); eauto.
+Qed.
+
+Global Instance pure_fst e1 e2 `{!AsVal e1, !AsVal e2} :
+  PureExec True 1 (Fst (Pair e1 e2)) e1.
+Proof.
+  intros _. apply nsteps_once. apply prim_step_pure.
+  destruct AsVal0 as [??];subst.
+  destruct AsVal1 as [??];subst.
+  eapply (Ectx_step []); eauto.
+Qed.
+Proof.
+
+Global Instance pure_snd e1 e2 `{!AsVal e1, !AsVal e2} :
+  PureExec True 1 (Snd (Pair e1 e2)) e2.
+Proof.
+  intros _. apply nsteps_once. apply prim_step_pure.
+  destruct AsVal0 as [??];subst.
+  destruct AsVal1 as [??];subst.
+  eapply (Ectx_step []); eauto.
+Qed.
+
+Global Instance pure_case_inl e0 e1 e2 `{!AsVal e0}:
+  PureExec True 1 (Case (InjL e0) e1 e2) e1.[e0/].
+Proof.
+  intros _. apply nsteps_once. apply prim_step_pure.
+  destruct AsVal0 as [??];subst.
+  eapply (Ectx_step []); eauto.
+Qed.
+
+Global Instance pure_case_inr e0 e1 e2 `{!AsVal e0}:
+  PureExec True 1 (Case (InjR e0) e1 e2) e2.[e0/].
+Proof.
+  intros _. apply nsteps_once. apply prim_step_pure.
+  destruct AsVal0 as [??];subst.
+  eapply (Ectx_step []); eauto.
+Qed.
+
+Global Instance pure_cast_between_sum1 e1 τ1 τ2 τ1' τ2' `{!AsVal e1}:
+  PureExec True 1 (Cast (InjL e1) (TSum τ1 τ2) (TSum τ1' τ2')) (InjL (Cast e1 τ1 τ1')).
+Proof.
+  intros _. apply nsteps_once. apply prim_step_pure.
+  destruct AsVal0 as [??];subst.
+  eapply (Ectx_step []); eauto.
+Qed.
+
+Global Instance pure_cast_between_sum2 e2 τ1 τ2 τ1' τ2' `{!AsVal e2}:
+  PureExec True 1 (Cast (InjR e2) (TSum τ1 τ2) (TSum τ1' τ2')) (InjR (Cast e2 τ2 τ2')).
+Proof.
+  intros _. apply nsteps_once. apply prim_step_pure.
+  destruct AsVal0 as [??];subst.
+  eapply (Ectx_step []); eauto.
+Qed.
+
+Global Instance pure_cast_between_rec e τl τr `{!AsVal e}:
+  PureExec True 1 (Cast (Fold e) (TRec τl) (TRec τr))
+            (Fold (Cast e τl.[TRec τl/] τr.[TRec τr/])).
+Proof.
+  intros _. apply nsteps_once. apply prim_step_pure.
+  destruct AsVal0 as [??];subst.
+  eapply (Ectx_step []); eauto.
+Qed.
+
+Global Instance pure_app_cast f e2 τ1 τ2 τ1' τ2' `{!AsVal f,!AsVal e2} :
+  PureExec True 1 (App (Cast f (TArrow τ1 τ2) (TArrow τ1' τ2')) e2) (Cast (App f (Cast e2 τ1' τ1)) τ2 τ2').
+Proof.
+  intros _. apply nsteps_once. apply prim_step_pure.
+  destruct AsVal0 as [??];subst.
+  destruct AsVal1 as [??];subst.
+  eapply (Ectx_step []); eauto.
+Qed.
+
+Global Instance pure_same_ground e τ `{!AsVal e, !Ground τ} :
+  PureExec True 1 (Cast (Cast e τ TUnknown) TUnknown τ) e.
+Proof.
+  intros _. apply nsteps_once. apply prim_step_pure.
+  destruct AsVal0 as [??];subst.
+  eapply (Ectx_step []); eauto.
+Qed.
+
+Global Instance pure_different_ground e τ τ' (neq : τ ≠ τ') `{!AsVal e, !Ground τ, !Ground τ'} :
+  PureExec True 1 (Cast (Cast e τ TUnknown) TUnknown τ') CastError.
+Proof.
+  intros _. apply nsteps_once. apply prim_step_pure.
+  destruct AsVal0 as [??];subst.
+  eapply (Ectx_step []); eauto.
+Qed.
+
+Lemma pure_fact_up e τ τG (neq : τ ≠ TUnknown) (nG : Ground τ → False) (G : get_shape τ = Some τG) `{!AsVal e} :
+  PureExec True 1 (Cast e τ TUnknown) (Cast (Cast e τ τG) τG TUnknown).
+Proof.
+  intros _. apply nsteps_once. apply prim_step_pure.
+  destruct AsVal0 as [??];subst.
+  eapply (Ectx_step []); eauto.
+Qed.
+
+Lemma pure_fact_down e τ τG (neq : τ ≠ TUnknown) (nG : Ground τ → False) (G : get_shape τ = Some τG) `{!AsVal e} :
+  PureExec True 1 (Cast e TUnknown τ) (Cast (Cast e TUnknown τG) τG τ).
+Proof.
+  intros _. apply nsteps_once. apply prim_step_pure.
+  destruct AsVal0 as [??];subst.
+  eapply (Ectx_step []); eauto.
+Qed.
+
+Global Instance pure_cast_pair e1 e2 τ1 τ2 τ1' τ2' `{!AsVal e1, !AsVal e2} :
+  PureExec True 1 (Cast (Pair e1 e2) (TProd τ1 τ2) (TProd τ1' τ2')) (Pair (Cast e1 τ1 τ1') (Cast e2 τ2 τ2')).
+Proof.
+  intros _. apply nsteps_once. apply prim_step_pure.
+  destruct AsVal0 as [??];subst.
+  destruct AsVal1 as [??];subst.
+  eapply (Ectx_step []); eauto.
+Qed.
+
+Global Instance pure_cast_tunit_tunit e  `{!AsVal e} :
+  PureExec True 1 (Cast e TUnit TUnit) e.
+Proof.
+  intros _. apply nsteps_once. apply prim_step_pure.
+  destruct AsVal0 as [??];subst.
+  eapply (Ectx_step []); eauto.
+Qed.
+
+Global Instance pure_cast_tunk_tunk e  `{!AsVal e} :
+  PureExec True 1 (Cast e TUnknown TUnknown) e.
+Proof.
+  intros _. apply nsteps_once. apply prim_step_pure.
+  destruct AsVal0 as [??];subst.
+  eapply (Ectx_step []); eauto.
+Qed.

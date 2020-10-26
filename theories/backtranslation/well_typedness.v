@@ -3,6 +3,7 @@ From fae_gtlc_mu.stlc_mu Require Export typing contexts.
 From fae_gtlc_mu.cast_calculus Require Import lang consistency consistency_lemmas.
 From fae_gtlc_mu.backtranslation Require Import types expressions cast_help.general_def cast_help.general_def_lemmas contexts.
 
+(* Well-typedness for expressions *)
 Lemma well_typedness_expr Γ e τ : (Γ ⊢ₜ e : τ) →
     map backtranslate_type Γ ⊢ₛ backtranslate_expr e : backtranslate_type τ.
 Proof.
@@ -26,8 +27,7 @@ Proof.
   - apply Ω_typed. by apply back_closed.
 Qed.
 
-(* From fae_gtlc_mu.embedding Require Export types. *)
-
+(* Well-typedness for contexts of depth 1 *)
 Lemma well_typedness_ctx_item Γ (τ : cast_calculus.types.type) (pτ : Closed τ) Γ' τ' C :
   cast_calculus.contexts.typed_ctx_item C Γ τ Γ' τ' →
   typed_ctx_item (backtranslate_ctx_item C) (map backtranslate_type Γ) (backtranslate_type τ) (map backtranslate_type Γ') (backtranslate_type τ').
@@ -56,6 +56,7 @@ Proof.
     rewrite /𝓕c /=. asimpl. apply 𝓕_typed with (A := []); auto.
 Qed.
 
+(* Well-typedness for contexts *)
 Lemma well_typedness_ctx Γ (τ : cast_calculus.types.type) (pτ : Closed τ) Γ' τ' C :
   cast_calculus.contexts.typed_ctx C Γ τ Γ' τ' →
   typed_ctx (backtranslate_ctx C) (map backtranslate_type Γ) (backtranslate_type τ) (map backtranslate_type Γ') (backtranslate_type τ').

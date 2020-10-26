@@ -58,6 +58,7 @@ theories/backtranslation/types_lemmas.v # boring lemmas on backtranslation of ty
 theories/backtranslation/cast_help/fix.v # defining fix operator
 theories/backtranslation/cast_help/embed.v # upcasts from ground
 theories/backtranslation/cast_help/extract.v # downcasts to ground
+theories/backtranslation/cast_help/identity.v # identity function
 theories/backtranslation/cast_help/factorize.v # factorizing upcasts and downcasts
 theories/backtranslation/cast_help/between.v # casts between sum, product, recursive and arrow types
 theories/backtranslation/cast_help/general_def.v # general casts

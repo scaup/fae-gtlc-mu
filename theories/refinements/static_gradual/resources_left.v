@@ -1,10 +1,12 @@
 From iris.program_logic Require Export weakestpre.
 From fae_gtlc_mu.stlc_mu Require Export lang.
 
+(* Iris resources for invariants *)
 Class implG Σ := ImplG {
   implG_invG : invG Σ;
 }.
 
+(* Iris resources static side for weakest preconditions... *)
 Instance implG_irisG `{implG Σ} : irisG lang Σ := {
   iris_invG := implG_invG;
   state_interp σ κs _ := True%I;
@@ -17,11 +19,13 @@ From fae_gtlc_mu.backtranslation Require Import extract.
 From iris.program_logic Require Export ectx_lifting.
 From iris.proofmode Require Export tactics.
 
+(* WP Ω ... *)
 Section wp_omega.
 
   Context `{!implG Σ}.
 
   Lemma wp_Ω Φ : ⊢ (True -∗ (WP Ω {{ Φ }}))%I.
+  (* because Ω diverges *)
   Proof.
     iIntros.
     iLöb as "IH".

@@ -17,7 +17,7 @@ Section compat_cast_identity.
   Qed.
 
   Lemma back_cast_ar_star_star:
-    ∀ A : list (type * type), back_cast_ar (consStarStar A).
+    ∀ A : list (type * type), back_cast_ar (atomic_Unknown A).
   Proof.
     intros A.
     rewrite /back_cast_ar. iIntros (ei' K' v v' fs) "(#Hfs & #Hvv' & #Hei' & Hv')".

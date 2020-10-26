@@ -6,6 +6,7 @@ Section compat_cast_prod_prod.
   Context `{!implG Σ,!specG Σ}.
   Local Hint Resolve to_of_val : core.
 
+  (** The case `throughProd` in our proof by induction on the alternative consistency relation. *)
   Lemma back_cast_ar_prod_prod:
     ∀ (A : list (type * type)) (τ1 τ1' τ2 τ2' : type) (pC1 : alternative_consistency A τ1 τ1') (pC2 : alternative_consistency A τ2 τ2')
       (IHpC1 : back_cast_ar pC1) (IHpC2 : back_cast_ar pC2),
@@ -17,7 +18,6 @@ Section compat_cast_prod_prod.
     rewrite /𝓕c /𝓕. fold (𝓕 pC1) (𝓕 pC2). rewrite between_TProd_subst_rewrite.
     rewrite interp_rw_TProd.
     iDestruct "Hvv'" as ((v1, v1') (v2, v2')) "(% & #H1 & #H2)". simpl in H0. inversion H0. clear H0 H2 H3 v v'.
-    iDestruct "Hfs" as "[% Hfs']"; iAssert (rel_cast_functions A fs) with "[Hfs']" as "Hfs". iSplit; done. iClear "Hfs'".
     fold interp.
     fold (𝓕c pC1 fs) (𝓕c pC2 fs).
 

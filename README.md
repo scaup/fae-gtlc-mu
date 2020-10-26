@@ -119,19 +119,27 @@ for a complete listing of all files, one can refer to the commented [_CoqProject
 
 ### Defining backtranslation (section 4.2 in paper)
 
-- [theories/backtranslation/alternative_consistency.v](theories/backtranslation/alternative_consistency.v) defines the alternative consistency relation as in figure 9 of paper
-- [theories/backtranslation/implication_consistencies/proof.v](theories/backtranslation/implication_consistencies/proof.v) proves that the conventional relations implies the alternative one, as is claimed in the "Is this Well-Defined"-paragraph
+#### Laying out ground work
+
+Alternative consistency relation (figure 9 in paper) on which the backtranslation for casts will be inductively defined.
+- [theories/backtranslation/alternative_consistency.v](theories/backtranslation/alternative_consistency.v) definition relation
+- [theories/backtranslation/implication_consistencies/proof.v](theories/backtranslation/implication_consistencies/proof.v) proves that the conventional relations implies the alternative one, as is claimed in the "Is this Well-Defined"-paragraph.
+
+Definition of the static Universe type and the backtranslation on types.
 - [theories/backtranslation/cast_help/universe.v](theories/backtranslation/cast_help/universe.v) defines the universe (equation 1 in paper)
 - [theories/backtranslation/types.v](theories/backtranslation/types.v) defines the backtranslation on types (figure 6 and equation 1 in paper)
-- [theories/backtranslation/cast_help/embed.v](theories/backtranslation/cast_help/embed.v) defines backtranslation of casts from ground to unknown (figure 7 in paper)
-- [theories/backtranslation/cast_help/extract.v](theories/backtranslation/cast_help/extract.v) defines backtranslation of casts from unknown to ground (figure 7 in paper)
-- [theories/backtranslation/cast_help/extract.v](theories/backtranslation/cast_help/extract.v) defines backtranslation of casts from unknown to ground (figure 7 in paper)
-- [theories/backtranslation/cast_help/factorize.v](theories/backtranslation/cast_help/factorize.v): factorizing upcasts and downcasts (figure 9)
-- [theories/backtranslation/cast_help/between.v](theories/backtranslation/cast_help/between.v): casts between sum, product, recursive and arrow types
-- [theories/backtranslation/cast_help/general_def.v](theories/backtranslation/cast_help/general_def.v) brings it all together (figure 9)
 
-- [theories/backtranslation/expressions.v](theories/backtranslation/expressions.v): actual backtranslation on terms
-- [theories/backtranslation/contexts.v](theories/backtranslation/contexts.v): on contexts
+Static functions (and proofs of their well-typedness) that will be used later in the backtranslation for casts
+- [theories/backtranslation/cast_help/embed.v](theories/backtranslation/cast_help/embed.v) defines embedding functions (figure 7 in paper)
+- [theories/backtranslation/cast_help/extract.v](theories/backtranslation/cast_help/extract.v) defines extraction functions (figure 7 in paper)
+- [theories/backtranslation/cast_help/identity.v](theories/backtranslation/cast_help/identity.v) defines identity function
+- [theories/backtranslation/cast_help/factorize.v](theories/backtranslation/cast_help/factorize.v): defines factorization function
+- [theories/backtranslation/cast_help/between.v](theories/backtranslation/cast_help/between.v): defines decomposition of casts between sum, product, recursive and arrow types
+
+#### Bringing stuff together
+- [theories/backtranslation/cast_help/general_def.v](theories/backtranslation/cast_help/general_def.v) brings the previously defined static functions together to define the backtranslation of a cast between two consistent types as a function by recursion on the alternative consistency relation (figure 9)
+- [theories/backtranslation/expressions.v](theories/backtranslation/expressions.v): Defines the actual backtranslation on terms. Here we needed our proof of the fact that conventional consistency implies the alternative one.
+- [theories/backtranslation/contexts.v](theories/backtranslation/contexts.v): Naturally extends the backtranslation to contexts.
 - [theories/backtranslation/well_typedness.v](theories/backtranslation/well_typedness.v): proves well-typedness of backtranslation
 
 ### Defining logical relations from static to gradual (section 4.3.3)
@@ -142,11 +150,17 @@ for a complete listing of all files, one can refer to the commented [_CoqProject
 
 ### Proving specification for LR from static to gradual (section 4.3.2 and 4.3.4)
 
-- [theories/refinements/static_gradual/compat_easy.v](theories/refinements/static_gradual/compat_easy.v) proves the unexciting lemmas (fig 12 in the paper)
-- [theories/refinements/static_gradual/compat_cast/defs.v](theories/refinements/static_gradual/compat_cast/defs.v) defines the generalized compatibility lemma for casts (lemma 4.7)
-- [theories/refinements/static_gradual/compat_cast/all.v](theories/refinements/static_gradual/compat_cast/all.v) proves the compatibility lemma on casts; it brings together the different cases defined in the same folder
-- [theories/refinements/static_gradual/rel_ref_specs.v][theories/refinements/static_gradual/rel_ref_specs.v] proves that gradual contexts are related to their backtranslation and that static terms are related to their embeddings (lemma 4.2 in paper)
-- [theories/refinements/static_gradual/adequacy.v](theories/refinements/static_gradual/adequacy.v) proves adequacy of logical relations (lemma 4.3)
+The file [theories/refinements/static_gradual/compat_easy.v](theories/refinements/static_gradual/compat_easy.v) proves the unexciting compatibility lemmas (fig 12 in the paper).
+
+For the compatibility lemma between casts (lemma 4.7 in paper), we first define the (to-be-proven) proposition named `back_cast_ar` in [theories/refinements/static_gradual/compat_cast/defs.v](theories/refinements/static_gradual/compat_cast/defs.v).
+The proposition `back_cast_ar` deviates slightly from lemma 4.7 in the paper, as it is more ergonomic to prove.
+
+The file [theories/refinements/static_gradual/compat_cast/all.v](theories/refinements/static_gradual/compat_cast/all.v) actually proves proposition `back_cast_ar` by induction on the alternative consistency relation. 
+The different inductive cases are proven in all the other files from the same directory: [between_rec.v](theories/refinements/static_gradual/compat_cast/between_rec.v), [prod_prod.v](theories/refinements/static_gradual/compat_cast/prod_prod.v), [sum_sum.v](theories/refinements/static_gradual/compat_cast/sum_sum.v), [arrow_arrow.v](theories/refinements/static_gradual/compat_cast/arrow_arrow.v), [identity.v](theories/refinements/static_gradual/compat_cast/identity.v), [tau_star.v](theories/refinements/static_gradual/compat_cast/tau_star.v), [ground_star.v](theories/refinements/static_gradual/compat_cast/ground_star.v), [tau_star.v](theories/refinements/static_gradual/compat_cast/tau_star.v), [star_tau.v](theories/refinements/static_gradual/compat_cast/star_tau.v), and [star_ground.v](theories/refinements/static_gradual/compat_cast/star_ground.v).
+Afterwards, the actual compatibility for casts (lemma 4.7) is proven (`bin_log_related_back_cast`) out of `back_cast_ar`.
+
+The file [theories/refinements/static_gradual/rel_ref_specs.v][theories/refinements/static_gradual/rel_ref_specs.v] proves that gradual contexts are related to their backtranslation and that static terms are related to their embeddings (lemma 4.2 in paper); to do this, it basically applies all the aforementioned compatibility lemmas.
+In [theories/refinements/static_gradual/adequacy.v](theories/refinements/static_gradual/adequacy.v), adequacy of the logical relations are proven (lemma 4.3).
 
 ### Defining logical relations from gradual to static (mostly analogous and not in the paper)
 
@@ -156,15 +170,23 @@ for a complete listing of all files, one can refer to the commented [_CoqProject
 
 ### Proving specification for LR from gradual to static (mostly analogous and mostly absent in paper)
 
-- [theories/refinements/gradual_static/compat_easy.v](theories/refinements/gradual_static/compat_easy.v) proves the unexciting lemmas (not in paper)
-- [theories/refinements/gradual_static/compat_cast/defs.v](theories/refinements/gradual_static/compat_cast/defs.v) defines the generalized compatibility lemma for casts (not in paper)
-- [theories/refinements/gradual_static/compat_cast/all.v](theories/refinements/gradual_static/compat_cast/all.v) proves the compatibility lemma on casts; it brings together the different cases defined in the same folder
-- [theories/refinements/gradual_static/rel_ref_specs.v][theories/refinements/gradual_static/rel_ref_specs.v] proves that static contexts are related to their backtranslation and that gradual terms are related to their embeddings (lemma 4.4 in paper)
-- [theories/refinements/gradual_static/adequacy.v](theories/refinements/static_static/adequacy.v) proves adequacy of logical relations (lemma 4.5)
+The file [theories/refinements/gradual_static/compat_easy.v](theories/refinements/gradual_static/compat_easy.v) proves the unexciting compatibility lemmas (not in paper).
+
+For the compatibility lemma between casts (not in paper), we first define the (to-be-proven) proposition named `back_cast_ar` in [theories/refinements/gradual_static/compat_cast/defs.v](theories/refinements/gradual_static/compat_cast/defs.v).
+The proposition `back_cast_ar` deviates slightly from the compatibility lemma on casts, as it is more ergonomic to prove.
+
+The file [theories/refinements/gradual_static/compat_cast/all.v](theories/refinements/gradual_static/compat_cast/all.v) actually proves proposition `back_cast_ar` by induction on the alternative consistency relation. 
+The different inductive cases are proven in all the other files from the same directory: [between_rec.v](theories/refinements/gradual_static/compat_cast/between_rec.v), [prod_prod.v](theories/refinements/gradual_static/compat_cast/prod_prod.v), [sum_sum.v](theories/refinements/gradual_static/compat_cast/sum_sum.v), [arrow_arrow.v](theories/refinements/gradual_static/compat_cast/arrow_arrow.v), [identity.v](theories/refinements/gradual_static/compat_cast/identity.v), [tau_star.v](theories/refinements/gradual_static/compat_cast/tau_star.v), [ground_star.v](theories/refinements/gradual_static/compat_cast/ground_star.v), [tau_star.v](theories/refinements/gradual_static/compat_cast/tau_star.v), [star_tau.v](theories/refinements/gradual_static/compat_cast/star_tau.v), and [star_ground.v](theories/refinements/gradual_static/compat_cast/star_ground.v).
+Afterwards, the actual compatibility for casts is proven (`bin_log_related_back_cast`) out of `back_cast_ar`.
+
+The file [theories/refinements/gradual_static/rel_ref_specs.v][theories/refinements/gradual_static/rel_ref_specs.v] proves that gradual contexts are related to their backtranslation and that static terms are related to their embeddings (lemma 4.4 in paper); to do this, it basically applies all the aforementioned compatibility lemmas.
+In [theories/refinements/gradual_static/adequacy.v](theories/refinements/gradual_static/adequacy.v), adequacy of the logical relations are proven (lemma 4.5).
 
 ### Bringing stuff together in [theories/fae.v](theories/fae.v)
 
-Both directions of theorem 4.1 from the paper are proven there.
+Both directions of theorem 4.1 from the paper are proven there; 
+left to right is proven by `static_ctx_refines_gradual` and right to left by `gradual_ctx_refines_static`.
+Finally, all is brought together to prove full abstraction.
 
 ## Credits
 

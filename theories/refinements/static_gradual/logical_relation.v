@@ -5,40 +5,42 @@ From iris.algebra Require Import list.
 From stdpp Require Import tactics.
 Import uPred.
 
+(* Some definitions to help us define the relations on values *)
+Definition castupV_TUnit (v : val) : val :=
+  (CastV v TUnit ⋆ (TGround_TUnknown_icp Ground_TUnit)).
+
+Definition castupV_TSum (v : val) : val :=
+  (CastV v (TSum ⋆ ⋆) ⋆ (TGround_TUnknown_icp Ground_TSum)).
+
+Definition castupV_TProd (v : val) : val :=
+  (CastV v (TProd ⋆ ⋆) ⋆ (TGround_TUnknown_icp Ground_TProd)).
+
+Definition castupV_TArrow (v : val) : val :=
+  (CastV v (TArrow ⋆ ⋆) ⋆ (TGround_TUnknown_icp Ground_TArrow)).
+
+Definition castupV_TRec (v : val) : val :=
+  (CastV v (TRec ⋆) ⋆ (TGround_TUnknown_icp Ground_TRec)).
+
 Canonical Structure typeO := leibnizO type.
 
-Definition logN : namespace := nroot .@ "logN".
-
 Section logrel.
-  Context `{!implG Σ, !specG Σ}.
+  Context `{!implG Σ}. (* the resource for invariants and WP *)
+  Context `{!specG Σ}. (* the resources for keeping track of gradual side *)
   Notation P := (prodO stlc_mu.lang.valO cast_calculus.lang.valO).
   Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iPropO Σ).
   Implicit Types τi : D.
   Implicit Types Δ : listO D.
 
-  Definition castupV_TUnit (v : val) : val :=
-    (CastV v TUnit ⋆ (TGround_TUnknown_icp Ground_TUnit)).
-
-  Definition castupV_TSum (v : val) : val :=
-    (CastV v (TSum ⋆ ⋆) ⋆ (TGround_TUnknown_icp Ground_TSum)).
-
-  Definition castupV_TProd (v : val) : val :=
-    (CastV v (TProd ⋆ ⋆) ⋆ (TGround_TUnknown_icp Ground_TProd)).
-
-  Definition castupV_TArrow (v : val) : val :=
-    (CastV v (TArrow ⋆ ⋆) ⋆ (TGround_TUnknown_icp Ground_TArrow)).
-
-  Definition castupV_TRec (v : val) : val :=
-    (CastV v (TRec ⋆) ⋆ (TGround_TUnknown_icp Ground_TRec)).
-
-  Definition interp_expr (interp_cor_val : P → iPropO Σ)
+  (* The lifting operator for relations on values to relations on expressions *)
+  Definition interp_expr (interp_cor_val : P → iPropO Σ (* relation on values*))
       (ee : stlc_mu.lang.expr * cast_calculus.lang.expr) : iProp Σ := (∀ K',
     currently_half (fill K' (ee.2)) →
     WP ee.1 {{ v, ∃ v', currently_half (fill K' (of_val v')) ∧ interp_cor_val (v, v') }})%I.
 
-  Definition Closed (τ : type) : Prop := forall σ, τ.[σ] = τ.
-
-  (** Definition of logical relations on values (given relation on terms) *)
+  (** Defining the logical relations on values *)
+  (** We use `Fixpoint` because we use induction on types (where the types become structurally smaller) *)
+  (** We have in scope Ψ, which we'll use for guarded recursion (where the types do not become structurally smaller). *)
+  (** Note that Ψ always appears under a later. *)
   Fixpoint interp_gen (Ψ : typeO -n> D) (τ : typeO) (ww : P) : iPropO Σ := (
     match τ with
     | TUnit => ⌜ww.1 = stlc_mu.lang.UnitV⌝ ∧ ⌜ww.2 = cast_calculus.lang.UnitV⌝
@@ -62,23 +64,21 @@ Section logrel.
     | TVar x => False
     end)%I.
 
-  (* HACK: move somewhere else *)
+  (* Technical lemma *)
   Ltac auto_equiv :=
-    (* Deal with "pointwise_relation" *)
     repeat lazymatch goal with
     | |- pointwise_relation _ _ _ _ => intros ?
     end;
-    (* Normalize away equalities. *)
     repeat match goal with
     | H : _ ≡{_}≡ _ |-  _ => apply (discrete_iff _ _) in H
     | _ => progress simplify_eq
     end;
-    (* repeatedly apply congruence lemmas and use the equalities in the hypotheses. *)
     try (f_equiv; fast_done || auto_equiv).
 
   Program Definition interp_gen_ne (Ψ : typeO -n> D) : typeO -n> D := λne τ p, interp_gen Ψ τ p.
   Solve Obligations with repeat intros ?; simpl; auto_equiv.
 
+  (* Proof that `interp_gen_ne` is well-guarded. *)
   Global Instance interp_gen_ne_contractive : Contractive interp_gen_ne.
   Proof.
     intros n Ψ1 Ψ2  pnΨ τ. simpl.
@@ -100,11 +100,11 @@ Section logrel.
     - solve_contractive.
   Qed.
 
-  (** The actual relations on values *)
+  (** Taking the `fixpoint`, we obtain the actual relation on values (figure 11 in paper) *)
   Definition interp : typeO -n> D := fixpoint interp_gen_ne.
-
   Notation "⟦ τ ⟧" := (interp τ).
 
+  (* Some lemmas for rewriting our logical relations *)
   Lemma unfold_interp : interp ≡ interp_gen_ne interp.
   Proof. apply fixpoint_unfold. Qed.
 
@@ -155,6 +155,7 @@ Section logrel.
                                )))%I.
   Proof. rewrite (unfold_interp_type_pair). by simpl. Qed.
 
+  (* Proving that logical relation on values is persistent *)
   Global Instance interp_persistent τ vv :
     Persistent (⟦ τ ⟧ vv).
   Proof.
@@ -164,6 +165,7 @@ Section logrel.
     - apply or_persistent; apply exist_persistent; intro q; rewrite -unfold_interp_type_pair; apply _.
   Qed.
 
+  (* Extending logical relation on values to that of contexts *)
   Definition interp_env (Γ : list type)
       (vvs : list (stlc_mu.lang.val * cast_calculus.lang.val)) : iProp Σ :=
     (⌜length Γ = length vvs⌝ ∧ [∧] zip_with (λ τ, ⟦ τ ⟧) Γ vvs)%I.
@@ -219,7 +221,8 @@ End logrel.
 
 Typeclasses Opaque interp_env.
 Notation "⟦ τ ⟧" := (interp τ).
-(** Logical relation on closed terms *)
+(** Given `interp`, the logical relation on values, and `interp_expr` our lifting operator,
+    we define our logical relation on closed expressions. *)
 Notation "⟦ τ ⟧ₑ" := (interp_expr (interp τ)).
 Notation "⟦ Γ ⟧*" := (interp_env Γ).
 
@@ -229,12 +232,13 @@ Section bin_log_def.
   Context `{!implG Σ, !specG Σ}.
   Notation D := (prodO stlc_mu.lang.valO cast_calculus.lang.valO -n> iProp Σ).
 
-  (** Logical relation extended to open terms *)
+  (** Extending the logical relations to open terms *)
   Definition bin_log_related
   (Γ : list cast_calculus.types.type) (e : stlc_mu.lang.expr) (e' : cast_calculus.lang.expr) (τ : cast_calculus.types.type) :=
     ∀ vvs (ei' : cast_calculus.lang.expr),
     initially_inv ei' ∧ ⟦ Γ ⟧* vvs ⊢
     ⟦ τ ⟧ₑ (e.[stlc_mu.typing_lemmas.env_subst (vvs.*1)], e'.[cast_calculus.typing_lemmas.env_subst (vvs.*2)]).
+
 End bin_log_def.
 
 Notation "Γ ⊨ e '≤log≤' e' : τ" :=
