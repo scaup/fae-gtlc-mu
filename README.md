@@ -95,7 +95,7 @@ We restrict our typing derivations so that they only treat meaningful types; the
 - [theories/cast_calculus/lang.v](theories/cast_calculus/lang.v) defines expressions, values, evaluation contexts, head reductions, total reduction, and a `Halts` predicate on expressions.
 - [theories/cast_calculus/consistency.v](theories/cast_calculus/consistency.v) defines the conventional consistency relation (figure 1 in paper)
 - [theories/cast_calculus/typing.v](theories/cast_calculus/typing.v) defines the typing rules for expressions.
-We restrict our typing derivations so that they only treat meaningful types; the closed types (types with no free variables) (see [theories/prelude.v] for the formal definition of closedness).
+We restrict our typing derivations so that they only treat meaningful types; the closed types (types with no free variables) (see [theories/prelude.v](theories/prelude.v) for the formal definition of closedness).
 - [theories/cast_calculus/contexts.v](theories/cast_calculus/contexts.v) defines general contexts (not evaluation contexts) together with their typing rules.
 - [theories/cast_calculus/ctx_equiv.v](theories/cast_calculus/ctx_equiv.v) defines contextual equivalence.
 
@@ -159,7 +159,7 @@ The file [theories/refinements/static_gradual/compat_cast/all.v](theories/refine
 The different inductive cases are proven in all the other files from the same directory: [between_rec.v](theories/refinements/static_gradual/compat_cast/between_rec.v), [prod_prod.v](theories/refinements/static_gradual/compat_cast/prod_prod.v), [sum_sum.v](theories/refinements/static_gradual/compat_cast/sum_sum.v), [arrow_arrow.v](theories/refinements/static_gradual/compat_cast/arrow_arrow.v), [identity.v](theories/refinements/static_gradual/compat_cast/identity.v), [tau_star.v](theories/refinements/static_gradual/compat_cast/tau_star.v), [ground_star.v](theories/refinements/static_gradual/compat_cast/ground_star.v), [tau_star.v](theories/refinements/static_gradual/compat_cast/tau_star.v), [star_tau.v](theories/refinements/static_gradual/compat_cast/star_tau.v), and [star_ground.v](theories/refinements/static_gradual/compat_cast/star_ground.v).
 Afterwards, the actual compatibility for casts (lemma 4.7) is proven (`bin_log_related_back_cast`) out of `back_cast_ar`.
 
-The file [theories/refinements/static_gradual/rel_ref_specs.v][theories/refinements/static_gradual/rel_ref_specs.v] proves that gradual contexts are related to their backtranslation and that static terms are related to their embeddings (lemma 4.2 in paper); to do this, it basically applies all the aforementioned compatibility lemmas.
+The file [theories/refinements/static_gradual/rel_ref_specs.v](theories/refinements/static_gradual/rel_ref_specs.v) proves that gradual contexts are related to their backtranslation and that static terms are related to their embeddings (lemma 4.2 in paper); to do this, it basically applies all the aforementioned compatibility lemmas.
 In [theories/refinements/static_gradual/adequacy.v](theories/refinements/static_gradual/adequacy.v), adequacy of the logical relations are proven (lemma 4.3).
 
 ### Defining logical relations from gradual to static (mostly analogous and not in the paper)
@@ -179,7 +179,7 @@ The file [theories/refinements/gradual_static/compat_cast/all.v](theories/refine
 The different inductive cases are proven in all the other files from the same directory: [between_rec.v](theories/refinements/gradual_static/compat_cast/between_rec.v), [prod_prod.v](theories/refinements/gradual_static/compat_cast/prod_prod.v), [sum_sum.v](theories/refinements/gradual_static/compat_cast/sum_sum.v), [arrow_arrow.v](theories/refinements/gradual_static/compat_cast/arrow_arrow.v), [identity.v](theories/refinements/gradual_static/compat_cast/identity.v), [tau_star.v](theories/refinements/gradual_static/compat_cast/tau_star.v), [ground_star.v](theories/refinements/gradual_static/compat_cast/ground_star.v), [tau_star.v](theories/refinements/gradual_static/compat_cast/tau_star.v), [star_tau.v](theories/refinements/gradual_static/compat_cast/star_tau.v), and [star_ground.v](theories/refinements/gradual_static/compat_cast/star_ground.v).
 Afterwards, the actual compatibility for casts is proven (`bin_log_related_back_cast`) out of `back_cast_ar`.
 
-The file [theories/refinements/gradual_static/rel_ref_specs.v][theories/refinements/gradual_static/rel_ref_specs.v] proves that gradual contexts are related to their backtranslation and that static terms are related to their embeddings (lemma 4.4 in paper); to do this, it basically applies all the aforementioned compatibility lemmas.
+The file [theories/refinements/gradual_static/rel_ref_specs.v](theories/refinements/gradual_static/rel_ref_specs.v) proves that gradual contexts are related to their backtranslation and that static terms are related to their embeddings (lemma 4.4 in paper); to do this, it basically applies all the aforementioned compatibility lemmas.
 In [theories/refinements/gradual_static/adequacy.v](theories/refinements/gradual_static/adequacy.v), adequacy of the logical relations are proven (lemma 4.5).
 
 ### Bringing stuff together in [theories/fae.v](theories/fae.v)
